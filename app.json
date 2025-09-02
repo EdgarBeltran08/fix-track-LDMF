@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "carponent",
-    "slug": "carponent",
+    "name": "fix-track",
+    "slug": "fix-track",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "carponent",
+    "scheme": "fix-track",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
