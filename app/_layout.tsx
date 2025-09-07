@@ -1,6 +1,7 @@
 import { GluestackUIProvider } from "@/shared/components/ui/gluestack-ui-provider";
 import "@/shared/styles/globals.css";
 import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -27,6 +28,7 @@ export default function RootLayout() {
 
         </LayoutContainer>
       </SafeAreaProvider>
+      <StatusBar style="auto" />
     </GluestackUIProvider>
   );
 }
