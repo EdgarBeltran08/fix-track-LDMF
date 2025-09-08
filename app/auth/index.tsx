@@ -4,7 +4,7 @@ import {
   ButtonText,
 } from "@/shared/components/ui/button";
 import { Text, View } from "react-native";
-import "../shared/styles/globals.css";
+import "../../shared/styles/globals.css";
 
 export default function Index() {
   return (
