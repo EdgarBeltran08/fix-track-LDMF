@@ -1,31 +1,6 @@
-import { GluestackUIProvider } from "@/shared/components/ui/gluestack-ui-provider";
 import "@/shared/styles/globals.css";
 import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { View } from "react-native";
-import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 
-function LayoutContainer({ children }: { children: React.ReactNode }) {
-  const insets = useSafeAreaInsets();
-  return (
-    <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}>
-      {children}
-    </View>
-  );
-}
-
-export default function RootLayout() {
-  return (
-    <GluestackUIProvider mode="system">
-      <SafeAreaProvider>
-        <LayoutContainer>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="auth" />
-            <Stack.Screen name="(tab)" />
-          </Stack>
-        </LayoutContainer>
-      </SafeAreaProvider>
-      <StatusBar style="auto" />
-    </GluestackUIProvider>
-  );
+export default function AuthLayout() {
+  return <Stack/>
 }
