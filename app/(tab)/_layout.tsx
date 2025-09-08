@@ -1,16 +1,29 @@
+import { TabBar } from "@/shared/components/ui/Bottom-React/TabBar";
 import { Tabs } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+import React from 'react';
 
-export default function Applayout() {
+export default function TabLayout() {
     return(
-        <>
-            <Tabs screenOptions={{ headerShown: false }}>
-                <Tabs.Screen name="Home"/>
-                <Tabs.Screen name="Repairs"/>
-                <Tabs.Screen name="Inventory"/>
-                <Tabs.Screen name="Profile"/>
-            </Tabs>
-            <StatusBar style="auto"/>
-        </>
+        <Tabs screenOptions={{ headerShown: false}} tabBar={(props) => <TabBar {...props} />}
+        >
+            <Tabs.Screen
+                name="index" 
+                options={{
+                title: 'Home',
+                }}
+            />
+            <Tabs.Screen
+                name="repairs"
+                options={{
+                title: 'Repairs',
+                }}
+            />
+            <Tabs.Screen
+                name="inventory"
+                options={{
+                title: 'Inventory',
+                }}
+            />
+        </Tabs>
     );
 }
