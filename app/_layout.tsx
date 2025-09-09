@@ -2,14 +2,20 @@ import { GluestackUIProvider } from "@/shared/components/ui/gluestack-ui-provide
 import "@/shared/styles/globals.css";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useColorScheme } from 'nativewind';
 import { View } from "react-native";
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import "../shared/styles/globals.css";
 
+
 function LayoutContainer({ children }: { children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
+  const { colorScheme } = useColorScheme();
+
+  const backgroundColor = colorScheme === 'dark' ? '#0d0d0d' : '#f2f2f2';
+
   return (
-    <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom}} className="bg-background-50">
+    <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom, backgroundColor}}>
       {children}
     </View>
   );
