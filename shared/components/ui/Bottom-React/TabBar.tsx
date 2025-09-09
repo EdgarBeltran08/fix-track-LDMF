@@ -14,9 +14,9 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { colorScheme } = useColorScheme();
   const { buildHref } = useLinkBuilder();
   const icon = {
-    index: (props: any) => <House name="Home" size={24} {...props}/>,
-    inventory: (props: any) => <Package name="Inventory" size={24} {...props}/>,
-    repairs: (props: any) => <Wrench name="Repairs" size={24} {...props}/>
+    index: (props: any) => <House name="Home" size={24} strokeWidth={2.5} {...props}/>,
+    inventory: (props: any) => <Package name="Inventory" size={24} strokeWidth={2.5} {...props}/>,
+    repairs: (props: any) => <Wrench name="Repairs" size={24} strokeWidth={2.5} {...props}/>
   }
 
   const lightColors = {
@@ -29,11 +29,11 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   };
 
   const darkColors = {
-    background: '#FFFFFF',
-    shadow: '#F5F5F5',
-    activeText: '#1C743E',
+    background: '#1a1a1a',
+    shadow: '#c4c2c2',
+    activeText: '#2ad582',
     inactiveText: '#C7C7C7',
-    activeIcon: '#1C743E',
+    activeIcon: '#2ad582',
     inactiveIcon: '#C7C7C7',
   };
 
@@ -104,12 +104,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginHorizontal: '80',
+        marginHorizontal: '60',
         paddingVertical: '15',
         borderRadius: 30,
         shadowOffset: {width:0, height:0},
         shadowRadius: 10,
-        shadowOpacity: 0.3
+        shadowOpacity: 0.2
     },
     tabbarItem: {
         flex: 1,
