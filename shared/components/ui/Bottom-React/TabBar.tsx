@@ -2,24 +2,47 @@ import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { PlatformPressable, Text } from '@react-navigation/elements';
 import { useLinkBuilder, useTheme } from '@react-navigation/native';
 import { House, Package, Wrench } from 'lucide-react-native';
+import { useColorScheme } from 'nativewind';
 import { StyleSheet, View } from 'react-native';
 import "../../../../shared/styles/globals.css";
 
 
 
+
 export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { colors } = useTheme();
+  const { colorScheme } = useColorScheme();
   const { buildHref } = useLinkBuilder();
   const icon = {
     index: (props: any) => <House name="Home" size={24} {...props}/>,
     inventory: (props: any) => <Package name="Inventory" size={24} {...props}/>,
     repairs: (props: any) => <Wrench name="Repairs" size={24} {...props}/>
-
   }
+
+  const lightColors = {
+    background: '#2ad582',
+    shadow: '#000000',
+    activeText: '#ffffff',
+    inactiveText: '#115534',
+    activeIcon: '#ffffff',
+    inactiveIcon: '#115534',
+  };
+
+  const darkColors = {
+    background: '#FFFFFF',
+    shadow: '#F5F5F5',
+    activeText: '#1C743E',
+    inactiveText: '#C7C7C7',
+    activeIcon: '#1C743E',
+    inactiveIcon: '#C7C7C7',
+  };
+
+  const currentColors = colorScheme === 'dark' ? darkColors : lightColors;
+
 
 
   return (
-    <View style={ styles.tabbar }>
+    <View style={ [styles.tabbar, { backgroundColor: currentColors.background, shadowColor: currentColors.shadow }] }>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
@@ -62,9 +85,9 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             style={styles.tabbarItem}
           >
             {icon[route.name]({
-                color: isFocused ? colors.primary : colors.text
+                color: isFocused ? currentColors.activeIcon : currentColors.inactiveIcon
             })}
-            <Text style={{ color: isFocused ? colors.primary : colors.text }}>
+            <Text style={{ color: isFocused ? currentColors.activeText : currentColors.inactiveText }}>
               {label}
             </Text>
           </PlatformPressable>
@@ -81,11 +104,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: 'white',
         marginHorizontal: '80',
         paddingVertical: '15',
         borderRadius: 30,
-        shadowColor: '#fff',
         shadowOffset: {width:0, height:0},
         shadowRadius: 10,
         shadowOpacity: 0.3
