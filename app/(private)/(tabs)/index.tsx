@@ -3,6 +3,7 @@ import { Button, ButtonText } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
 import { Input, InputField } from "@/shared/components/ui/input";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   FlatList,
@@ -323,7 +324,7 @@ export default function HomeScreen() {
             action="primary"
             size="lg"
             className="flex-1"
-            onPress={() => console.log("Nueva reparación")}
+            onPress={() => router.push("/(private)/(tabs)/repairs/create")}
           >
             <Ionicons
               name="add"

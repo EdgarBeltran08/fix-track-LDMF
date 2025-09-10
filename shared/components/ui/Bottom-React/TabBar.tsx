@@ -12,13 +12,13 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { buildHref } = useLinkBuilder();
   const icon = {
     index: (props: any) => (
-      <House name="Home" size={24} strokeWidth={2.5} {...props} />
+      <House name="Inicio" size={24} strokeWidth={2.5} {...props} />
     ),
     inventory: (props: any) => (
-      <Package name="Inventory" size={24} strokeWidth={2.5} {...props} />
+      <Package name="Inventario" size={24} strokeWidth={2.5} {...props} />
     ),
     repairs: (props: any) => (
-      <Wrench name="Repairs" size={24} strokeWidth={2.5} {...props} />
+      <Wrench name="Reparaciones" size={24} strokeWidth={2.5} {...props} />
     ),
   };
 

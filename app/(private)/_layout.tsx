@@ -10,9 +10,9 @@ export default function PrivateLayout() {
     <Stack
       screenOptions={{
         headerStyle: {
-          backgroundColor: isDark ? "#333333" : "#FFFFFF", // background-0
+          backgroundColor: isDark ? "#333333" : "#FFFFFF",
         },
-        headerTintColor: isDark ? "#F9FAFB" : "#333333", // typography-900
+        headerTintColor: isDark ? "#F9FAFB" : "#333333",
       }}
     >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
