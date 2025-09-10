@@ -4,7 +4,7 @@ import { GluestackUIProvider } from "@/shared/components/ui/gluestack-ui-provide
 import "@/shared/styles/globals.css";
 
 export default function RootLayout() {
-  const isAuthenticated = false;
+  const isAuthenticated = true;
 
   return (
     <GluestackUIProvider mode="system">
