@@ -1,24 +1,22 @@
-import { Button, ButtonText } from '@/shared/components/ui/button'; // Asegúrate de que ButtonIcon esté importado
+import { Button, ButtonText } from '@/shared/components/ui/button';
 import { Input, InputField, InputSlot } from '@/shared/components/ui/input';
 import { Table, TableBody, TableData, TableFooter, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
-import AntDesign from '@expo/vector-icons/AntDesign'; // Icono de Expo Vector Icons
+import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6'; // Icono de agregar
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import React, { useState } from 'react';
-import { Modal as RNModal, ScrollView, Text, TouchableOpacity, View } from 'react-native'; // Usando Modal de react-native
+import { Modal as RNModal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 const InventoryPage: React.FC = () => {
   const [searchText, setSearchText] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
 
-  // Estado para mostrar/ocultar menú de filtro
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
 
-  // Estado para categoría seleccionada ('' = sin filtro)
   const [selectedCategory, setSelectedCategory] = useState<string>('');
 
-  // Arreglo de categorías para filtrar
+  
   const categories = [
     '', 
     'Pantallas',
@@ -29,7 +27,7 @@ const InventoryPage: React.FC = () => {
     'Micas',
   ];
 
-  // Datos de items
+  //Datos de items
   const inventoryData = [
     { id: 1, repuesto: 'Pantalla LCD', cantidad: 15, idRepuesto: '0002', categoria: 'Pantallas', estado: 'Disponible' },
     { id: 2, repuesto: 'Bateria IPhone 15', cantidad: 25, idRepuesto: '0056', categoria: 'Baterias', estado: 'Disponible' },
@@ -39,7 +37,6 @@ const InventoryPage: React.FC = () => {
     { id: 6, repuesto: 'Mica Cristal Templado Samsung J7', cantidad: 5, idRepuesto: '0279', categoria: 'Micas', estado: 'Disponible' },
   ];
 
-  // Filtrar los datos con base en el texto de búsqueda Y la categoría seleccionada
   const filteredData = inventoryData.filter(item =>
     item.repuesto.toLowerCase().includes(searchText.toLowerCase()) &&
     (selectedCategory === '' || item.categoria === selectedCategory)
@@ -47,25 +44,22 @@ const InventoryPage: React.FC = () => {
 
   const totalItems = filteredData.reduce((sum, item) => sum + item.cantidad, 0);
 
-  // Función para manejar el clic en el "Ver" de la tabla
   const handleClickVer = (item: any) => {
     setSelectedItem(item);
-    setIsModalOpen(true); // Abre el modal con la información del item
+    setIsModalOpen(true); 
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false); // Cierra el modal
+    setIsModalOpen(false); 
   };
 
-  // Manejar clic en botón filtro para mostrar/ocultar menú
   const toggleFilterMenu = () => {
     setIsFilterMenuOpen(!isFilterMenuOpen);
   };
 
-  // Manejar selección de categoría
   const handleSelectCategory = (category: string) => {
     setSelectedCategory(category);
-    setIsFilterMenuOpen(false); // cerrar menú al seleccionar
+    setIsFilterMenuOpen(false); 
   };
 
   return (
@@ -74,36 +68,27 @@ const InventoryPage: React.FC = () => {
         <Text className="text-3xl font-bold ml-6 mb-2 text-secondary-900">Inventory</Text>
         <Text className="text-xl ml-6 mb-2 text-primary-500">Control de Inventario</Text>
 
-        {/* Barra de búsqueda */}
+        {/* Barra de busqueda */}
         <View className="my-2 w-full flex flex-row items-center mb-3 ml-5">
-
-          {/* Barra de búsqueda con ancho fijo */}
           <Input className="bg-background-50 rounded-xl flex-row items-center border-2 border-primary-300 w-64 mr-6">
-            {/* Icono al inicio del input */}
             <InputSlot className="pl-3">
               <AntDesign name="search1" size={24} color="gray" />
             </InputSlot>
-
-            {/* Campo de texto */}
             <InputField
               placeholder="Search"
               value={searchText}
               onChangeText={setSearchText}
-              className="text-secondary-900 font-bold bg-background-50"
-            />
+              className="text-secondary-900 font-bold bg-background-50"/>
           </Input>
 
-          {/* Contenedor para los botones con espacio entre ellos y margen izquierdo reducido */}
+        
           <View className="flex flex-row space-x-2 ml-10 mr-5 relative">
-            {/* Botón de filtro */}
             <TouchableOpacity
               onPress={toggleFilterMenu}
-              className="rounded-full p-2 bg-background-300 flex-row justify-center items-center h-11"
-            >
+              className="rounded-full p-2 bg-background-300 flex-row justify-center items-center h-11">
               <Feather name="filter" size={24} color="white" className="align-middle translate-y-[1px]" />
             </TouchableOpacity>
 
-            {/* Menú desplegable de categorías */}
             {isFilterMenuOpen && (
               <View className="absolute top-14 right-0 bg-background-100 border-2 border-primary-300 rounded-md shadow-lg z-50 w-40">
                 <Text className="px-4 py-2 font-bold text-secondary-900 border-b border-primary-300">Categoría:</Text>
@@ -111,8 +96,7 @@ const InventoryPage: React.FC = () => {
                   <TouchableOpacity
                     key={cat}
                     onPress={() => handleSelectCategory(cat)}
-                    className={`px-4 py-2 ${selectedCategory === cat ? 'bg-primary-300' : ''}`}
-                  >
+                    className={`px-4 py-2 ${selectedCategory === cat ? 'bg-primary-300' : ''}`}>
                     <Text className={selectedCategory === cat ? 'text-primary-900' : 'text-primary-900'}>
                       {cat === '' ? 'Todas' : cat}
                     </Text>
@@ -121,15 +105,12 @@ const InventoryPage: React.FC = () => {
               </View>
             )}
 
-            {/* Botón de agregar */}
             <Button
               size="lg"
-              className="rounded-full ml-4 p-2 bg-primary-400 border-2 border-primary-400 flex-row justify-center items-center h-11"
-            >
+              className="rounded-full ml-4 p-2 bg-primary-400 border-2 border-primary-400 flex-row justify-center items-center h-11">
               <FontAwesome6 name="add" size={24} color="black" className="align-middle translate-y-[-2px]" />
             </Button>
           </View>
-
         </View>
 
         {/* Contenedor de la tabla */}
@@ -156,6 +137,7 @@ const InventoryPage: React.FC = () => {
                     <TableHead className="text-secondary-900 text-center px-5 py-3 text-lg">Detalle</TableHead>
                   </TableRow>
                 </TableHeader>
+
 <TableBody>
   {filteredData.map((item) => (
     <TableRow key={item.id} className="bg-background-100">
@@ -166,15 +148,12 @@ const InventoryPage: React.FC = () => {
       <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md">{item.estado}</TableData>
       <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md flex justify-center items-center">
         <Button variant="link" onPress={() => handleClickVer(item)} className="p-0 mx-auto">
-           <AntDesign name="eye" size={24} color="#29ac55ff" className="ml-10" />
+           <AntDesign name="eye" size={24} color="#3ed389ff" className="ml-10" />
         </Button>
       </TableData>
     </TableRow>
   ))}
 </TableBody>
-
-
-
 
                 <TableFooter>
                   <TableRow className="bg-secondary-200">
@@ -192,7 +171,7 @@ const InventoryPage: React.FC = () => {
         </View>
       </View>
 
-      {/* Modal personalizado */}
+      
         <RNModal
   visible={isModalOpen}
   animationType="slide"
