@@ -16,6 +16,7 @@ interface UserState {
     displayName: string | null;
     role: string | null;
   } | null;
+  isAuthenticated: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   hydrateUser: (user: User | null) => void;
@@ -26,10 +27,12 @@ export const useUserStore = create<UserState>()(
   persist(
     (set) => ({
       user: null,
+      isAuthenticated: false,
 
       signIn: async (email, password) => {
         try {
           await signInWithEmailAndPassword(auth, email, password);
+          set({ isAuthenticated: true });
         } catch (error: any) {
           console.error("Error al iniciar sesión:", error);
           throw error;
@@ -38,7 +41,7 @@ export const useUserStore = create<UserState>()(
 
       signOut: async () => {
         await signOut(auth);
-        set({ user: null });
+        set({ user: null, isAuthenticated: false });
       },
 
       // Método para hidratar el estado del usuario desde Firebase.
@@ -56,22 +59,24 @@ export const useUserStore = create<UserState>()(
                 displayName: firebaseUser.displayName,
                 role: role,
               },
+              isAuthenticated: true,
             });
           } catch (error: any) {
             set({
               user: null,
+              isAuthenticated: false,
             });
             console.error("Error en hydrateUser:", error);
           }
         } else {
-          set({ user: null });
+          set({ user: null, isAuthenticated: false });
         }
       },
 
       // Método para limpiar el estado del usuario.
       // Este método se llamará automáticamente al cerrar la sesión.
       clearUser: () => {
-        set({ user: null });
+        set({ user: null, isAuthenticated: false });
       },
     }),
     {

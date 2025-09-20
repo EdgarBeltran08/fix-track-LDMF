@@ -1,4 +1,5 @@
 import { GluestackUIProvider } from "@/shared/components/ui/gluestack-ui-provider";
+import { useUserStore } from "@/shared/stores/useUserStore";
 import "@/shared/styles/globals.css";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -30,7 +31,7 @@ function LayoutContainer({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
-  const isAuthenticated = true;
+  const { isAuthenticated } = useUserStore();
 
   return (
     <GluestackUIProvider mode="system">

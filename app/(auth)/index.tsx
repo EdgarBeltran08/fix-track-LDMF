@@ -7,6 +7,8 @@ import {
   FormControlLabelText,
 } from "@/shared/components/ui/form-control";
 import { Input, InputField } from "@/shared/components/ui/input";
+import { Spinner } from "@/shared/components/ui/spinner";
+import { useUserStore } from "@/shared/stores/useUserStore";
 import React, { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -15,46 +17,120 @@ import {
   Text,
   View,
 } from "react-native";
+import { InferType, object, string, ValidationError } from "yup";
+
+const loginInputSchema = object({
+  email: string()
+    .email("Por favor ingresa un correo electrónico válido")
+    .required("El correo electrónico es requerido"),
+  password: string()
+    .min(6, "La contraseña debe tener al menos 6 caracteres")
+    .max(100, "La contraseña no puede tener más de 100 caracteres")
+    .required("La contraseña es requerida"),
+});
+type LoginInput = InferType<typeof loginInputSchema>;
 
 export default function AuthIndex() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [formData, setFormData] = useState<LoginInput>({
+    email: "",
+    password: "",
+  });
+  const [validationErrors, setValidationErrors] = useState<Partial<LoginInput>>(
+    {}
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const { signIn } = useUserStore();
 
   const handleEmailChange = (text: string) => {
-    setEmail(text);
-    if (emailError) setEmailError("");
+    setFormData({ ...formData, email: text });
+    if (validationErrors.email) {
+      setValidationErrors({ ...validationErrors, email: undefined });
+    }
   };
 
   const handlePasswordChange = (text: string) => {
-    setPassword(text);
-    if (passwordError) setPasswordError("");
+    setFormData({ ...formData, password: text });
+    if (validationErrors.password) {
+      setValidationErrors({ ...validationErrors, password: undefined });
+    }
   };
 
-  const handleLogin = () => {
-    // Basic validation for UI demo
-    let hasError = false;
-
-    if (!email) {
-      setEmailError("El correo electrónico es requerido");
-      hasError = true;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setEmailError("Por favor ingresa un correo electrónico válido");
-      hasError = true;
+  const validateForm = async (): Promise<boolean> => {
+    try {
+      await loginInputSchema.validate(formData, { abortEarly: false });
+      setValidationErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        const errors: Partial<LoginInput> = {};
+        error.inner.forEach((err) => {
+          if (err.path) {
+            errors[err.path as keyof LoginInput] = err.message;
+          }
+        });
+        setValidationErrors(errors);
+      }
+      return false;
     }
+  };
 
-    if (!password) {
-      setPasswordError("La contraseña es requerida");
-      hasError = true;
-    } else if (password.length < 6) {
-      setPasswordError("La contraseña debe tener al menos 6 caracteres");
-      hasError = true;
+  const getFirebaseErrorMessage = (
+    errorCode: string
+  ): { field: keyof LoginInput | null; message: string } => {
+    switch (errorCode) {
+      case "auth/user-not-found":
+        return {
+          field: "email",
+          message: "No se encontró una cuenta con este correo electrónico",
+        };
+      case "auth/wrong-password":
+      case "auth/invalid-credential":
+        return { field: "password", message: "Contraseña incorrecta" };
+      case "auth/invalid-email":
+        return {
+          field: "email",
+          message: "El formato del correo electrónico no es válido",
+        };
+      case "auth/user-disabled":
+        return { field: "email", message: "Esta cuenta ha sido deshabilitada" };
+      case "auth/too-many-requests":
+        return {
+          field: null,
+          message: "Demasiados intentos. Intenta de nuevo más tarde",
+        };
+      case "auth/network-request-failed":
+        return {
+          field: null,
+          message: "Error de conexión. Verifica tu internet",
+        };
+      default:
+        return {
+          field: null,
+          message: "Error al iniciar sesión. Inténtalo de nuevo",
+        };
     }
+  };
 
-    if (!hasError) {
-      // Authentication logic will be implemented later
-      console.log("Login attempted with:", { email, password });
+  const handleLogin = async () => {
+    if (isLoading) return;
+
+    const isValid = await validateForm();
+    if (!isValid) return;
+
+    setIsLoading(true);
+    try {
+      await signIn(formData.email, formData.password);
+    } catch (error: any) {
+      const { field, message } = getFirebaseErrorMessage(error.code);
+
+      if (field) {
+        setValidationErrors({ ...validationErrors, [field]: message });
+      } else {
+        // For general errors, we could show them in password field or use a toast
+        setValidationErrors({ ...validationErrors, password: message });
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -86,7 +162,7 @@ export default function AuthIndex() {
             </Text>
 
             {/* Email Field */}
-            <FormControl className="mb-4" isInvalid={!!emailError}>
+            <FormControl className="mb-4" isInvalid={!!validationErrors.email}>
               <FormControlLabel>
                 <FormControlLabelText className="text-typography-700 font-medium">
                   Correo electrónico
@@ -95,23 +171,29 @@ export default function AuthIndex() {
               <Input variant="outline" size="lg" className="mt-2">
                 <InputField
                   placeholder="Ingresa tu correo electrónico"
-                  value={email}
+                  value={formData.email}
                   onChangeText={handleEmailChange}
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoComplete="email"
                   className="text-typography-900"
+                  editable={!isLoading}
                 />
               </Input>
-              {emailError && (
+              {validationErrors.email && (
                 <FormControlError className="mt-1">
-                  <FormControlErrorText>{emailError}</FormControlErrorText>
+                  <FormControlErrorText>
+                    {validationErrors.email}
+                  </FormControlErrorText>
                 </FormControlError>
               )}
             </FormControl>
 
             {/* Password Field */}
-            <FormControl className="mb-6" isInvalid={!!passwordError}>
+            <FormControl
+              className="mb-6"
+              isInvalid={!!validationErrors.password}
+            >
               <FormControlLabel>
                 <FormControlLabelText className="text-typography-700 font-medium">
                   Contraseña
@@ -120,16 +202,19 @@ export default function AuthIndex() {
               <Input variant="outline" size="lg" className="mt-2">
                 <InputField
                   placeholder="Ingresa tu contraseña"
-                  value={password}
+                  value={formData.password}
                   onChangeText={handlePasswordChange}
                   secureTextEntry
                   autoComplete="password"
                   className="text-typography-900"
+                  editable={!isLoading}
                 />
               </Input>
-              {passwordError && (
+              {validationErrors.password && (
                 <FormControlError className="mt-1">
-                  <FormControlErrorText>{passwordError}</FormControlErrorText>
+                  <FormControlErrorText>
+                    {validationErrors.password}
+                  </FormControlErrorText>
                 </FormControlError>
               )}
             </FormControl>
@@ -140,8 +225,15 @@ export default function AuthIndex() {
               action="primary"
               onPress={handleLogin}
               className="mb-4"
+              isDisabled={isLoading}
             >
-              <ButtonText className="font-semibold">Iniciar Sesión</ButtonText>
+              {isLoading ? (
+                <Spinner color="white" size="small" />
+              ) : (
+                <ButtonText className="font-semibold">
+                  Iniciar Sesión
+                </ButtonText>
+              )}
             </Button>
 
             {/* Forgot Password Link */}
