@@ -197,7 +197,7 @@ export default function AuthIndex() {
                 Iniciar sesión
               </Text>
             </View>
-          )}{" "}
+          )}
           {/* Login Card */}
           <View className="bg-background-0 rounded-2xl p-8 border border-primary-100 shadow-xl shadow-primary-900/5 flex-shrink-0">
             {!keyboardVisible && (
@@ -293,20 +293,6 @@ export default function AuthIndex() {
                 </ButtonText>
               )}
             </Button>
-
-            {/* Forgot Password Link */}
-            <View className="items-center">
-              <Button
-                variant="link"
-                action="primary"
-                onPress={() => console.log("Forgot password pressed")}
-                className="h-auto p-2"
-              >
-                <ButtonText className="text-primary-600 font-medium">
-                  ¿Olvidaste tu contraseña?
-                </ButtonText>
-              </Button>
-            </View>
           </View>
           {/* Footer */}
           {!keyboardVisible && (
