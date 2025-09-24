@@ -9,8 +9,9 @@ import {
 import { Input, InputField } from "@/shared/components/ui/input";
 import { Spinner } from "@/shared/components/ui/spinner";
 import { useUserStore } from "@/shared/stores/useUserStore";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -42,7 +43,24 @@ export default function AuthIndex() {
     {}
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const { signIn } = useUserStore();
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => setKeyboardVisible(true)
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => setKeyboardVisible(false)
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
 
   const handleEmailChange = (text: string) => {
     setFormData({ ...formData, email: text });
@@ -140,46 +158,63 @@ export default function AuthIndex() {
     <KeyboardAvoidingView
       className="flex-1 bg-background-0"
       behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
     >
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{ flexGrow: 1, minHeight: "100%" }}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        bounces={false}
       >
-        <View className="flex-1 justify-center px-6 py-12">
+        <View className="flex-1 justify-center px-6 py-8 min-h-full">
           {/* Header with Logo */}
-          <View className="mb-12 items-center">
-            {/* Logo Container */}
-            <View className="mb-6 p-4 rounded-full bg-primary-50 shadow-lg shadow-primary-200/30">
-              <SvgXml xml={logoSvg} width={80} height={80} />
-            </View>
+          {!keyboardVisible && (
+            <View className="mb-8 items-center flex-shrink-0">
+              {/* Logo Container */}
+              <View className="mb-4 p-4 rounded-full bg-primary-50 shadow-lg shadow-primary-200/30">
+                <SvgXml xml={logoSvg} width={80} height={80} />
+              </View>
 
-            {/* App Title */}
-            <View className="items-center">
-              <Text className="text-4xl font-black text-primary-600 mb-2 tracking-tight">
+              {/* App Title */}
+              <View className="items-center">
+                <Text className="text-4xl font-black text-primary-600 mb-2 tracking-tight">
+                  FixTrack
+                </Text>
+                <Text className="text-lg text-typography-600 text-center max-w-xs leading-relaxed">
+                  Sistema profesional de gestión para talleres de reparación
+                </Text>
+              </View>
+            </View>
+          )}
+          {/* Compact header for keyboard mode */}
+          {keyboardVisible && (
+            <View className="mb-6 items-center flex-shrink-0">
+              <Text className="text-2xl font-black text-primary-600 mb-1 tracking-tight">
                 FixTrack
               </Text>
-              <Text className="text-lg text-typography-600 text-center max-w-xs leading-relaxed">
-                Sistema profesional de gestión para talleres de reparación
+              <Text className="text-sm text-typography-600 text-center">
+                Iniciar sesión
               </Text>
             </View>
-          </View>
-
+          )}{" "}
           {/* Login Card */}
-          <View className="bg-background-0 rounded-2xl p-8 border border-primary-100 shadow-xl shadow-primary-900/5">
-            <View className="mb-8 items-center">
-              <Text className="text-2xl font-bold text-typography-900 mb-2">
-                Bienvenido de nuevo
-              </Text>
-              <Text className="text-sm text-typography-500">
-                Inicia sesión para acceder a tu panel de control
-              </Text>
-            </View>
+          <View className="bg-background-0 rounded-2xl p-8 border border-primary-100 shadow-xl shadow-primary-900/5 flex-shrink-0">
+            {!keyboardVisible && (
+              <View className="mb-6 items-center">
+                <Text className="text-2xl font-bold text-typography-900 mb-2">
+                  Bienvenido de nuevo
+                </Text>
+                <Text className="text-sm text-typography-500">
+                  Inicia sesión para acceder a tu panel de control
+                </Text>
+              </View>
+            )}
 
             {/* Email Field */}
-            <FormControl className="mb-6" isInvalid={!!validationErrors.email}>
+            <FormControl className="mb-4" isInvalid={!!validationErrors.email}>
               <FormControlLabel>
-                <FormControlLabelText className="text-typography-700 font-semibold text-base mb-2">
+                <FormControlLabelText className="text-typography-700 font-semibold text-base mb-1">
                   Correo electrónico
                 </FormControlLabelText>
               </FormControlLabel>
@@ -200,7 +235,7 @@ export default function AuthIndex() {
                 />
               </Input>
               {validationErrors.email && (
-                <FormControlError className="mt-2">
+                <FormControlError className="mt-1">
                   <FormControlErrorText className="text-error-600 text-sm">
                     {validationErrors.email}
                   </FormControlErrorText>
@@ -210,11 +245,11 @@ export default function AuthIndex() {
 
             {/* Password Field */}
             <FormControl
-              className="mb-8"
+              className="mb-6"
               isInvalid={!!validationErrors.password}
             >
               <FormControlLabel>
-                <FormControlLabelText className="text-typography-700 font-semibold text-base mb-2">
+                <FormControlLabelText className="text-typography-700 font-semibold text-base mb-1">
                   Contraseña
                 </FormControlLabelText>
               </FormControlLabel>
@@ -234,7 +269,7 @@ export default function AuthIndex() {
                 />
               </Input>
               {validationErrors.password && (
-                <FormControlError className="mt-2">
+                <FormControlError className="mt-1">
                   <FormControlErrorText className="text-error-600 text-sm">
                     {validationErrors.password}
                   </FormControlErrorText>
@@ -247,7 +282,7 @@ export default function AuthIndex() {
               size="lg"
               action="primary"
               onPress={handleLogin}
-              className="mb-6 h-14 rounded-xl shadow-lg shadow-primary-900/20"
+              className="mb-4 h-14 rounded-xl shadow-lg shadow-primary-900/20"
               isDisabled={isLoading}
             >
               {isLoading ? (
@@ -265,7 +300,7 @@ export default function AuthIndex() {
                 variant="link"
                 action="primary"
                 onPress={() => console.log("Forgot password pressed")}
-                className="h-auto p-3"
+                className="h-auto p-2"
               >
                 <ButtonText className="text-primary-600 font-medium">
                   ¿Olvidaste tu contraseña?
@@ -273,14 +308,15 @@ export default function AuthIndex() {
               </Button>
             </View>
           </View>
-
           {/* Footer */}
-          <View className="mt-12 items-center">
-            <Text className="text-sm text-typography-400 text-center leading-relaxed max-w-sm">
-              Optimiza el flujo de trabajo de tu taller con tecnología de
-              vanguardia
-            </Text>
-          </View>
+          {!keyboardVisible && (
+            <View className="mt-6 items-center flex-shrink-0">
+              <Text className="text-sm text-typography-400 text-center leading-relaxed max-w-sm">
+                Optimiza el flujo de trabajo de tu taller con tecnología de
+                vanguardia
+              </Text>
+            </View>
+          )}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
