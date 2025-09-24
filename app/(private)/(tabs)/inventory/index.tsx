@@ -9,12 +9,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
+import { InventoryRepository } from "@/shared/repositories/inventory.repository";
+import { InventoryItem } from "@/shared/types/inventory.type";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal as RNModal,
+  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -24,11 +27,14 @@ import {
 const InventoryPage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
 
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
 
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   const categories = [
     "",
@@ -40,67 +46,15 @@ const InventoryPage: React.FC = () => {
     "Micas",
   ];
 
-  //Datos de items
-  const inventoryData = [
-    {
-      id: 1,
-      repuesto: "Pantalla LCD",
-      cantidad: 15,
-      idRepuesto: "0002",
-      categoria: "Pantallas",
-      estado: "Disponible",
-    },
-    {
-      id: 2,
-      repuesto: "Bateria IPhone 15",
-      cantidad: 25,
-      idRepuesto: "0056",
-      categoria: "Baterias",
-      estado: "Disponible",
-    },
-    {
-      id: 3,
-      repuesto: "Puerto de Carga Samsung",
-      cantidad: 8,
-      idRepuesto: "0023",
-      categoria: "Conectores",
-      estado: "Disponible",
-    },
-    {
-      id: 4,
-      repuesto: "Placa Base Motorola",
-      cantidad: 2,
-      idRepuesto: "0180",
-      categoria: "Placas Bases",
-      estado: "Bajo Stock",
-    },
-    {
-      id: 5,
-      repuesto: "Cámara Trasera IPhone 11",
-      cantidad: 5,
-      idRepuesto: "0250",
-      categoria: "Cámaras",
-      estado: "Disponible",
-    },
-    {
-      id: 6,
-      repuesto: "Mica Cristal Templado Samsung J7",
-      cantidad: 5,
-      idRepuesto: "0279",
-      categoria: "Micas",
-      estado: "Disponible",
-    },
-  ];
-
-  const filteredData = inventoryData.filter(
+  const filteredData = inventoryItems.filter(
     (item) =>
-      item.repuesto.toLowerCase().includes(searchText.toLowerCase()) &&
-      (selectedCategory === "" || item.categoria === selectedCategory)
+      item.name.toLowerCase().includes(searchText.toLowerCase()) &&
+      (selectedCategory === "" || item.category?.name === selectedCategory)
   );
 
-  const totalItems = filteredData.reduce((sum, item) => sum + item.cantidad, 0);
+  const totalItems = filteredData.length;
 
-  const handleClickVer = (item: any) => {
+  const handleClickVer = (item: InventoryItem) => {
     setSelectedItem(item);
     setIsModalOpen(true);
   };
@@ -117,6 +71,25 @@ const InventoryPage: React.FC = () => {
     setSelectedCategory(category);
     setIsFilterMenuOpen(false);
   };
+
+  const fetchInventoryItems = async () => {
+    try {
+      const items = await InventoryRepository.getAll();
+      setInventoryItems(items);
+    } catch (error) {
+      console.error("Error fetching inventory items:", error);
+    }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchInventoryItems();
+    setRefreshing(false);
+  };
+
+  useEffect(() => {
+    fetchInventoryItems();
+  }, []);
 
   return (
     <>
@@ -203,6 +176,9 @@ const InventoryPage: React.FC = () => {
             showsVerticalScrollIndicator={true}
             showsHorizontalScrollIndicator={true}
             nestedScrollEnabled={true}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
           >
             <ScrollView
               horizontal={true}
@@ -216,10 +192,10 @@ const InventoryPage: React.FC = () => {
                       Repuesto
                     </TableHead>
                     <TableHead className="text-secondary-900 text-center px-5 py-3 text-lg">
-                      Cantidad
+                      Costo Unitario
                     </TableHead>
                     <TableHead className="text-secondary-900 text-center px-5 py-3 text-lg">
-                      ID
+                      SKU
                     </TableHead>
                     <TableHead className="text-secondary-900 text-center px-5 py-3 text-lg">
                       Categoría
@@ -237,19 +213,21 @@ const InventoryPage: React.FC = () => {
                   {filteredData.map((item) => (
                     <TableRow key={item.id} className="bg-background-100">
                       <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md">
-                        {item.repuesto}
+                        {item.name}
                       </TableData>
                       <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md">
-                        {item.cantidad}
+                        ${item.unitCost}
                       </TableData>
                       <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md">
-                        {item.idRepuesto}
+                        {item.sku || "N/A"}
                       </TableData>
                       <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md">
-                        {item.categoria}
+                        {item.category?.name || "N/A"}
                       </TableData>
                       <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md">
-                        {item.estado}
+                        {item.state === "available"
+                          ? "Disponible"
+                          : "No Disponible"}
                       </TableData>
                       <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md flex justify-center items-center">
                         <Button
@@ -313,22 +291,20 @@ const InventoryPage: React.FC = () => {
                 <Text className="text-lg font-bold text-primary-900">
                   Repuesto:
                 </Text>{" "}
-                <Text className="text-primary-900">
-                  {selectedItem?.repuesto}
-                </Text>
+                <Text className="text-primary-900">{selectedItem?.name}</Text>
               </Text>
               <Text>
                 <Text className="text-lg font-bold text-primary-900">
-                  Cantidad:
+                  Costo Unitario:
                 </Text>{" "}
                 <Text className="text-primary-900">
-                  {selectedItem?.cantidad}
+                  ${selectedItem?.unitCost}
                 </Text>
               </Text>
               <Text>
-                <Text className="text-lg font-bold text-primary-900">ID:</Text>{" "}
+                <Text className="text-lg font-bold text-primary-900">SKU:</Text>{" "}
                 <Text className="text-primary-900">
-                  {selectedItem?.idRepuesto}
+                  {selectedItem?.sku || "N/A"}
                 </Text>
               </Text>
               <Text>
@@ -336,14 +312,18 @@ const InventoryPage: React.FC = () => {
                   Categoría:
                 </Text>{" "}
                 <Text className="text-primary-900">
-                  {selectedItem?.categoria}
+                  {selectedItem?.category?.name || "N/A"}
                 </Text>
               </Text>
               <Text>
                 <Text className="text-lg font-bold text-primary-900">
                   Estado:
                 </Text>{" "}
-                <Text className="text-primary-900">{selectedItem?.estado}</Text>
+                <Text className="text-primary-900">
+                  {selectedItem?.state === "available"
+                    ? "Disponible"
+                    : "No Disponible"}
+                </Text>
               </Text>
             </ScrollView>
             <Button
