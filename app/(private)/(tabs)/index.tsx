@@ -2,6 +2,7 @@ import { Badge } from "@/shared/components/ui/badge";
 import { Button, ButtonText } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
 import { Input, InputField } from "@/shared/components/ui/input";
+import { useUserStore } from "@/shared/stores/useUserStore";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -14,15 +15,6 @@ import {
   Text,
   View,
 } from "react-native";
-
-// Mock data types
-type User = {
-  name: string;
-  email: string;
-  role: "receptionist" | "technician" | "admin";
-  createdAt: Date;
-  isActive: boolean;
-};
 
 type Repair = {
   id: string;
@@ -47,14 +39,7 @@ type Repair = {
   folio: string;
 };
 
-// Mock data
-const mockUser: User = {
-  name: "Leon Casas",
-  email: "leon@fixtrack.com",
-  role: "admin",
-  createdAt: new Date(),
-  isActive: true,
-};
+// Mock data - keeping user type for reference but using real user data
 
 const mockRepairs: Repair[] = [
   {
@@ -174,6 +159,8 @@ const getStatusTextStyle = (status: Repair["status"]) => {
 export default function HomeScreen() {
   const [searchText, setSearchText] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, signOut } = useUserStore();
 
   // Filter repairs based on search
   const filteredRepairs = mockRepairs.filter(
@@ -261,16 +248,52 @@ export default function HomeScreen() {
         <View className="flex-row items-center justify-between mb-4">
           <View>
             <Text className="text-2xl font-bold text-typography-900">
-              ¡Hola, {mockUser.name.split(" ")[0]}!
+              ¡Hola, {user?.displayName?.split(" ")[0] || "Administrador"}!
             </Text>
             <Text className="text-sm text-typography-600 capitalize">
-              {mockUser.role}
+              {user?.role || "admin"}
             </Text>
           </View>
-          <View className="w-10 h-10 bg-primary-500 rounded-full items-center justify-center">
-            <Text className="text-white font-bold text-lg">
-              {mockUser.name.charAt(0)}
-            </Text>
+          <View className="relative">
+            <Pressable
+              className="w-10 h-10 bg-primary-500 rounded-full items-center justify-center"
+              onPress={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <Text className="text-white font-bold text-lg">
+                {user?.displayName?.charAt(0) || "A"}
+              </Text>
+            </Pressable>
+
+            {isMenuOpen && (
+              <>
+                {/* Backdrop */}
+                <Pressable
+                  className="absolute -inset-6 w-screen h-screen z-40"
+                  onPress={() => setIsMenuOpen(false)}
+                />
+
+                {/* Dropdown Menu */}
+                <View className="absolute top-12 right-0 z-50 bg-background-0 rounded-lg border border-background-200 shadow-lg min-w-[160px] p-1">
+                  <Pressable
+                    className="flex-row items-center px-3 py-2 rounded-md active:bg-background-100"
+                    onPress={() => {
+                      setIsMenuOpen(false);
+                      signOut();
+                    }}
+                  >
+                    <Ionicons
+                      name="log-out-outline"
+                      size={18}
+                      color="#6B7280"
+                      style={{ marginRight: 8 }}
+                    />
+                    <Text className="text-typography-700 font-normal">
+                      Cerrar sesión
+                    </Text>
+                  </Pressable>
+                </View>
+              </>
+            )}
           </View>
         </View>
 
