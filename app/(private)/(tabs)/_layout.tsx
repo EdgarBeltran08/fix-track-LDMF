@@ -15,12 +15,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="repairs"
-        options={{
-          title: "Repairs",
-        }}
-      />
-      <Tabs.Screen
         name="inventory"
         options={{
           title: "Inventory",
