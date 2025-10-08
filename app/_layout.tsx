@@ -14,7 +14,7 @@ function LayoutContainer({ children }: { children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
   const { colorScheme } = useColorScheme();
 
-  const backgroundColor = colorScheme === "dark" ? "#0d0d0d" : "#f2f2f2";
+  const backgroundColor = colorScheme === "dark" ? "#0d0d0d" : "#193456";
 
   return (
     <View
