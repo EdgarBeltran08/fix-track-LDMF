@@ -240,11 +240,11 @@ export default function HomeScreen() {
   );
 
   return (
-    <View className="flex-1 bg-background-0">
+    <View className="flex-1" style ={{backgroundColor: "#193456"}}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       {/* Header */}
-      <View className="bg-background-50 pt-12 pb-6 px-6 border-b border-background-200">
+      <View className="pt-12 pb-6 px-6 border-b" style={{backgroundColor:"#193456"}}>
         <View className="flex-row items-center justify-between mb-4">
           <View>
             <Text className="text-2xl font-bold text-typography-900">
