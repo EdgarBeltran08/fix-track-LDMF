@@ -9,7 +9,7 @@ import {
 import { Input, InputField } from "@/shared/components/ui/input";
 import { Spinner } from "@/shared/components/ui/spinner";
 import { useUserStore } from "@/shared/stores/useUserStore";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
