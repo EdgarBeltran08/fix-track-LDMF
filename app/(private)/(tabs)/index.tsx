@@ -186,14 +186,14 @@ export default function HomeScreen() {
 
   const renderRepairCard = ({ item }: { item: Repair }) => (
     <Pressable className="mb-3">
-      <Card className="p-4 bg-background-50 border border-background-200">
+      <Card className="p-6 rounded-xl border-4">
         {/* Header */}
         <View className="flex-row justify-between items-start mb-3">
-          <View className="flex-1">
-            <Text className="text-lg font-semibold text-typography-900 mb-1">
+          <View className="flex-1"> 
+            <Text className="text-2xl font-extrabold">
               {item.customerName}
             </Text>
-            <Text className="text-sm text-typography-600">{item.folio}</Text>
+            <Text className="text-lg text-typography-1000">{item.folio}</Text>
           </View>
           <Badge
             action={getStatusColor(item.status)}
@@ -201,7 +201,7 @@ export default function HomeScreen() {
             className={`ml-2 border-2 ${getStatusBadgeStyle(item.status)}`}
           >
             <Text
-              className={`text-xs font-bold ${getStatusTextStyle(item.status)}`}
+              className={`text-lg font-extrabold ${getStatusTextStyle(item.status)}`}
             >
               {getStatusText(item.status)}
             </Text>
@@ -210,10 +210,10 @@ export default function HomeScreen() {
 
         {/* Device Info */}
         <View className="mb-3">
-          <Text className="text-base font-medium text-typography-800 mb-1">
+          <Text className="text-2xl font-medium text-black mb-1">
             {item.deviceModel}
           </Text>
-          <Text className="text-sm text-typography-600" numberOfLines={2}>
+          <Text className="text-lg text-typography-800" numberOfLines={2}>
             {item.issueDescription}
           </Text>
         </View>
@@ -223,15 +223,15 @@ export default function HomeScreen() {
           <View className="flex-row items-center">
             <Ionicons
               name="calendar-outline"
-              size={16}
+              size={35}
               color="#6B7280"
               style={{ marginRight: 4 }}
             />
-            <Text className="text-sm text-typography-600">
+            <Text className="text-lg text-typography-600">
               {item.createdAt.toLocaleDateString("es-MX")}
             </Text>
           </View>
-          <Text className="text-base font-semibold text-primary-600">
+          <Text className="text-2xl font-semibold text-primary-600" style={{textShadowColor:"#008f39", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 5}}>
             ${item.estimatedCost.toLocaleString("es-MX")}
           </Text>
         </View>
