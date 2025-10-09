@@ -65,15 +65,15 @@ export default function AddEquipoForm() {
 
   return (
     <ScrollView
-      className="flex-1 bg-background-0 p-4"
+      className="flex-1 bg-[#193456] p-4"
       scrollEnabled={scrollEnabled}
     >
       {/* Título */}
       <View className="mb-8 mt-2">
-        <Text className="text-3xl font-bold text-center text-typography-900 mb-2">
+        <Text className="text-3xl font-bold text-center color-white mb-2">
           Registrar reparación
         </Text>
-        <View className="w-20 h-1 bg-primary-500 mx-auto rounded-full" />
+        <View className="w-20 h-1 bg-[#FFB74D] mx-auto rounded-full" />
       </View>
 
       {/* Bloque Cliente */}
