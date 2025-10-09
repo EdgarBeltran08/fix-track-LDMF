@@ -34,7 +34,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const darkColors = {
     background: "#1a1a1a",
     shadow: "#c4c2c2",
-    activeText: "#db6520ff",
+    activeText: "#2e1506ff",
     inactiveText: "#C7C7C7",
     activeIcon: "#FFB74D",
     inactiveIcon: "#C7C7C7",
