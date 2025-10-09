@@ -26,7 +26,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
     background: "#FFB74D",
     shadow: "#000000",
     activeText: "#ffffff",
-    inactiveText: "#f89e77ff",
+    inactiveText: "#502512ff",
     activeIcon: "#ffffff",
     inactiveIcon: "#8b3f19ff",
   };
