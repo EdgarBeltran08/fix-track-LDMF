@@ -157,7 +157,7 @@ const InventoryPage: React.FC = () => {
 
             <Button
               size="lg"
-              className="rounded-full ml-4 p-2 bg-primary-400 border-2 border-primary-400 flex-row justify-center items-center h-11"
+              className="rounded-full ml-4 p-2 bg-[#FFB74D] border-2 border-[#FFB74D] flex-row justify-center items-center h-11"
             >
               <FontAwesome6
                 name="add"
