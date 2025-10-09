@@ -93,11 +93,11 @@ const InventoryPage: React.FC = () => {
 
   return (
     <>
-      <View className="flex-1 pt-5 mb-8 items-start bg-background-50">
-        <Text className="text-3xl font-bold ml-6 mb-2 text-secondary-900">
+      <View className="flex-1 pt-5 mb-8 items-start bg-[#193456]">
+        <Text className="text-3xl font-bold ml-6 mb-2 color-white">
           Inventory
         </Text>
-        <Text className="text-xl ml-6 mb-2 text-primary-900">
+        <Text className="text-xl ml-6 mb-2 color-white">
           Control de Inventario
         </Text>
 

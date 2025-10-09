@@ -202,7 +202,7 @@ export default function AddEquipoForm() {
       <View className="flex-row justify-between mb-8 gap-4">
         <TouchableOpacity
           onPress={() => console.log("Datos:", form, firma)}
-          className="bg-primary-500 flex-1 rounded-xl p-4 shadow-lg border border-primary-600"
+          className="bg-[#FFB74D] flex-1 rounded-xl p-4 shadow-lg border border-[#FFB74D]"
         >
           <Text className="text-background-0 text-center font-bold text-lg">
             Registrar Equipo
