@@ -190,10 +190,10 @@ export default function HomeScreen() {
         {/* Header */}
         <View className="flex-row justify-between items-start mb-3">
           <View className="flex-1"> 
-            <Text className="text-2xl font-extrabold">
+            <Text className="text-lg font-extrabold">
               {item.customerName}
             </Text>
-            <Text className="text-lg text-typography-1000">{item.folio}</Text>
+            <Text className="text-sm text-typography-1000">{item.folio}</Text>
           </View>
           <Badge
             action={getStatusColor(item.status)}
@@ -210,10 +210,10 @@ export default function HomeScreen() {
 
         {/* Device Info */}
         <View className="mb-3">
-          <Text className="text-2xl font-medium text-black mb-1">
+          <Text className="text-lg font-medium text-black mb-1">
             {item.deviceModel}
           </Text>
-          <Text className="text-lg text-typography-800" numberOfLines={2}>
+          <Text className="text-md text-typography-800" numberOfLines={2}>
             {item.issueDescription}
           </Text>
         </View>
@@ -223,15 +223,15 @@ export default function HomeScreen() {
           <View className="flex-row items-center">
             <Ionicons
               name="calendar-outline"
-              size={35}
+              size={20}
               color="#6B7280"
               style={{ marginRight: 4 }}
             />
-            <Text className="text-lg text-typography-600">
+            <Text className="text-md text-typography-600">
               {item.createdAt.toLocaleDateString("es-MX")}
             </Text>
           </View>
-          <Text className="text-2xl font-semibold text-primary-600" style={{textShadowColor:"#008f39", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 5}}>
+          <Text className="text-lg font-semibold text-primary-600" style={{textShadowColor:"#008f39", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 5}}>
             ${item.estimatedCost.toLocaleString("es-MX")}
           </Text>
         </View>
@@ -355,7 +355,7 @@ export default function HomeScreen() {
               color="white"
               style={{ marginRight: 8 }}
             />
-            <ButtonText className="font-semibold text-3xl ">Nueva Reparación</ButtonText>
+            <ButtonText className="font-semibold text-2xl ">Nueva Reparación</ButtonText>
           </Button>
         </View>
 
