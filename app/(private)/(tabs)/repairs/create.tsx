@@ -1,3 +1,4 @@
+import CheckBox from "expo-checkbox"; //CAMBIO PARA AGREGAR CHECKLIST
 import React, { useRef, useState } from "react";
 import {
   Alert,
@@ -20,7 +21,22 @@ type FormData = {
 };
 
 type FormField = keyof FormData;
-
+//CAMBIO PARA AGREGAR CHECKLIST
+type ChecklistKeys =
+  | "aparatoMojado"
+  | "noEnciende"
+  | "seApagaSolo"
+  | "noCarga"
+  | "bateriaInflada"
+  | "seDescarga"
+  | "seReinicia"
+  | "pantallaRota"
+  | "pantallaManchas"
+  | "tactilNoResponde"
+  | "sinImagen"
+  | "rayasPantalla"
+  | "pantallaNegra";
+//
 export default function AddEquipoForm() {
   const [form, setForm] = useState<FormData>({
     nombre: "",
@@ -34,8 +50,6 @@ export default function AddEquipoForm() {
 
   const [firma, setFirma] = useState<string | null>(null);
   const [scrollEnabled, setScrollEnabled] = useState(true);
-
-  // Ref para controlar el componente Signature
   const signatureRef = useRef<any>(null);
 
   const handleChange = (field: FormField, value: string) => {
@@ -48,7 +62,6 @@ export default function AddEquipoForm() {
     setScrollEnabled(true);
   };
 
-  // Limpiar firma tanto en estado como en canvas
   const handleClear = () => {
     setFirma(null);
     if (signatureRef.current) {
@@ -62,82 +75,157 @@ export default function AddEquipoForm() {
       { text: "Sí", onPress: () => console.log("Formulario cancelado") },
     ]);
   };
+  //CAMBIO PARA AGREGAR CHECKLIST
+  const [checklist, setChecklist] = useState<Record<ChecklistKeys, boolean>>({
+    aparatoMojado: false,
+    noEnciende: false,
+    seApagaSolo: false,
+    noCarga: false,
+    bateriaInflada: false,
+    seDescarga: false,
+    seReinicia: false,
+    pantallaRota: false,
+    pantallaManchas: false,
+    tactilNoResponde: false,
+    sinImagen: false,
+    rayasPantalla: false,
+    pantallaNegra: false,
+  });
 
+  const toggleCheckbox = (key: ChecklistKeys) => {
+    setChecklist((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+  //
   return (
     <ScrollView
       className="flex-1 bg-[#193456] p-4"
       scrollEnabled={scrollEnabled}
+      contentContainerStyle={{ paddingBottom: 120 }} // CAMBIO PAR AAGREGAR ESPACIO AL FINAL Y QUE LOS BOTONES EAN VISIBLES
     >
       {/* Título */}
       <View className="mb-8 mt-2">
-        <Text className="text-3xl font-bold text-center color-white mb-2">
+        <Text className="text-3xl font-bold text-center text-white mb-2">
           Registrar reparación
         </Text>
         <View className="w-20 h-1 bg-[#FFB74D] mx-auto rounded-full" />
       </View>
 
-      {/* Bloque Cliente */}
-      <View className="bg-[#EDFFFD]  p-6 rounded-2xl shadow-lg mb-6 border border-outline-100">
-        <View className="flex-row items-center mb-4">
-          <View className="w-2 h-6 bg-primary-500 rounded-full mr-3" />
-          <Text className="text-xl font-bold text-typography-900">
-            Datos del Cliente
-          </Text>
-        </View>
-        <TextInput
-          placeholder="Nombre completo"
-          value={form.nombre}
-          onChangeText={(v) => handleChange("nombre", v)}
-          placeholderTextColor="#999999"
-          className="border-2 border-[#FFB74D] rounded-xl p-4 mb-4 text-typography-900 bg-[#EDFFFD]  focus:border-[#FFB74D] focus:bg-background-0"
-        />
-        <TextInput
-          placeholder="Teléfono"
-          value={form.telefono}
-          onChangeText={(v) => handleChange("telefono", v)}
-          keyboardType="phone-pad"
-          placeholderTextColor="#999999"
-          className="border-2 border-[#FFB74D] rounded-xl p-4 mb-4 text-typography-900 bg-[#EDFFFD]  focus:border-[#FFB74D] focus:bg-background-0"
-        />
-        <TextInput
-          placeholder="Correo electrónico"
-          value={form.email}
-          onChangeText={(v) => handleChange("email", v)}
-          keyboardType="email-address"
-          placeholderTextColor="#999999"
-          className="border-2 border-[#FFB74D] rounded-xl p-4 text-typography-900 bg-[#EDFFFD]  focus:border-[#FFB74D] focus:bg-background-0"
-        />
+      {/* Datos del Cliente */}
+      <View className="bg-[#EDFFFD] p-6 rounded-2xl shadow-lg mb-6 border border-[#FFB74D]/30">
+        <Text className="text-xl font-bold mb-4 text-[#193456]">
+          Datos del Cliente
+        </Text>
+
+        {[
+          { placeholder: "Nombre completo", field: "nombre" },
+          {
+            placeholder: "Teléfono",
+            field: "telefono",
+            keyboardType: "phone-pad",
+          },
+          {
+            placeholder: "Correo electrónico",
+            field: "email",
+            keyboardType: "email-address",
+          },
+        ].map(({ placeholder, field, keyboardType }) => (
+          <TextInput
+            key={field}
+            placeholder={placeholder}
+            value={form[field as FormField]}
+            onChangeText={(v) => handleChange(field as FormField, v)}
+            keyboardType={keyboardType as any}
+            placeholderTextColor="#999999"
+            className="border-2 border-[#FFB74D] rounded-xl p-4 mb-4 bg-[#EDFFFD]"
+          />
+        ))}
       </View>
 
-      {/* Bloque Equipo */}
-      <View className="bg-[#EDFFFD]  p-6 rounded-2xl shadow-lg mb-6 border border-outline-100">
-        <View className="flex-row items-center mb-4">
-          <View className="w-2 h-6 bg-info-500 rounded-full mr-3" />
-          <Text className="text-xl font-bold text-typography-900">
-            Datos del Equipo
+      {/* Datos del Equipo */}
+      <View className="bg-[#EDFFFD] p-6 rounded-2xl shadow-lg mb-6 border border-[#FFB74D]/30">
+        <Text className="text-xl font-bold mb-4 text-[#193456]">
+          Datos del Equipo
+        </Text>
+
+        {[
+          { placeholder: "Marca del dispositivo", field: "marca" },
+          { placeholder: "Modelo", field: "modelo" },
+          { placeholder: "IMEI / Número de serie", field: "imei" },
+        ].map(({ placeholder, field }) => (
+          <TextInput
+            key={field}
+            placeholder={placeholder}
+            value={form[field as FormField]}
+            onChangeText={(v) => handleChange(field as FormField, v)}
+            placeholderTextColor="#999999"
+            className="border-2 border-[#FFB74D] rounded-xl p-4 mb-4 bg-[#EDFFFD]"
+          />
+        ))}
+        {/*CAMBIO PARA AGREGAR CHECKLIST*/}
+        {/* Checklist */}
+        <Text className="text-lg font-bold text-[#193456] mb-2">
+          Este equipo se recibe:
+        </Text>
+
+        <View className="gap-2 mb-4">
+          <View className="flex-row items-center mb-2">
+            <CheckBox
+              value={checklist.aparatoMojado}
+              onValueChange={() => toggleCheckbox("aparatoMojado")}
+              color={checklist.aparatoMojado ? "#FFB74D" : undefined}
+            />
+            <Text className="ml-2 text-[#193456]">Aparato mojado</Text>
+          </View>
+
+          <Text className="font-semibold text-[#193456] mt-2">
+            Condiciones relacionadas con la batería y energía
           </Text>
+
+          {[
+            ["noEnciende", "No enciende"],
+            ["seApagaSolo", "Se apaga solo"],
+            ["noCarga", "No carga aún conectado"],
+            ["bateriaInflada", "Batería inflada"],
+            ["seDescarga", "Se descarga demasiado rápido"],
+            ["seReinicia", "Se reinicia constantemente"],
+          ].map(([key, label]) => (
+            <View key={key} className="flex-row items-center mb-1">
+              <CheckBox
+                value={checklist[key as ChecklistKeys]}
+                onValueChange={() => toggleCheckbox(key as ChecklistKeys)}
+                color={checklist[key as ChecklistKeys] ? "#FFB74D" : undefined}
+              />
+              <Text className="ml-2 text-[#193456]">{label}</Text>
+            </View>
+          ))}
+
+          <Text className="font-semibold text-[#193456] mt-3">
+            Condiciones de la pantalla
+          </Text>
+
+          {[
+            ["pantallaRota", "Pantalla rota o estrellada"],
+            [
+              "pantallaManchas",
+              "Pantalla con manchas (amarillas, negras o de colores)",
+            ],
+            ["tactilNoResponde", "Táctil no responde o responde parcialmente"],
+            ["sinImagen", "Pantalla encendida pero sin imagen"],
+            ["rayasPantalla", "Pantalla con rayas verticales / horizontales"],
+            ["pantallaNegra", "Pantalla completamente negra"],
+          ].map(([key, label]) => (
+            <View key={key} className="flex-row items-center mb-1">
+              <CheckBox
+                value={checklist[key as ChecklistKeys]}
+                onValueChange={() => toggleCheckbox(key as ChecklistKeys)}
+                color={checklist[key as ChecklistKeys] ? "#FFB74D" : undefined}
+              />
+              <Text className="ml-2 text-[#193456]">{label}</Text>
+            </View>
+          ))}
         </View>
-        <TextInput
-          placeholder="Marca del dispositivo"
-          value={form.marca}
-          onChangeText={(v) => handleChange("marca", v)}
-          placeholderTextColor="#999999"
-          className="border-2 border-[#FFB74D] rounded-xl p-4 mb-4 text-typography-900 bg-[#EDFFFD]  focus:border-[#FFB74D] focus:bg-background-0"
-        />
-        <TextInput
-          placeholder="Modelo"
-          value={form.modelo}
-          onChangeText={(v) => handleChange("modelo", v)}
-          placeholderTextColor="#999999"
-          className="border-2 border-[#FFB74D] rounded-xl p-4 mb-4 text-typography-900 bg-[#EDFFFD]  focus:border-[#FFB74D] focus:bg-background-0"
-        />
-        <TextInput
-          placeholder="IMEI / Número de serie"
-          value={form.imei}
-          onChangeText={(v) => handleChange("imei", v)}
-          placeholderTextColor="#999999"
-          className="border-2 border-[#FFB74D] rounded-xl p-4 mb-4 text-typography-900 bg-[#EDFFFD]  focus:border-[#FFB74D] focus:bg-background-0"
-        />
+        {/*CAMBIO PARA AGREGAR CHECKLIST HASTA AQUI*/}
+        {/* Descripción */}
         <TextInput
           placeholder="Describe el problema o daño del equipo..."
           value={form.descripcion}
@@ -146,25 +234,34 @@ export default function AddEquipoForm() {
           numberOfLines={6}
           textAlignVertical="top"
           placeholderTextColor="#999999"
-          className="border-2 border-[#FFB74D] rounded-xl p-4 h-32 text-typography-900 bg-[#EDFFFD]  focus:border-[#FFB74D] focus:bg-background-0"
+          className="border-2 border-[#FFB74D] rounded-xl p-4 h-32 bg-[#EDFFFD]"
         />
+        {/*CAMBIO PARA AGREGAR texto legal*/}
+        <Text className="text-xs text-typography-700 mt-3 text-justify">
+          Green Monkey responsabiliza al cliente de la procedencia lícita del
+          equipo. La garantía solo aplica en mano de obra y en piezas
+          reemplazadas, cualquier falla adicional genera un costo extra. Golpes
+          o manipulación indebida no tendrán garantía de ningún tipo. Estos
+          equipos corren el riesgo de apagarse definitivamente. El cliente
+          cuenta con 30 días para recoger su equipo. No nos hacemos responsables
+          por SIM o accesorios olvidados.
+        </Text>
       </View>
+      {/*CAMBIO PARA AGREGAR texto legal hasta aqui*/}
 
-      {/* Bloque Firma */}
-      <View className="bg-[#EDFFFD]  p-6 rounded-2xl shadow-lg mb-6 border border-outline-100">
-        <View className="flex-row items-center mb-4">
-          <View className="w-2 h-6 bg-warning-500 rounded-full mr-3" />
-          <Text className="text-xl font-bold text-typography-900">
-            Firma del Cliente
-          </Text>
-        </View>
+      {/* Firma */}
+      <View className="bg-[#EDFFFD] p-6 rounded-2xl shadow-lg mb-6 border border-[#FFB74D]/30">
+        <Text className="text-xl font-bold mb-4 text-[#193456]">
+          Firma del Cliente
+        </Text>
+
         <View
           style={{
             height: 200,
             borderWidth: 2,
             borderColor: "#FFB74D",
             borderRadius: 12,
-            backgroundColor: "rgb(var(--color-background-50))",
+            backgroundColor: "#fff",
           }}
         >
           <Signature
@@ -175,24 +272,26 @@ export default function AddEquipoForm() {
             descriptionText="Firme aquí"
             clearText="Borrar"
             confirmText="Guardar"
-            webStyle={`.m-signature-pad {border: none; background-color: rgb(var(--color-background-50));}`}
+            webStyle={`
+              .m-signature-pad {border: none; background-color: #fff;}
+              .m-signature-pad--footer {display: none;}
+            `}
           />
         </View>
 
         {firma && (
-          <View className="flex-row items-center mt-4 p-3 bg-success-50 rounded-xl border border-success-200">
-            <Text className="text-success-700 font-semibold">
+          <View className="flex-row items-center mt-4 p-3 bg-green-100 rounded-xl border border-green-300">
+            <Text className="text-green-800 font-semibold">
               ✓ Firma guardada correctamente
             </Text>
           </View>
         )}
 
-        {/* Botón para borrar la firma */}
         <TouchableOpacity
           onPress={handleClear}
-          className="bg-secondary-200 rounded-xl p-4 mt-4 border border-outline-200"
+          className="bg-gray-200 rounded-xl p-4 mt-4 border border-gray-300"
         >
-          <Text className="text-typography-700 text-center font-semibold">
+          <Text className="text-gray-700 text-center font-semibold">
             Borrar Firma
           </Text>
         </TouchableOpacity>
@@ -201,18 +300,19 @@ export default function AddEquipoForm() {
       {/* Botones Finales */}
       <View className="flex-row justify-between mb-8 gap-4">
         <TouchableOpacity
-          onPress={() => console.log("Datos:", form, firma)}
+          onPress={() => console.log("Datos:", form, firma, checklist)}
           className="bg-[#FFB74D] flex-1 rounded-xl p-4 shadow-lg border border-[#FFB74D]"
         >
-          <Text className="text-background-0 text-center font-bold text-lg">
+          <Text className="text-white text-center font-bold text-lg">
             Registrar Equipo
           </Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           onPress={handleCancel}
-          className="bg-secondary-200 flex-1 rounded-xl p-4 shadow-lg border border-outline-200"
+          className="bg-gray-200 flex-1 rounded-xl p-4 shadow-lg border border-gray-300"
         >
-          <Text className="text-typography-700 text-center font-bold text-lg">
+          <Text className="text-gray-700 text-center font-bold text-lg">
             Cancelar
           </Text>
         </TouchableOpacity>
