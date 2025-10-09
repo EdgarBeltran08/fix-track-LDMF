@@ -77,7 +77,7 @@ export default function AddEquipoForm() {
       </View>
 
       {/* Bloque Cliente */}
-      <View className="bg-background-0 p-6 rounded-2xl shadow-lg mb-6 border border-outline-100">
+      <View className="bg-[#EDFFFD]  p-6 rounded-2xl shadow-lg mb-6 border border-outline-100">
         <View className="flex-row items-center mb-4">
           <View className="w-2 h-6 bg-primary-500 rounded-full mr-3" />
           <Text className="text-xl font-bold text-typography-900">
@@ -89,7 +89,7 @@ export default function AddEquipoForm() {
           value={form.nombre}
           onChangeText={(v) => handleChange("nombre", v)}
           placeholderTextColor="#999999"
-          className="border border-outline-200 rounded-xl p-4 mb-4 text-typography-900 bg-background-50 focus:border-primary-500 focus:bg-background-0"
+          className="border-2 border-[#FFB74D] rounded-xl p-4 mb-4 text-typography-900 bg-[#EDFFFD]  focus:border-[#FFB74D] focus:bg-background-0"
         />
         <TextInput
           placeholder="Teléfono"
@@ -97,7 +97,7 @@ export default function AddEquipoForm() {
           onChangeText={(v) => handleChange("telefono", v)}
           keyboardType="phone-pad"
           placeholderTextColor="#999999"
-          className="border border-outline-200 rounded-xl p-4 mb-4 text-typography-900 bg-background-50 focus:border-primary-500 focus:bg-background-0"
+          className="border-2 border-[#FFB74D] rounded-xl p-4 mb-4 text-typography-900 bg-[#EDFFFD]  focus:border-[#FFB74D] focus:bg-background-0"
         />
         <TextInput
           placeholder="Correo electrónico"
@@ -105,12 +105,12 @@ export default function AddEquipoForm() {
           onChangeText={(v) => handleChange("email", v)}
           keyboardType="email-address"
           placeholderTextColor="#999999"
-          className="border border-outline-200 rounded-xl p-4 text-typography-900 bg-background-50 focus:border-primary-500 focus:bg-background-0"
+          className="border-2 border-[#FFB74D] rounded-xl p-4 text-typography-900 bg-[#EDFFFD]  focus:border-[#FFB74D] focus:bg-background-0"
         />
       </View>
 
       {/* Bloque Equipo */}
-      <View className="bg-background-0 p-6 rounded-2xl shadow-lg mb-6 border border-outline-100">
+      <View className="bg-[#EDFFFD]  p-6 rounded-2xl shadow-lg mb-6 border border-outline-100">
         <View className="flex-row items-center mb-4">
           <View className="w-2 h-6 bg-info-500 rounded-full mr-3" />
           <Text className="text-xl font-bold text-typography-900">
@@ -122,21 +122,21 @@ export default function AddEquipoForm() {
           value={form.marca}
           onChangeText={(v) => handleChange("marca", v)}
           placeholderTextColor="#999999"
-          className="border border-outline-200 rounded-xl p-4 mb-4 text-typography-900 bg-background-50 focus:border-primary-500 focus:bg-background-0"
+          className="border-2 border-[#FFB74D] rounded-xl p-4 mb-4 text-typography-900 bg-[#EDFFFD]  focus:border-[#FFB74D] focus:bg-background-0"
         />
         <TextInput
           placeholder="Modelo"
           value={form.modelo}
           onChangeText={(v) => handleChange("modelo", v)}
           placeholderTextColor="#999999"
-          className="border border-outline-200 rounded-xl p-4 mb-4 text-typography-900 bg-background-50 focus:border-primary-500 focus:bg-background-0"
+          className="border-2 border-[#FFB74D] rounded-xl p-4 mb-4 text-typography-900 bg-[#EDFFFD]  focus:border-[#FFB74D] focus:bg-background-0"
         />
         <TextInput
           placeholder="IMEI / Número de serie"
           value={form.imei}
           onChangeText={(v) => handleChange("imei", v)}
           placeholderTextColor="#999999"
-          className="border border-outline-200 rounded-xl p-4 mb-4 text-typography-900 bg-background-50 focus:border-primary-500 focus:bg-background-0"
+          className="border-2 border-[#FFB74D] rounded-xl p-4 mb-4 text-typography-900 bg-[#EDFFFD]  focus:border-[#FFB74D] focus:bg-background-0"
         />
         <TextInput
           placeholder="Describe el problema o daño del equipo..."
@@ -146,12 +146,12 @@ export default function AddEquipoForm() {
           numberOfLines={6}
           textAlignVertical="top"
           placeholderTextColor="#999999"
-          className="border border-outline-200 rounded-xl p-4 h-32 text-typography-900 bg-background-50 focus:border-primary-500 focus:bg-background-0"
+          className="border-2 border-[#FFB74D] rounded-xl p-4 h-32 text-typography-900 bg-[#EDFFFD]  focus:border-[#FFB74D] focus:bg-background-0"
         />
       </View>
 
       {/* Bloque Firma */}
-      <View className="bg-background-0 p-6 rounded-2xl shadow-lg mb-6 border border-outline-100">
+      <View className="bg-[#EDFFFD]  p-6 rounded-2xl shadow-lg mb-6 border border-outline-100">
         <View className="flex-row items-center mb-4">
           <View className="w-2 h-6 bg-warning-500 rounded-full mr-3" />
           <Text className="text-xl font-bold text-typography-900">
@@ -162,7 +162,7 @@ export default function AddEquipoForm() {
           style={{
             height: 200,
             borderWidth: 2,
-            borderColor: "rgb(var(--color-outline-200))",
+            borderColor: "#FFB74D",
             borderRadius: 12,
             backgroundColor: "rgb(var(--color-background-50))",
           }}
