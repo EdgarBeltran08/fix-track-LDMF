@@ -23,20 +23,20 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   };
 
   const lightColors = {
-    background: "#2ad582",
+    background: "#FFB74D",
     shadow: "#000000",
     activeText: "#ffffff",
-    inactiveText: "#115534",
+    inactiveText: "#502512ff",
     activeIcon: "#ffffff",
-    inactiveIcon: "#115534",
+    inactiveIcon: "#8b3f19ff",
   };
 
   const darkColors = {
     background: "#1a1a1a",
     shadow: "#c4c2c2",
-    activeText: "#2ad582",
+    activeText: "#2e1506ff",
     inactiveText: "#C7C7C7",
-    activeIcon: "#2ad582",
+    activeIcon: "#FFB74D",
     inactiveIcon: "#C7C7C7",
   };
 

@@ -65,15 +65,15 @@ export default function AddEquipoForm() {
 
   return (
     <ScrollView
-      className="flex-1 bg-background-0 p-4"
+      className="flex-1 bg-[#193456] p-4"
       scrollEnabled={scrollEnabled}
     >
       {/* Título */}
       <View className="mb-8 mt-2">
-        <Text className="text-3xl font-bold text-center text-typography-900 mb-2">
+        <Text className="text-3xl font-bold text-center color-white mb-2">
           Registrar reparación
         </Text>
-        <View className="w-20 h-1 bg-primary-500 mx-auto rounded-full" />
+        <View className="w-20 h-1 bg-[#FFB74D] mx-auto rounded-full" />
       </View>
 
       {/* Bloque Cliente */}
@@ -202,7 +202,7 @@ export default function AddEquipoForm() {
       <View className="flex-row justify-between mb-8 gap-4">
         <TouchableOpacity
           onPress={() => console.log("Datos:", form, firma)}
-          className="bg-primary-500 flex-1 rounded-xl p-4 shadow-lg border border-primary-600"
+          className="bg-[#FFB74D] flex-1 rounded-xl p-4 shadow-lg border border-[#FFB74D]"
         >
           <Text className="text-background-0 text-center font-bold text-lg">
             Registrar Equipo

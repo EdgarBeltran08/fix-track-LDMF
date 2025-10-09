@@ -93,17 +93,17 @@ const InventoryPage: React.FC = () => {
 
   return (
     <>
-      <View className="flex-1 pt-5 mb-8 items-start bg-background-50">
-        <Text className="text-3xl font-bold ml-6 mb-2 text-secondary-900">
+      <View className="flex-1 pt-5 mb-8 items-start bg-[#193456]">
+        <Text className="text-3xl font-bold ml-6 mb-2 color-white">
           Inventory
         </Text>
-        <Text className="text-xl ml-6 mb-2 text-primary-500">
+        <Text className="text-xl ml-6 mb-2 color-white">
           Control de Inventario
         </Text>
 
         {/* Barra de busqueda */}
         <View className="my-2 w-full flex flex-row items-center mb-3 ml-5">
-          <Input className="bg-background-50 rounded-xl flex-row items-center border-2 border-primary-300 w-64 mr-6">
+          <Input className="bg-background-50 rounded-xl flex-row items-center border-2 border-[#FFB74D]  w-64 mr-6">
             <InputSlot className="pl-3">
               <AntDesign name="search" size={24} color="gray" />
             </InputSlot>
@@ -129,8 +129,8 @@ const InventoryPage: React.FC = () => {
             </TouchableOpacity>
 
             {isFilterMenuOpen && (
-              <View className="absolute top-14 right-0 bg-background-100 border-2 border-primary-300 rounded-md shadow-lg z-50 w-40">
-                <Text className="px-4 py-2 font-bold text-secondary-900 border-b border-primary-300">
+              <View className="absolute top-14 right-0 bg-background-100 border-2 border-[#FFB74D]  rounded-md shadow-lg z-50 w-40">
+                <Text className="px-4 py-2 font-bold text-secondary-900 border-b border-[#FFB74D]">
                   Categoría:
                 </Text>
                 {categories.map((cat) => (
@@ -138,7 +138,7 @@ const InventoryPage: React.FC = () => {
                     key={cat}
                     onPress={() => handleSelectCategory(cat)}
                     className={`px-4 py-2 ${
-                      selectedCategory === cat ? "bg-primary-300" : ""
+                      selectedCategory === cat ? "bg-[#FFB74D]" : ""
                     }`}
                   >
                     <Text
@@ -157,7 +157,7 @@ const InventoryPage: React.FC = () => {
 
             <Button
               size="lg"
-              className="rounded-full ml-4 p-2 bg-primary-400 border-2 border-primary-400 flex-row justify-center items-center h-11"
+              className="rounded-full ml-4 p-2 bg-[#FFB74D] border-2 border-[#FFB74D] flex-row justify-center items-center h-11"
             >
               <FontAwesome6
                 name="add"
@@ -185,9 +185,9 @@ const InventoryPage: React.FC = () => {
               showsHorizontalScrollIndicator={true}
               className="w-full"
             >
-              <Table className="min-w-[600px] border-primary-400 rounded-lg overflow-visible">
+              <Table className="min-w-[600px] border-[#FFB74D] rounded-lg overflow-visible">
                 <TableHeader>
-                  <TableRow className="bg-background-100 border-b-2 border-primary-400">
+                  <TableRow className="bg-background-100 border-b-2 border-[#FFB74D]">
                     <TableHead className="text-secondary-900 text-center px-5 py-3 text-lg">
                       Repuesto
                     </TableHead>
