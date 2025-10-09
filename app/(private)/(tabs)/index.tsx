@@ -186,14 +186,14 @@ export default function HomeScreen() {
 
   const renderRepairCard = ({ item }: { item: Repair }) => (
     <Pressable className="mb-3">
-      <Card className="p-4 bg-background-50 border border-background-200">
+      <Card className="p-6 rounded-xl border-4">
         {/* Header */}
         <View className="flex-row justify-between items-start mb-3">
-          <View className="flex-1">
-            <Text className="text-lg font-semibold text-typography-900 mb-1">
+          <View className="flex-1"> 
+            <Text className="text-2xl font-extrabold">
               {item.customerName}
             </Text>
-            <Text className="text-sm text-typography-600">{item.folio}</Text>
+            <Text className="text-lg text-typography-1000">{item.folio}</Text>
           </View>
           <Badge
             action={getStatusColor(item.status)}
@@ -201,7 +201,7 @@ export default function HomeScreen() {
             className={`ml-2 border-2 ${getStatusBadgeStyle(item.status)}`}
           >
             <Text
-              className={`text-xs font-bold ${getStatusTextStyle(item.status)}`}
+              className={`text-lg font-extrabold ${getStatusTextStyle(item.status)}`}
             >
               {getStatusText(item.status)}
             </Text>
@@ -210,10 +210,10 @@ export default function HomeScreen() {
 
         {/* Device Info */}
         <View className="mb-3">
-          <Text className="text-base font-medium text-typography-800 mb-1">
+          <Text className="text-2xl font-medium text-black mb-1">
             {item.deviceModel}
           </Text>
-          <Text className="text-sm text-typography-600" numberOfLines={2}>
+          <Text className="text-lg text-typography-800" numberOfLines={2}>
             {item.issueDescription}
           </Text>
         </View>
@@ -223,15 +223,15 @@ export default function HomeScreen() {
           <View className="flex-row items-center">
             <Ionicons
               name="calendar-outline"
-              size={16}
+              size={35}
               color="#6B7280"
               style={{ marginRight: 4 }}
             />
-            <Text className="text-sm text-typography-600">
+            <Text className="text-lg text-typography-600">
               {item.createdAt.toLocaleDateString("es-MX")}
             </Text>
           </View>
-          <Text className="text-base font-semibold text-primary-600">
+          <Text className="text-2xl font-semibold text-primary-600" style={{textShadowColor:"#008f39", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 5}}>
             ${item.estimatedCost.toLocaleString("es-MX")}
           </Text>
         </View>
@@ -247,10 +247,10 @@ export default function HomeScreen() {
       <View className="pt-12 pb-6 px-6" style={{backgroundColor:"#193456"}}>
         <View className="flex-row items-center justify-between mb-4">
           <View>
-            <Text className="text-2xl font-bold text-typography-900">
+            <Text className="text-3xl font-extrabold text-white" style={{color:"#FFB74D"}}>
               ¡Hola, {user?.displayName?.split(" ")[0] || "Administrador"}!
             </Text>
-            <Text className="text-sm text-typography-600 capitalize">
+            <Text className="text-2xl font-semibold capitalize" style={{color:"white"}}>
               {user?.role || "admin"}
             </Text>
           </View>
@@ -301,38 +301,37 @@ export default function HomeScreen() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          className="mb-4"
-        >
+  >
           <View className="flex-row space-x-4">
-            <View className="bg-background-0 px-4 py-3 rounded-lg border border-background-200 min-w-[110px]">
-              <Text className="text-2xl font-bold text-warning-600 text-center">
+            <View className="bg-background-0 px-4 py-3 rounded-lg border-4 min-w-[110px]" style={{ marginRight: 8}}>
+              <Text className="text-3xl font-bold text-warning-600 text-center"   style={{textShadowColor: "#F59E0B", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 10}}>
                 {statusCounts.repairing || 0}
               </Text>
-              <Text className="text-xs text-typography-600 text-center">
+              <Text className="text-lg font-extrabold text-center" style={{color:"#193456"}}>
                 Reparando
               </Text>
             </View>
-            <View className="bg-background-0 px-4 py-3 rounded-lg border border-background-200 min-w-[110px]">
-              <Text className="text-2xl font-bold text-info-600 text-center">
+            <View className="bg-background-0 px-4 py-3 rounded-lg border-4 min-w-[110px]" style={{ marginRight: 8}}>
+              <Text className="text-3xl font-bold text-info-600 text-center" style={{textShadowColor: "#3B82F6", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 10}}>
                 {statusCounts.in_review || 0}
               </Text>
-              <Text className="text-xs text-typography-600 text-center">
+              <Text className="text-lg font-extrabold text-center" style={{color:"#193456"}}>
                 En Revisión
               </Text>
             </View>
-            <View className="bg-background-0 px-4 py-3 rounded-lg border border-background-200 min-w-[110px]">
-              <Text className="text-2xl font-bold text-success-600 text-center">
+            <View className="bg-background-0 px-4 py-3 rounded-lg border-4 min-w-[110px]" style={{ marginRight: 8}}>
+              <Text className="text-3xl font-bold text-success-600 text-center" style={{textShadowColor: "#10B981", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 10}}>
                 {statusCounts.done || 0}
               </Text>
-              <Text className="text-xs text-typography-600 text-center">
+              <Text className="text-lg font-extrabold text-center" style={{color:"#193456"}}>
                 Terminados
               </Text>
             </View>
-            <View className="bg-background-0 px-4 py-3 rounded-lg border border-background-200 min-w-[110px]">
-              <Text className="text-2xl font-bold text-typography-500 text-center">
+            <View className="bg-background-0 px-4 py-3 rounded-lg border-4 min-w-[110px]" style={{ marginRight: 8}}>
+              <Text className="text-3xl font-bold text-typography-500 text-center" style={{textShadowColor: "#6B7280", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 10,}}>
                 {statusCounts.waiting_parts || 0}
               </Text>
-              <Text className="text-xs text-typography-600 text-center">
+              <Text className="text-lg font-extrabold text-center" style={{color:"#193456"}}>
                 Esperando Piezas
               </Text>
             </View>
@@ -345,28 +344,30 @@ export default function HomeScreen() {
         <View className="flex-row space-x-3 mb-3">
           <Button
             action="primary"
-            size="lg"
+            size="xl"
             className="flex-1"
             onPress={() => router.push("/(private)/(tabs)/repairs/create")}
+            style = {{backgroundColor: "#FFB74D"}}
           >
             <Ionicons
               name="add"
-              size={20}
+              size={30}
               color="white"
               style={{ marginRight: 8 }}
             />
-            <ButtonText className="font-semibold">Nueva Reparación</ButtonText>
+            <ButtonText className="font-semibold text-3xl ">Nueva Reparación</ButtonText>
           </Button>
         </View>
 
         {/* Search Bar */}
-        <View className="relative">
-          <Input variant="outline" size="md">
+        <View className="relative  rounded-xl border-4" style={{borderColor:"#FFB74D"}}>
+          <Input variant="outline" size="md" className="bg-white rounded-lg">
             <InputField
               placeholder="Buscar por cliente, dispositivo o folio..."
               value={searchText}
               onChangeText={setSearchText}
-              className="pl-10"
+              className="pl-10 text-base font-extrabold"
+              style={{color:"black",fontSize:15}}
             />
           </Input>
           <View className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -378,10 +379,10 @@ export default function HomeScreen() {
       {/* Repairs List */}
       <View className="flex-1 px-6 pt-4">
         <View className="flex-row justify-between items-center mb-4">
-          <Text className="text-lg font-semibold text-typography-900">
+          <Text className="text-2xl font-extrabold" style={{color:"#FFB74D"}}>
             Reparaciones Activas
           </Text>
-          <Text className="text-sm text-typography-600">
+          <Text className="text-2xl text-white font-bold">
             {filteredRepairs.length} de {mockRepairs.length}
           </Text>
         </View>
