@@ -238,7 +238,7 @@ const InventoryPage: React.FC = () => {
                           <AntDesign
                             name="eye"
                             size={24}
-                            color="#3ed389ff"
+                            color="#FFB74D"
                             className="ml-10"
                           />
                         </Button>
