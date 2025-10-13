@@ -113,11 +113,6 @@ export default function ActualizarEstadoScreen() {
           <Text className="text-white font-bold">Cancelar</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Navegación inferior */}
-      <View className="bg-background-50 w-full items-center py-4 mt-5 border-t border-background-200">
-        <Text className="text-base text-typography-900">🏠 Inicio</Text>
-      </View>
     </View>
   );
 }
