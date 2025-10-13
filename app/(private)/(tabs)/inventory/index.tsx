@@ -1,456 +1,123 @@
-import { Button, ButtonText } from "@/shared/components/ui/button";
-import { Input, InputField, InputSlot } from "@/shared/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableData,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/shared/components/ui/table";
-import { InventoryRepository } from "@/shared/repositories/inventory.repository";
-import { InventoryItem } from "@/shared/types/inventory.type";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import Feather from "@expo/vector-icons/Feather";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import React, { useEffect, useState } from "react";
-//impor de modal
 import { Picker } from "@react-native-picker/picker";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Modal as RNModal,
-  RefreshControl,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React, { useState } from "react";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
-const InventoryPage: React.FC = () => {
-  const [searchText, setSearchText] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+export default function ActualizarEstadoScreen() {
+  const [estado, setEstado] = useState("En progreso");
+  const [nuevoEstado, setNuevoEstado] = useState("");
 
-  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
-
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-
-  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
-  const [refreshing, setRefreshing] = useState(false);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
-  const categories = [
-    "",
-    "Pantallas",
-    "Baterias",
-    "Conectores",
-    "Placas Bases",
-    "Cámaras",
-    "Micas",
-  ];
-
-  const filteredData = inventoryItems.filter(
-    (item) =>
-      item.name.toLowerCase().includes(searchText.toLowerCase()) &&
-      (selectedCategory === "" || item.category?.name === selectedCategory)
-  );
-
-  const totalItems = filteredData.length;
-
-  const handleClickVer = (item: InventoryItem) => {
-    setSelectedItem(item);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const toggleFilterMenu = () => {
-    setIsFilterMenuOpen(!isFilterMenuOpen);
-  };
-
-  const handleSelectCategory = (category: string) => {
-    setSelectedCategory(category);
-    setIsFilterMenuOpen(false);
-  };
-
-  const fetchInventoryItems = async () => {
-    try {
-      const items = await InventoryRepository.getAll();
-      setInventoryItems(items);
-    } catch (error) {
-      console.error("Error fetching inventory items:", error);
+  // ======== función para asignar color según estado ========
+  const getEstadoColor = (estado) => {
+    switch (estado) {
+      case "Pendiente":
+      case "Revisión":
+      case "En progreso":
+        return {
+          bg: "bg-yellow-100 dark:bg-yellow-800", // fondo adaptado a modo oscuro
+          text: "text-yellow-800 dark:text-yellow-100", // texto inverso
+          border: "border-yellow-300 dark:border-yellow-700",
+        };
+      case "Completo":
+        return {
+          bg: "bg-green-100 dark:bg-green-800",
+          text: "text-green-800 dark:text-green-100",
+          border: "border-green-300 dark:border-green-700",
+        };
+      case "Cancelado":
+        return {
+          bg: "bg-red-100 dark:bg-red-800",
+          text: "text-red-800 dark:text-red-100",
+          border: "border-red-300 dark:border-red-700",
+        };
+      default:
+        return {
+          bg: "bg-background-50",
+          text: "text-typography-900",
+          border: "border-background-200",
+        };
     }
   };
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await fetchInventoryItems();
-    setRefreshing(false);
-  };
-
-  useEffect(() => {
-    fetchInventoryItems();
-  }, []);
-  const [newCategory, setNewCategory] = useState("");
+  const estadoColors = getEstadoColor(estado);
 
   return (
-    <>
-      <View className="flex-1 pt-5 mb-8 items-start bg-background-50">
-        <Text className="text-3xl font-bold ml-6 mb-2 text-secondary-900">
-          Inventory
-        </Text>
-        <Text className="text-xl ml-6 mb-2 text-primary-500">
-          Control de Inventario
-        </Text>
-
-        {/* Barra de busqueda */}
-        <View className="my-2 w-full flex flex-row items-center mb-3 ml-5">
-          <Input className="bg-background-50 rounded-xl flex-row items-center border-2 border-primary-300 w-64 mr-6">
-            <InputSlot className="pl-3">
-              <AntDesign name="search" size={24} color="gray" />
-            </InputSlot>
-            <InputField
-              placeholder="Search"
-              value={searchText}
-              onChangeText={setSearchText}
-              className="text-secondary-900 font-bold bg-background-50"
-            />
-          </Input>
-
-          <View className="flex flex-row space-x-2 ml-10 mr-5 relative">
-            <TouchableOpacity
-              onPress={toggleFilterMenu}
-              className="rounded-full p-2 bg-background-300 flex-row justify-center items-center h-11"
-            >
-              <Feather
-                name="filter"
-                size={24}
-                color="white"
-                className="align-middle translate-y-[1px]"
-              />
-            </TouchableOpacity>
-
-            {isFilterMenuOpen && (
-              <View className="absolute top-14 right-0 bg-background-100 border-2 border-primary-300 rounded-md shadow-lg z-50 w-40">
-                <Text className="px-4 py-2 font-bold text-secondary-900 border-b border-primary-300">
-                  Categoría:
-                </Text>
-                {categories.map((cat) => (
-                  <TouchableOpacity
-                    key={cat}
-                    onPress={() => handleSelectCategory(cat)}
-                    className={`px-4 py-2 ${
-                      selectedCategory === cat ? "bg-primary-300" : ""
-                    }`}
-                  >
-                    <Text
-                      className={
-                        selectedCategory === cat
-                          ? "text-primary-900"
-                          : "text-primary-900"
-                      }
-                    >
-                      {cat === "" ? "Todas" : cat}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-            <Button
-              size="lg"
-              className="rounded-full ml-4 p-2 bg-primary-400 border-2 border-primary-400 flex-row justify-center items-center h-11"
-              //ON PRESS PARA MODAL
-              onPress={() => setIsAddModalOpen(true)}
-            >
-              <FontAwesome6
-                name="add"
-                size={24}
-                color="black"
-                className="align-middle translate-y-[-2px]"
-              />
-            </Button>
-          </View>
-        </View>
-
-        {/* Contenedor de la tabla */}
-        <View className="flex-1 rounded-lg pt-2 ml-5 mx-2 w-11/12 max-h-[500px]">
-          <ScrollView
-            className="flex-1"
-            showsVerticalScrollIndicator={true}
-            showsHorizontalScrollIndicator={true}
-            nestedScrollEnabled={true}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          >
-            <ScrollView
-              horizontal={true}
-              showsHorizontalScrollIndicator={true}
-              className="w-full"
-            >
-              <Table className="min-w-[600px] border-primary-400 rounded-lg overflow-visible">
-                <TableHeader>
-                  <TableRow className="bg-background-100 border-b-2 border-primary-400">
-                    <TableHead className="text-secondary-900 text-center px-5 py-3 text-lg">
-                      Repuesto
-                    </TableHead>
-                    <TableHead className="text-secondary-900 text-center px-5 py-3 text-lg">
-                      Costo Unitario
-                    </TableHead>
-                    <TableHead className="text-secondary-900 text-center px-5 py-3 text-lg">
-                      SKU
-                    </TableHead>
-                    <TableHead className="text-secondary-900 text-center px-5 py-3 text-lg">
-                      Categoría
-                    </TableHead>
-                    <TableHead className="text-secondary-900 text-center px-5 py-3 text-lg">
-                      Estado
-                    </TableHead>
-                    <TableHead className="text-secondary-900 text-center px-5 py-3 text-lg">
-                      Detalle
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-
-                <TableBody>
-                  {filteredData.map((item) => (
-                    <TableRow key={item.id} className="bg-background-100">
-                      <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md">
-                        {item.name}
-                      </TableData>
-                      <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md">
-                        ${item.unitCost}
-                      </TableData>
-                      <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md">
-                        {item.sku || "N/A"}
-                      </TableData>
-                      <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md">
-                        {item.category?.name || "N/A"}
-                      </TableData>
-                      <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md">
-                        {item.state === "available"
-                          ? "Disponible"
-                          : "No Disponible"}
-                      </TableData>
-                      <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md flex justify-center items-center">
-                        <Button
-                          variant="link"
-                          onPress={() => handleClickVer(item)}
-                          className="p-0 mx-auto"
-                        >
-                          <AntDesign
-                            name="eye"
-                            size={24}
-                            color="#3ed389ff"
-                            className="ml-10"
-                          />
-                        </Button>
-                      </TableData>
-                    </TableRow>
-                  ))}
-                </TableBody>
-
-                <TableFooter>
-                  <TableRow className="bg-secondary-200">
-                    <TableHead className="text-secondary-900 px-5 py-5 text-md">
-                      Total Items
-                    </TableHead>
-                    <TableHead className="text-secondary-900 px-5 py-5 text-md">
-                      {totalItems}
-                    </TableHead>
-                    <TableHead className="text-secondary-900 px-5 py-5 text-md">
-                      -
-                    </TableHead>
-                    <TableHead className="text-secondary-900 px-5 py-5 text-md">
-                      -
-                    </TableHead>
-                    <TableHead className="text-secondary-900 px-5 py-5 text-md">
-                      -
-                    </TableHead>
-                    <TableHead className="text-secondary-900 px-5 py-5 text-md">
-                      -
-                    </TableHead>
-                  </TableRow>
-                </TableFooter>
-              </Table>
-            </ScrollView>
-          </ScrollView>
-        </View>
+    <View className="flex-1 bg-background-100 items-center">
+      {/* Header */}
+      <View className="flex-row justify-between items-center w-full px-5 py-4 bg-background-50 border-b border-background-200">
+        <Text className="text-lg font-bold text-typography-900">FixTrack</Text>
+        <View className="w-8 h-8 bg-background-200 rounded-full" />
       </View>
 
-      <RNModal
-        visible={isModalOpen}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={handleCloseModal}
-      >
-        <View className="flex-1 justify-center items-center bg-black/60 p-5">
-          <View className="bg-background-50 rounded-xl border-2 border-primary-300 p-5 w-full max-w-[400px]">
-            <Text className="text-xl font-bold mb-4 text-primary-900">
-              Detalles del Repuesto
-            </Text>
-            <ScrollView style={{ maxHeight: 300 }}>
-              <Text>
-                <Text className="text-lg font-bold text-primary-900">
-                  Repuesto:
-                </Text>{" "}
-                <Text className="text-primary-900">{selectedItem?.name}</Text>
-              </Text>
-              <Text>
-                <Text className="text-lg font-bold text-primary-900">
-                  Costo Unitario:
-                </Text>{" "}
-                <Text className="text-primary-900">
-                  ${selectedItem?.unitCost}
-                </Text>
-              </Text>
-              <Text>
-                <Text className="text-lg font-bold text-primary-900">SKU:</Text>{" "}
-                <Text className="text-primary-900">
-                  {selectedItem?.sku || "N/A"}
-                </Text>
-              </Text>
-              <Text>
-                <Text className="text-lg font-bold text-primary-900">
-                  Categoría:
-                </Text>{" "}
-                <Text className="text-primary-900">
-                  {selectedItem?.category?.name || "N/A"}
-                </Text>
-              </Text>
-              <Text>
-                <Text className="text-lg font-bold text-primary-900">
-                  Estado:
-                </Text>{" "}
-                <Text className="text-primary-900">
-                  {selectedItem?.state === "available"
-                    ? "Disponible"
-                    : "No Disponible"}
-                </Text>
-              </Text>
-            </ScrollView>
-            <Button
-              variant="outline"
-              action="secondary"
-              onPress={handleCloseModal}
-              className="mt-4 bg-primary-300 border-primary-300 rounded-full p-2"
-            >
-              <ButtonText>Cerrar</ButtonText>
-            </Button>
+      {/* Título */}
+      <Text className="text-xl font-bold mt-3 mb-3 text-typography-900">
+        Actualizar Estado
+      </Text>
+
+      {/* Card principal */}
+      <View className="bg-background-50 w-[90%] rounded-xl p-5 items-center border border-background-200">
+        {/* Imagen del equipo */}
+        <Image
+          source={{
+            uri: "https://cdn-icons-png.flaticon.com/512/4824/4824793.png",
+          }}
+          className="w-20 h-20 mb-3"
+        />
+
+        {/* Información del cliente */}
+        <View className="items-center mb-4">
+          <Text className="font-bold text-base text-typography-900"># 201354</Text>
+          <Text className="text-base text-typography-900">Fabián Gómez</Text>
+          <Text className="text-sm text-typography-900">iPhone 14 Pro</Text>
+          <Text className="text-xs text-typography-900 opacity-70">
+            Pantalla rota no responde al tacto
+          </Text>
+        </View>
+
+        {/* Estado actual */}
+        <View className="w-full mb-3">
+          <Text className="font-bold mb-1 text-typography-900">Estado actual</Text>
+          <View
+            className={`p-3 rounded-md items-center border ${estadoColors.bg} ${estadoColors.border}`}
+          >
+            <Text className={`font-bold ${estadoColors.text}`}>{estado}</Text>
           </View>
         </View>
-      </RNModal>
 
-      <RNModal
-        //MODAL PARA AGREGAR OBJETO AL INVENTARIO
-        visible={isAddModalOpen}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setIsAddModalOpen(false)}
-      >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1 }}
-        >
-          <View className="flex-1 justify-center items-center bg-black/60 p-5">
-            <View className="bg-background-50 rounded-xl border-2 border-primary-300 p-6 w-full max-w-[400px]">
-              <Text className="text-xl font-bold mb-4 text-primary-900 text-center">
-                Agregar al inventario
-              </Text>
-
-              {/* Formulario */}
-              <ScrollView
-                className="w-full"
-                style={{ maxHeight: 300 }}
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-              >
-                <View className="mb-3">
-                  <Text className="text-primary-900 font-semibold mb-1">
-                    Nombre del repuesto
-                  </Text>
-                  <Input>
-                    <InputField placeholder="Ej. Pantalla iPhone 12" />
-                  </Input>
-                </View>
-
-                <View className="mb-3">
-                  <Text className="text-primary-900 font-semibold mb-1">
-                    Costo unitario
-                  </Text>
-                  <Input>
-                    <InputField
-                      placeholder="Ej. 250.00"
-                      keyboardType="numeric"
-                    />
-                  </Input>
-                </View>
-
-                <View className="mb-3">
-                  <Text className="text-primary-900 font-semibold mb-1">
-                    SKU
-                  </Text>
-                  <Input>
-                    <InputField placeholder="Ej. IP12-SCR-001" />
-                  </Input>
-                </View>
-
-                <View className="mb-3">
-                  <Text className="text-primary-900 font-semibold mb-1">
-                    Categoría
-                  </Text>
-                  <View className="border-2 border-primary-300 rounded-xl bg-background-50 overflow-hidden">
-                    <Picker
-                      selectedValue={newCategory}
-                      onValueChange={(itemValue) => setNewCategory(itemValue)}
-                      style={{
-                        fontSize: 14,
-                      }}
-                      itemStyle={{
-                        fontSize: 14,
-                      }}
-                      dropdownIconColor="#FFB74D"
-                    >
-                      <Picker.Item label="Seleccionar categoría..." value="" />
-                      <Picker.Item label="Pantallas" value="Pantallas" />
-                      <Picker.Item label="Baterias" value="Baterias" />
-                      <Picker.Item label="Conectores" value="Conectores" />
-                      <Picker.Item label="Placas Bases" value="Placas Bases" />
-                      <Picker.Item label="Cámaras" value="Cámaras" />
-                      <Picker.Item label="Micas" value="Micas" />
-                    </Picker>
-                  </View>
-                </View>
-              </ScrollView>
-
-              {/* Botones */}
-              <View className="flex-row justify-between mt-6">
-                <Button
-                  variant="outline"
-                  action="secondary"
-                  onPress={() => setIsAddModalOpen(false)}
-                  className="bg-background-200 border-primary-300 rounded-full px-5"
-                >
-                  <ButtonText>Cancelar</ButtonText>
-                </Button>
-
-                <Button
-                  className="bg-primary-400 border-primary-400 rounded-full px-5"
-                  onPress={() => setIsAddModalOpen(false)}
-                >
-                  <ButtonText>Agregar</ButtonText>
-                </Button>
-              </View>
-            </View>
+        {/* Cambiar estado */}
+        <View className="w-full mb-5">
+          <Text className="font-bold mb-1 text-typography-900">Cambiar estado</Text>
+          <View className="border border-background-200 rounded-md bg-background-50">
+            <Picker
+              selectedValue={nuevoEstado}
+              onValueChange={(itemValue) => {
+                setNuevoEstado(itemValue);
+                if (itemValue) setEstado(itemValue);
+              }}
+            >
+              <Picker.Item label="Seleccionar estado" value="" />
+              <Picker.Item label="Pendiente" value="Pendiente" />
+              <Picker.Item label="Revisión" value="Revisión" />
+              <Picker.Item label="En progreso" value="En progreso" />
+              <Picker.Item label="Completo" value="Completo" />
+              <Picker.Item label="Cancelado" value="Cancelado" />
+            </Picker>
           </View>
-        </KeyboardAvoidingView>
-      </RNModal>
-    </>
-  );
-};
+        </View>
 
-export default InventoryPage;
+        {/* Botones */}
+        <TouchableOpacity className="bg-green-600 w-4/5 py-2 rounded-md items-center mb-3">
+          <Text className="text-white font-bold">Guardar</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity className="bg-red-600 w-4/5 py-2 rounded-md items-center">
+          <Text className="text-white font-bold">Cancelar</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Navegación inferior */}
+      <View className="bg-background-50 w-full items-center py-4 mt-5 border-t border-background-200">
+        <Text className="text-base text-typography-900">🏠 Inicio</Text>
+      </View>
+    </View>
+  );
+}
