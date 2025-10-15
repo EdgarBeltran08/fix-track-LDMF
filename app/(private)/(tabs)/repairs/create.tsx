@@ -1,3 +1,4 @@
+import CheckBox from "expo-checkbox";
 import React, { useRef, useState } from "react";
 import {
   Alert,
@@ -18,9 +19,22 @@ type FormData = {
   imei: string;
   descripcion: string;
 };
-
 type FormField = keyof FormData;
-
+type ChecklistKeys =
+  | "aparatoMojado"
+  | "noEnciende"
+  | "seApagaSolo"
+  | "noCarga"
+  | "bateriaInflada"
+  | "seDescarga"
+  | "seReinicia"
+  | "pantallaRota"
+  | "pantallaManchas"
+  | "tactilNoResponde"
+  | "sinImagen"
+  | "rayasPantalla"
+  | "pantallaNegra";
+//
 export default function AddEquipoForm() {
   const [form, setForm] = useState<FormData>({
     nombre: "",
@@ -62,11 +76,30 @@ export default function AddEquipoForm() {
       { text: "Sí", onPress: () => console.log("Formulario cancelado") },
     ]);
   };
+  const [checklist, setChecklist] = useState<Record<ChecklistKeys, boolean>>({
+    aparatoMojado: false,
+    noEnciende: false,
+    seApagaSolo: false,
+    noCarga: false,
+    bateriaInflada: false,
+    seDescarga: false,
+    seReinicia: false,
+    pantallaRota: false,
+    pantallaManchas: false,
+    tactilNoResponde: false,
+    sinImagen: false,
+    rayasPantalla: false,
+    pantallaNegra: false,
+  });
 
+  const toggleCheckbox = (key: ChecklistKeys) => {
+    setChecklist((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
   return (
     <ScrollView
       className="flex-1 bg-background-0 p-4"
       scrollEnabled={scrollEnabled}
+      contentContainerStyle={{ paddingBottom: 120 }}
     >
       {/* Título */}
       <View className="mb-8 mt-2">
@@ -138,6 +171,69 @@ export default function AddEquipoForm() {
           placeholderTextColor="#999999"
           className="border border-outline-200 rounded-xl p-4 mb-4 text-typography-900 bg-background-50 focus:border-primary-500 focus:bg-background-0"
         />
+        {/* Checklist */}
+        <Text className="text-lg font-bold text-typography-900 mb-2">
+          Este equipo se recibe:
+        </Text>
+
+        <View className="gap-2 mb-4">
+          <View className="flex-row items-center mb-2">
+            <CheckBox
+              value={checklist.aparatoMojado}
+              onValueChange={() => toggleCheckbox("aparatoMojado")}
+              color={checklist.aparatoMojado ? "#FFB74D" : undefined}
+            />
+            <Text className="ml-2 text-typography-900">Aparato mojado</Text>
+          </View>
+
+          <Text className="font-bold text-typography-900 mt-2">
+            Condiciones relacionadas con la batería y energía
+          </Text>
+
+          {[
+            ["noEnciende", "No enciende"],
+            ["seApagaSolo", "Se apaga solo"],
+            ["noCarga", "No carga aún conectado"],
+            ["bateriaInflada", "Batería inflada"],
+            ["seDescarga", "Se descarga demasiado rápido"],
+            ["seReinicia", "Se reinicia constantemente"],
+          ].map(([key, label]) => (
+            <View key={key} className="flex-row items-center mb-1">
+              <CheckBox
+                value={checklist[key as ChecklistKeys]}
+                onValueChange={() => toggleCheckbox(key as ChecklistKeys)}
+                color={checklist[key as ChecklistKeys] ? "#FFB74D" : undefined}
+              />
+              <Text className="ml-2 text-typography-900">{label}</Text>
+            </View>
+          ))}
+
+          <Text className="font-bold text-typography-900 mt-3">
+            Condiciones de la pantalla
+          </Text>
+
+          {[
+            ["pantallaRota", "Pantalla rota o estrellada"],
+            [
+              "pantallaManchas",
+              "Pantalla con manchas (amarillas, negras o de colores)",
+            ],
+            ["tactilNoResponde", "Táctil no responde o responde parcialmente"],
+            ["sinImagen", "Pantalla encendida pero sin imagen"],
+            ["rayasPantalla", "Pantalla con rayas verticales / horizontales"],
+            ["pantallaNegra", "Pantalla completamente negra"],
+          ].map(([key, label]) => (
+            <View key={key} className="flex-row items-center mb-1">
+              <CheckBox
+                value={checklist[key as ChecklistKeys]}
+                onValueChange={() => toggleCheckbox(key as ChecklistKeys)}
+                color={checklist[key as ChecklistKeys] ? "#FFB74D" : undefined}
+              />
+              <Text className="ml-2 text-typography-900">{label}</Text>
+            </View>
+          ))}
+        </View>
+        {/*CHECKLIST*/}
         <TextInput
           placeholder="Describe el problema o daño del equipo..."
           value={form.descripcion}
@@ -148,6 +244,16 @@ export default function AddEquipoForm() {
           placeholderTextColor="#999999"
           className="border border-outline-200 rounded-xl p-4 h-32 text-typography-900 bg-background-50 focus:border-primary-500 focus:bg-background-0"
         />
+        {/* texto legal*/}
+        <Text className="text-xs text-typography-700 mt-3 text-justify">
+          Green Monkey responsabiliza al cliente de la procedencia lícita del
+          equipo. La garantía solo aplica en mano de obra y en piezas
+          reemplazadas, cualquier falla adicional genera un costo extra. Golpes
+          o manipulación indebida no tendrán garantía de ningún tipo. Estos
+          equipos corren el riesgo de apagarse definitivamente. El cliente
+          cuenta con 30 días para recoger su equipo. No nos hacemos responsables
+          por SIM o accesorios olvidados.
+        </Text>
       </View>
 
       {/* Bloque Firma */}
