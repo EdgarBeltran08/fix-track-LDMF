@@ -2,10 +2,12 @@ import { Badge } from "@/shared/components/ui/badge";
 import { Button, ButtonText } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
 import { Input, InputField } from "@/shared/components/ui/input";
+import { RepairsRepository } from "@/shared/repositories/repairs.repository";
 import { useUserStore } from "@/shared/stores/useUserStore";
+import { Repair } from "@/shared/types/repair.type";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FlatList,
   Pressable,
@@ -15,98 +17,6 @@ import {
   Text,
   View,
 } from "react-native";
-
-type Repair = {
-  id: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-  deviceModel: string;
-  issueDescription: string;
-  status:
-    | "in_review"
-    | "repairing"
-    | "waiting_parts"
-    | "done"
-    | "not_repaired"
-    | "delivered";
-  createdAt: Date;
-  updatedAt: Date;
-  assignedTo: string;
-  estimatedCost: number;
-  finalCost: number;
-  deliveryDate: Date | null;
-  folio: string;
-};
-
-// Mock data - keeping user type for reference but using real user data
-
-const mockRepairs: Repair[] = [
-  {
-    id: "1",
-    customerName: "Michelle Garza",
-    customerEmail: "michelle@email.com",
-    customerPhone: "555-1234",
-    deviceModel: "iPhone 14 Pro",
-    issueDescription: "Pantalla rota, no responde al tacto",
-    status: "repairing",
-    createdAt: new Date("2024-01-15"),
-    updatedAt: new Date(),
-    assignedTo: "tech-1",
-    estimatedCost: 2500,
-    finalCost: 0,
-    deliveryDate: new Date("2024-01-20"),
-    folio: "FT-2024-001",
-  },
-  {
-    id: "2",
-    customerName: "Carlos Mendoza",
-    customerEmail: "carlos@email.com",
-    customerPhone: "555-9012",
-    deviceModel: "iPhone 13",
-    issueDescription: "Problema con el audio",
-    status: "in_review",
-    createdAt: new Date("2024-01-16"),
-    updatedAt: new Date(),
-    assignedTo: "tech-1",
-    estimatedCost: 1200,
-    finalCost: 0,
-    deliveryDate: null,
-    folio: "FT-2024-003",
-  },
-  {
-    id: "3",
-    customerName: "Ana López",
-    customerEmail: "ana@email.com",
-    customerPhone: "555-5678",
-    deviceModel: "Samsung Galaxy S23",
-    issueDescription: "No carga la batería",
-    status: "waiting_parts",
-    createdAt: new Date("2024-01-14"),
-    updatedAt: new Date(),
-    assignedTo: "tech-2",
-    estimatedCost: 800,
-    finalCost: 0,
-    deliveryDate: null,
-    folio: "FT-2024-002",
-  },
-  {
-    id: "4",
-    customerName: "Sofia Herrera",
-    customerEmail: "sofia@email.com",
-    customerPhone: "555-3456",
-    deviceModel: "Xiaomi Redmi Note 12",
-    issueDescription: "Cámara trasera no funciona",
-    status: "done",
-    createdAt: new Date("2024-01-10"),
-    updatedAt: new Date(),
-    assignedTo: "tech-3",
-    estimatedCost: 600,
-    finalCost: 650,
-    deliveryDate: new Date("2024-01-18"),
-    folio: "FT-2024-004",
-  },
-];
 
 const getStatusText = (status: Repair["status"]) => {
   const statusMap = {
@@ -160,28 +70,49 @@ export default function HomeScreen() {
   const [searchText, setSearchText] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [repairs, setRepairs] = useState<Repair[]>([]);
+  const [loading, setLoading] = useState(true);
   const { user, signOut } = useUserStore();
 
+  // Load repairs on component mount
+  useEffect(() => {
+    loadRepairs();
+  }, []);
+
+  const loadRepairs = async () => {
+    try {
+      setLoading(true);
+      const repairsData = await RepairsRepository.getAll();
+      setRepairs(repairsData);
+    } catch (error) {
+      console.error("Error loading repairs:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Filter repairs based on search
-  const filteredRepairs = mockRepairs.filter(
+  const filteredRepairs = repairs.filter(
     (repair) =>
       repair.customerName.toLowerCase().includes(searchText.toLowerCase()) ||
       repair.deviceModel.toLowerCase().includes(searchText.toLowerCase()) ||
-      repair.folio.toLowerCase().includes(searchText.toLowerCase())
+      repair.folio?.toLowerCase().includes(searchText.toLowerCase())
   );
 
   // Get status counts
-  const statusCounts = mockRepairs.reduce((acc, repair) => {
+  const statusCounts = repairs.reduce((acc, repair) => {
     acc[repair.status] = (acc[repair.status] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
     // Simulate API call
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
+    await loadRepairs();
+    setRefreshing(false);
   };
 
   const renderRepairCard = ({ item }: { item: Repair }) => (
@@ -189,10 +120,8 @@ export default function HomeScreen() {
       <Card className="p-6 rounded-xl border-4">
         {/* Header */}
         <View className="flex-row justify-between items-start mb-3">
-          <View className="flex-1"> 
-            <Text className="text-lg font-extrabold">
-              {item.customerName}
-            </Text>
+          <View className="flex-1">
+            <Text className="text-lg font-extrabold">{item.customerName}</Text>
             <Text className="text-sm text-typography-1000">{item.folio}</Text>
           </View>
           <Badge
@@ -201,7 +130,9 @@ export default function HomeScreen() {
             className={`ml-2 border-2 ${getStatusBadgeStyle(item.status)}`}
           >
             <Text
-              className={`text-lg font-extrabold ${getStatusTextStyle(item.status)}`}
+              className={`text-lg font-extrabold ${getStatusTextStyle(
+                item.status
+              )}`}
             >
               {getStatusText(item.status)}
             </Text>
@@ -231,7 +162,14 @@ export default function HomeScreen() {
               {item.createdAt.toLocaleDateString("es-MX")}
             </Text>
           </View>
-          <Text className="text-lg font-semibold text-primary-600" style={{textShadowColor:"#008f39", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 5}}>
+          <Text
+            className="text-lg font-semibold text-primary-600"
+            style={{
+              textShadowColor: "#008f39",
+              textShadowOffset: { width: 0, height: 0 },
+              textShadowRadius: 5,
+            }}
+          >
             ${item.estimatedCost.toLocaleString("es-MX")}
           </Text>
         </View>
@@ -240,17 +178,23 @@ export default function HomeScreen() {
   );
 
   return (
-    <View className="flex-1" style ={{backgroundColor: "#193456"}}>
+    <View className="flex-1" style={{ backgroundColor: "#193456" }}>
       <StatusBar barStyle="dark-content" backgroundColor="#193456" />
 
       {/* Header */}
-      <View className="pt-12 pb-6 px-6" style={{backgroundColor:"#193456"}}>
+      <View className="pt-12 pb-6 px-6" style={{ backgroundColor: "#193456" }}>
         <View className="flex-row items-center justify-between mb-4">
           <View>
-            <Text className="text-3xl font-extrabold text-white" style={{color:"#FFB74D"}}>
+            <Text
+              className="text-3xl font-extrabold text-white"
+              style={{ color: "#FFB74D" }}
+            >
               ¡Hola, {user?.displayName?.split(" ")[0] || "Administrador"}!
             </Text>
-            <Text className="text-2xl font-semibold capitalize" style={{color:"white"}}>
+            <Text
+              className="text-2xl font-semibold capitalize"
+              style={{ color: "white" }}
+            >
               {user?.role || "admin"}
             </Text>
           </View>
@@ -298,40 +242,89 @@ export default function HomeScreen() {
         </View>
 
         {/* Quick Stats */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-  >
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View className="flex-row space-x-4">
-            <View className="bg-background-0 px-4 py-3 rounded-lg border-4 min-w-[110px]" style={{ marginRight: 8}}>
-              <Text className="text-3xl font-bold text-warning-600 text-center"   style={{textShadowColor: "#F59E0B", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 10}}>
+            <View
+              className="bg-background-0 px-4 py-3 rounded-lg border-4 min-w-[110px]"
+              style={{ marginRight: 8 }}
+            >
+              <Text
+                className="text-3xl font-bold text-warning-600 text-center"
+                style={{
+                  textShadowColor: "#F59E0B",
+                  textShadowOffset: { width: 0, height: 0 },
+                  textShadowRadius: 10,
+                }}
+              >
                 {statusCounts.repairing || 0}
               </Text>
-              <Text className="text-lg font-extrabold text-center" style={{color:"#193456"}}>
+              <Text
+                className="text-lg font-extrabold text-center"
+                style={{ color: "#193456" }}
+              >
                 Reparando
               </Text>
             </View>
-            <View className="bg-background-0 px-4 py-3 rounded-lg border-4 min-w-[110px]" style={{ marginRight: 8}}>
-              <Text className="text-3xl font-bold text-info-600 text-center" style={{textShadowColor: "#3B82F6", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 10}}>
+            <View
+              className="bg-background-0 px-4 py-3 rounded-lg border-4 min-w-[110px]"
+              style={{ marginRight: 8 }}
+            >
+              <Text
+                className="text-3xl font-bold text-info-600 text-center"
+                style={{
+                  textShadowColor: "#3B82F6",
+                  textShadowOffset: { width: 0, height: 0 },
+                  textShadowRadius: 10,
+                }}
+              >
                 {statusCounts.in_review || 0}
               </Text>
-              <Text className="text-lg font-extrabold text-center" style={{color:"#193456"}}>
+              <Text
+                className="text-lg font-extrabold text-center"
+                style={{ color: "#193456" }}
+              >
                 En Revisión
               </Text>
             </View>
-            <View className="bg-background-0 px-4 py-3 rounded-lg border-4 min-w-[110px]" style={{ marginRight: 8}}>
-              <Text className="text-3xl font-bold text-success-600 text-center" style={{textShadowColor: "#10B981", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 10}}>
+            <View
+              className="bg-background-0 px-4 py-3 rounded-lg border-4 min-w-[110px]"
+              style={{ marginRight: 8 }}
+            >
+              <Text
+                className="text-3xl font-bold text-success-600 text-center"
+                style={{
+                  textShadowColor: "#10B981",
+                  textShadowOffset: { width: 0, height: 0 },
+                  textShadowRadius: 10,
+                }}
+              >
                 {statusCounts.done || 0}
               </Text>
-              <Text className="text-lg font-extrabold text-center" style={{color:"#193456"}}>
+              <Text
+                className="text-lg font-extrabold text-center"
+                style={{ color: "#193456" }}
+              >
                 Terminados
               </Text>
             </View>
-            <View className="bg-background-0 px-4 py-3 rounded-lg border-4 min-w-[110px]" style={{ marginRight: 8}}>
-              <Text className="text-3xl font-bold text-typography-500 text-center" style={{textShadowColor: "#6B7280", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 10,}}>
+            <View
+              className="bg-background-0 px-4 py-3 rounded-lg border-4 min-w-[110px]"
+              style={{ marginRight: 8 }}
+            >
+              <Text
+                className="text-3xl font-bold text-typography-500 text-center"
+                style={{
+                  textShadowColor: "#6B7280",
+                  textShadowOffset: { width: 0, height: 0 },
+                  textShadowRadius: 10,
+                }}
+              >
                 {statusCounts.waiting_parts || 0}
               </Text>
-              <Text className="text-lg font-extrabold text-center" style={{color:"#193456"}}>
+              <Text
+                className="text-lg font-extrabold text-center"
+                style={{ color: "#193456" }}
+              >
                 Esperando Piezas
               </Text>
             </View>
@@ -340,14 +333,14 @@ export default function HomeScreen() {
       </View>
 
       {/* Action Bar */}
-      <View className="px-6 py-4" style={{backgroundColor:"#193456"}}>
+      <View className="px-6 py-4" style={{ backgroundColor: "#193456" }}>
         <View className="flex-row space-x-3 mb-3">
           <Button
             action="primary"
             size="xl"
             className="flex-1"
             onPress={() => router.push("/(private)/(tabs)/repairs/create")}
-            style = {{backgroundColor: "#FFB74D"}}
+            style={{ backgroundColor: "#FFB74D" }}
           >
             <Ionicons
               name="add"
@@ -355,19 +348,24 @@ export default function HomeScreen() {
               color="white"
               style={{ marginRight: 8 }}
             />
-            <ButtonText className="font-semibold text-2xl ">Nueva Reparación</ButtonText>
+            <ButtonText className="font-semibold text-2xl ">
+              Nueva Reparación
+            </ButtonText>
           </Button>
         </View>
 
         {/* Search Bar */}
-        <View className="relative  rounded-xl border-4" style={{borderColor:"#FFB74D"}}>
+        <View
+          className="relative  rounded-xl border-4"
+          style={{ borderColor: "#FFB74D" }}
+        >
           <Input variant="outline" size="md" className="bg-white rounded-lg">
             <InputField
               placeholder="Buscar por cliente, dispositivo o folio..."
               value={searchText}
               onChangeText={setSearchText}
               className="pl-10 text-base font-extrabold"
-              style={{color:"black",fontSize:15}}
+              style={{ color: "black", fontSize: 15 }}
             />
           </Input>
           <View className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -379,11 +377,14 @@ export default function HomeScreen() {
       {/* Repairs List */}
       <View className="flex-1 px-6 pt-4">
         <View className="flex-row justify-between items-center mb-4">
-          <Text className="text-2xl font-extrabold" style={{color:"#FFB74D"}}>
+          <Text
+            className="text-2xl font-extrabold"
+            style={{ color: "#FFB74D" }}
+          >
             Reparaciones Activas
           </Text>
           <Text className="text-2xl text-white font-bold">
-            {filteredRepairs.length} de {mockRepairs.length}
+            {filteredRepairs.length} de {repairs.length}
           </Text>
         </View>
 
