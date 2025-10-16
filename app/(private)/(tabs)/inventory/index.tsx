@@ -84,6 +84,45 @@ const InventoryPage: React.FC = () => {
       console.error("Error fetching inventory items:", error);
     }
   };
+  const handleAddItem = async () => {
+    if (!newName || !newUnitCost || !newCategory) {
+      alert("Por favor llena todos los campos obligatorios");
+      return;
+    }
+
+    try {
+      const newItem = {
+        name: newName,
+        unitCost: parseFloat(newUnitCost),
+        sku: newSku || "",
+        category: { name: newCategory },
+        state: "available",
+        createdAt: new Date(),
+      };
+
+      await InventoryRepository.create({
+        name: newName,
+        sku: newSku || null,
+        unitCost: parseFloat(newUnitCost),
+        category: { id: "", name: newCategory, createdAt: new Date() },
+        state: "available",
+      });
+      setIsAddModalOpen(false);
+      fetchInventoryItems();
+      // Cierra el modal y limpia los campos
+      setIsAddModalOpen(false);
+      setNewName("");
+      setNewUnitCost("");
+      setNewSku("");
+      setNewCategory("");
+
+      // Recarga la tabla
+      fetchInventoryItems();
+    } catch (error) {
+      console.error("Error agregando repuesto:", error);
+      alert("Error al agregar el repuesto");
+    }
+  };
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -94,8 +133,13 @@ const InventoryPage: React.FC = () => {
   useEffect(() => {
     fetchInventoryItems();
   }, []);
-
+  // Estados del nuevo repuesto
   const [newCategory, setNewCategory] = useState("");
+  //Cambio para agregar repuesto a base de datos
+  const [newName, setNewName] = useState("");
+  const [newUnitCost, setNewUnitCost] = useState("");
+  const [newSku, setNewSku] = useState("");
+
   return (
     <>
       <View className="flex-1 pt-5 mb-8 items-start bg-[#193456]">
@@ -166,7 +210,6 @@ const InventoryPage: React.FC = () => {
               //ON PRESS PARA MODAL
               onPress={() => setIsAddModalOpen(true)}
             >
-              
               <FontAwesome6
                 name="add"
                 size={24}
@@ -375,7 +418,11 @@ const InventoryPage: React.FC = () => {
                     Nombre del repuesto
                   </Text>
                   <Input>
-                    <InputField placeholder="Ej. Pantalla iPhone 12" />
+                    <InputField
+                      placeholder="Ej. Pantalla iPhone 12"
+                      value={newName}
+                      onChangeText={setNewName}
+                    />
                   </Input>
                 </View>
 
@@ -383,10 +430,13 @@ const InventoryPage: React.FC = () => {
                   <Text className="text-primary-900 font-semibold mb-1">
                     Costo unitario
                   </Text>
+                  {/* Costo */}
                   <Input>
                     <InputField
                       placeholder="Ej. 250.00"
                       keyboardType="numeric"
+                      value={newUnitCost}
+                      onChangeText={setNewUnitCost}
                     />
                   </Input>
                 </View>
@@ -395,8 +445,13 @@ const InventoryPage: React.FC = () => {
                   <Text className="text-primary-900 font-semibold mb-1">
                     SKU
                   </Text>
+                  {/* SKU */}
                   <Input>
-                    <InputField placeholder="Ej. IP12-SCR-001" />
+                    <InputField
+                      placeholder="Ej. IP12-SCR-001"
+                      value={newSku}
+                      onChangeText={setNewSku}
+                    />
                   </Input>
                 </View>
 
@@ -441,7 +496,7 @@ const InventoryPage: React.FC = () => {
 
                 <Button
                   className="bg-primary-400 border-primary-400 rounded-full px-5"
-                  onPress={() => setIsAddModalOpen(false)}
+                  onPress={handleAddItem}
                 >
                   <ButtonText>Agregar</ButtonText>
                 </Button>
