@@ -6,7 +6,7 @@ import { RepairsRepository } from "@/shared/repositories/repairs.repository";
 import { useUserStore } from "@/shared/stores/useUserStore";
 import { Repair } from "@/shared/types/repair.type";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
@@ -116,7 +116,10 @@ export default function HomeScreen() {
   };
 
   const renderRepairCard = ({ item }: { item: Repair }) => (
-    <Pressable className="mb-3">
+    <Pressable
+      className="mb-3"
+      onPress={() => router.push(`/(private)/(tabs)/repairs/details`)}
+    >
       <Card className="p-6 rounded-xl border-4">
         {/* Header */}
         <View className="flex-row justify-between items-start mb-3">
@@ -124,19 +127,22 @@ export default function HomeScreen() {
             <Text className="text-lg font-extrabold">{item.customerName}</Text>
             <Text className="text-sm text-typography-1000">{item.folio}</Text>
           </View>
-          <Badge
-            action={getStatusColor(item.status)}
-            variant="outline"
-            className={`ml-2 border-2 ${getStatusBadgeStyle(item.status)}`}
-          >
-            <Text
-              className={`text-lg font-extrabold ${getStatusTextStyle(
-                item.status
-              )}`}
+
+          <Link href={"/(private)/(tabs)/repairs/status"}>
+            <Badge
+              action={getStatusColor(item.status)}
+              variant="outline"
+              className={`ml-2 border-2 ${getStatusBadgeStyle(item.status)}`}
             >
-              {getStatusText(item.status)}
-            </Text>
-          </Badge>
+              <Text
+                className={`text-xs font-bold ${getStatusTextStyle(
+                  item.status
+                )}`}
+              >
+                {getStatusText(item.status)}
+              </Text>
+            </Badge>
+          </Link>
         </View>
 
         {/* Device Info */}
