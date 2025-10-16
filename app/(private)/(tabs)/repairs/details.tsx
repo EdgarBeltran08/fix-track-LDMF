@@ -63,10 +63,14 @@ const Details: React.FC = () => {
   return (
     <ScrollView
       className="flex-1 bg-background-50 p-5"
+      style={{ backgroundColor: "#193456" }}
       scrollEnabled={scrollEnabled}
       contentContainerStyle={{ paddingBottom: 120 }}
     >
-      <View className=" bg-background-50 rounded-2xl p-5 border border-background-200  shadow-sm">
+      <View
+        className=" bg-background-50 rounded-2xl p-5 border border  shadow-sm border-4"
+        style={{ marginTop: 40 }}
+      >
         <Text className="text-2xl font-bold text-center text-typography-900 mb-5">
           Detalles
         </Text>

@@ -1,6 +1,7 @@
+import { Button, ButtonText } from "@/shared/components/ui/button"; // ✅ IMPORTA LOS BOTONES
 import { Picker } from "@react-native-picker/picker";
 import React, { useState } from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, Text, View } from "react-native";
 
 export default function ActualizarEstadoScreen() {
   const [estado, setEstado] = useState("En progreso");
@@ -13,8 +14,8 @@ export default function ActualizarEstadoScreen() {
       case "Revisión":
       case "En progreso":
         return {
-          bg: "bg-yellow-100 dark:bg-yellow-800", // fondo adaptado a modo oscuro
-          text: "text-yellow-800 dark:text-yellow-100", // texto inverso
+          bg: "bg-yellow-100 dark:bg-yellow-800",
+          text: "text-yellow-800 dark:text-yellow-100",
           border: "border-yellow-300 dark:border-yellow-700",
         };
       case "Completo":
@@ -41,16 +42,27 @@ export default function ActualizarEstadoScreen() {
   const estadoColors = getEstadoColor(estado);
 
   return (
-    <View className="flex-1 bg-background-100 items-center">
-      {/* Header */}
-
+    <ScrollView
+      className="flex-1 bg-background-100"
+      style={{ backgroundColor: "#193456" }}
+      contentContainerStyle={{
+        alignItems: "center",
+        paddingBottom: 100, // espacio extra al final para que no tape la barra
+      }}
+    >
       {/* Título */}
-      <Text className="text-xl font-bold mt-3 mb-3 text-typography-900">
+      <Text
+        className="text-3xl font-extrabold text-white"
+        style={{ color: "#FFB74D", marginTop: 40 }}
+      >
         Actualizar Estado
       </Text>
 
       {/* Card principal */}
-      <View className="bg-background-50 w-[90%] rounded-xl p-5 items-center border border-background-200">
+      <View
+        className="bg-background-50 w-[90%] rounded-xl p-5 items-center border border-4"
+        style={{ margin: 40 }}
+      >
         {/* Imagen del equipo */}
         <Image
           source={{
@@ -64,16 +76,16 @@ export default function ActualizarEstadoScreen() {
           <Text className="font-bold text-base text-typography-900">
             # 201354
           </Text>
-          <Text className="text-base text-typography-900">Fabián Gómez</Text>
+          <Text className="text-base text-typography-900">Michelle Garza</Text>
           <Text className="text-sm text-typography-900">iPhone 14 Pro</Text>
           <Text className="text-xs text-typography-900 opacity-70">
-            Pantalla rota no responde al tacto
+            No funciona
           </Text>
         </View>
 
         {/* Estado actual */}
         <View className="w-full mb-3">
-          <Text className="font-bold mb-1 text-typography-900">
+          <Text className="text-xl font-bold mb-1 text-typography-900">
             Estado actual
           </Text>
           <View
@@ -85,7 +97,7 @@ export default function ActualizarEstadoScreen() {
 
         {/* Cambiar estado */}
         <View className="w-full mb-5">
-          <Text className="font-bold mb-1 text-typography-900">
+          <Text className="text-xl font-bold mb-1 text-typography-900">
             Cambiar estado
           </Text>
           <View className="border border-background-200 rounded-md bg-background-50">
@@ -107,14 +119,30 @@ export default function ActualizarEstadoScreen() {
         </View>
 
         {/* Botones */}
-        <TouchableOpacity className="bg-green-600 w-4/5 py-2 rounded-md items-center mb-3">
-          <Text className="text-white font-bold">Guardar</Text>
-        </TouchableOpacity>
+        <View className="flex-row justify-between mt-4 w-full">
+          <Button
+            action="primary"
+            size="lg"
+            className="flex-1 mr-2 rounded-full bg-green-600"
+            // onPress={handleUpdate}
+          >
+            <ButtonText className="font-semibold text-white text-base">
+              Actualizar
+            </ButtonText>
+          </Button>
 
-        <TouchableOpacity className="bg-red-600 w-4/5 py-2 rounded-md items-center">
-          <Text className="text-white font-bold">Cancelar</Text>
-        </TouchableOpacity>
+          <Button
+            action="negative"
+            size="lg"
+            className="flex-1 ml-2 rounded-full bg-red-600"
+            // onPress={handleCancel}
+          >
+            <ButtonText className="font-semibold text-white text-base">
+              Cancelar
+            </ButtonText>
+          </Button>
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }

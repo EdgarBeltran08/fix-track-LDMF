@@ -401,7 +401,7 @@ const InventoryPage: React.FC = () => {
           style={{ flex: 1 }}
         >
           <View className="flex-1 justify-center items-center bg-black/60 p-5">
-            <View className="bg-background-50 rounded-xl border-2 border-primary-300 p-6 w-full max-w-[400px]">
+            <View className="bg-background-50 rounded-xl border-2 border-[#FFB74D] p-6 w-full max-w-[400px]">
               <Text className="text-xl font-bold mb-4 text-primary-900 text-center">
                 Agregar al inventario
               </Text>
@@ -459,7 +459,7 @@ const InventoryPage: React.FC = () => {
                   <Text className="text-primary-900 font-semibold mb-1">
                     Categoría
                   </Text>
-                  <View className="border-2 border-primary-300 rounded-xl bg-background-50 overflow-hidden">
+                  <View className="border-2 border-2 border-[#FFB74D] rounded-xl bg-background-50 overflow-hidden">
                     <Picker
                       selectedValue={newCategory}
                       onValueChange={(itemValue) => setNewCategory(itemValue)}
@@ -489,13 +489,13 @@ const InventoryPage: React.FC = () => {
                   variant="outline"
                   action="secondary"
                   onPress={() => setIsAddModalOpen(false)}
-                  className="bg-background-200 border-primary-300 rounded-full px-5"
+                  className="bg-background-200 border-2 border-[#FFB74D] rounded-full px-5"
                 >
                   <ButtonText>Cancelar</ButtonText>
                 </Button>
 
                 <Button
-                  className="bg-primary-400 border-primary-400 rounded-full px-5"
+                  className="bg-[#FFB74D] border-primary-400 rounded-full px-5"
                   onPress={handleAddItem}
                 >
                   <ButtonText>Agregar</ButtonText>
