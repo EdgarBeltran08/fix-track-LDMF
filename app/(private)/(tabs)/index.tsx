@@ -2,10 +2,12 @@ import { Badge } from "@/shared/components/ui/badge";
 import { Button, ButtonText } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
 import { Input, InputField } from "@/shared/components/ui/input";
+import { RepairsRepository } from "@/shared/repositories/repairs.repository";
 import { useUserStore } from "@/shared/stores/useUserStore";
+import { Repair } from "@/shared/types/repair.type";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FlatList,
   Pressable,
@@ -15,98 +17,6 @@ import {
   Text,
   View,
 } from "react-native";
-
-type Repair = {
-  id: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-  deviceModel: string;
-  issueDescription: string;
-  status:
-    | "in_review"
-    | "repairing"
-    | "waiting_parts"
-    | "done"
-    | "not_repaired"
-    | "delivered";
-  createdAt: Date;
-  updatedAt: Date;
-  assignedTo: string;
-  estimatedCost: number;
-  finalCost: number;
-  deliveryDate: Date | null;
-  folio: string;
-};
-
-// Mock data - keeping user type for reference but using real user data
-
-const mockRepairs: Repair[] = [
-  {
-    id: "1",
-    customerName: "Michelle Garza",
-    customerEmail: "michelle@email.com",
-    customerPhone: "555-1234",
-    deviceModel: "iPhone 14 Pro",
-    issueDescription: "Pantalla rota, no responde al tacto",
-    status: "repairing",
-    createdAt: new Date("2024-01-15"),
-    updatedAt: new Date(),
-    assignedTo: "tech-1",
-    estimatedCost: 2500,
-    finalCost: 0,
-    deliveryDate: new Date("2024-01-20"),
-    folio: "FT-2024-001",
-  },
-  {
-    id: "2",
-    customerName: "Carlos Mendoza",
-    customerEmail: "carlos@email.com",
-    customerPhone: "555-9012",
-    deviceModel: "iPhone 13",
-    issueDescription: "Problema con el audio",
-    status: "in_review",
-    createdAt: new Date("2024-01-16"),
-    updatedAt: new Date(),
-    assignedTo: "tech-1",
-    estimatedCost: 1200,
-    finalCost: 0,
-    deliveryDate: null,
-    folio: "FT-2024-003",
-  },
-  {
-    id: "3",
-    customerName: "Ana López",
-    customerEmail: "ana@email.com",
-    customerPhone: "555-5678",
-    deviceModel: "Samsung Galaxy S23",
-    issueDescription: "No carga la batería",
-    status: "waiting_parts",
-    createdAt: new Date("2024-01-14"),
-    updatedAt: new Date(),
-    assignedTo: "tech-2",
-    estimatedCost: 800,
-    finalCost: 0,
-    deliveryDate: null,
-    folio: "FT-2024-002",
-  },
-  {
-    id: "4",
-    customerName: "Sofia Herrera",
-    customerEmail: "sofia@email.com",
-    customerPhone: "555-3456",
-    deviceModel: "Xiaomi Redmi Note 12",
-    issueDescription: "Cámara trasera no funciona",
-    status: "done",
-    createdAt: new Date("2024-01-10"),
-    updatedAt: new Date(),
-    assignedTo: "tech-3",
-    estimatedCost: 600,
-    finalCost: 650,
-    deliveryDate: new Date("2024-01-18"),
-    folio: "FT-2024-004",
-  },
-];
 
 const getStatusText = (status: Repair["status"]) => {
   const statusMap = {
@@ -160,28 +70,45 @@ export default function HomeScreen() {
   const [searchText, setSearchText] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [repairs, setRepairs] = useState<Repair[]>([]);
+  const [loading, setLoading] = useState(true);
   const { user, signOut } = useUserStore();
 
+  // Load repairs on component mount
+  useEffect(() => {
+    loadRepairs();
+  }, []);
+
+  const loadRepairs = async () => {
+    try {
+      setLoading(true);
+      const repairsData = await RepairsRepository.getAll();
+      setRepairs(repairsData);
+    } catch (error) {
+      console.error("Error loading repairs:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Filter repairs based on search
-  const filteredRepairs = mockRepairs.filter(
+  const filteredRepairs = repairs.filter(
     (repair) =>
       repair.customerName.toLowerCase().includes(searchText.toLowerCase()) ||
       repair.deviceModel.toLowerCase().includes(searchText.toLowerCase()) ||
-      repair.folio.toLowerCase().includes(searchText.toLowerCase())
+      repair.folio?.toLowerCase().includes(searchText.toLowerCase())
   );
 
   // Get status counts
-  const statusCounts = mockRepairs.reduce((acc, repair) => {
+  const statusCounts = repairs.reduce((acc, repair) => {
     acc[repair.status] = (acc[repair.status] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
-    // Simulate API call
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
+    await loadRepairs();
+    setRefreshing(false);
   };
 
   const renderRepairCard = ({ item }: { item: Repair }) => (
@@ -382,7 +309,7 @@ export default function HomeScreen() {
             Reparaciones Activas
           </Text>
           <Text className="text-sm text-typography-600">
-            {filteredRepairs.length} de {mockRepairs.length}
+            {filteredRepairs.length} de {repairs.length}
           </Text>
         </View>
 

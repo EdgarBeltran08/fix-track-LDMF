@@ -1,0 +1,115 @@
+import { DocumentData } from "firebase/firestore";
+
+export type RepairStatus =
+  | "in_review"
+  | "repairing"
+  | "waiting_parts"
+  | "done"
+  | "not_repaired"
+  | "delivered";
+
+export type RepairNote = {
+  id: string;
+  authorId: string; // userId
+  text: string;
+  createdAt: Date;
+};
+
+export type RepairPiece = {
+  id: string;
+  inventoryId: string | null;
+  name: string;
+  quantity: number;
+  unitCost: number;
+  addedAt: Date;
+};
+
+export type Repair = {
+  id: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  deviceModel: string;
+  issueDescription: string;
+  status: RepairStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  assignedTo: string; // userId
+  estimatedCost: number;
+  finalCost: number;
+  deliveryDate: Date | null;
+  folio: string | null;
+  notes: RepairNote[];
+  pieces: RepairPiece[];
+};
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Repair = {
+  fromFirestore: (doc: DocumentData): Repair => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      customerName: data.customerName,
+      customerEmail: data.customerEmail,
+      customerPhone: data.customerPhone,
+      deviceModel: data.deviceModel,
+      issueDescription: data.issueDescription,
+      status: data.status,
+      createdAt: data.createdAt.toDate(),
+      updatedAt: data.updatedAt.toDate(),
+      assignedTo: data.assignedTo,
+      estimatedCost: data.estimatedCost,
+      finalCost: data.finalCost,
+      deliveryDate: data.deliveryDate ? data.deliveryDate.toDate() : null,
+      folio: data.folio || null,
+      notes:
+        data.notes?.map((note: any) => ({
+          id: note.id,
+          authorId: note.authorId,
+          text: note.text,
+          createdAt: note.createdAt.toDate(),
+        })) || [],
+      pieces:
+        data.pieces?.map((piece: any) => ({
+          id: piece.id,
+          inventoryId: piece.inventoryId || null,
+          name: piece.name,
+          quantity: piece.quantity,
+          unitCost: piece.unitCost,
+          addedAt: piece.addedAt.toDate(),
+        })) || [],
+    };
+  },
+
+  toFirestore: (repair: Omit<Repair, "id">): DocumentData => {
+    return {
+      customerName: repair.customerName,
+      customerEmail: repair.customerEmail,
+      customerPhone: repair.customerPhone,
+      deviceModel: repair.deviceModel,
+      issueDescription: repair.issueDescription,
+      status: repair.status,
+      createdAt: repair.createdAt,
+      updatedAt: repair.updatedAt,
+      assignedTo: repair.assignedTo,
+      estimatedCost: repair.estimatedCost,
+      finalCost: repair.finalCost,
+      deliveryDate: repair.deliveryDate,
+      folio: repair.folio,
+      notes: repair.notes.map((note) => ({
+        id: note.id,
+        authorId: note.authorId,
+        text: note.text,
+        createdAt: note.createdAt,
+      })),
+      pieces: repair.pieces.map((piece) => ({
+        id: piece.id,
+        inventoryId: piece.inventoryId,
+        name: piece.name,
+        quantity: piece.quantity,
+        unitCost: piece.unitCost,
+        addedAt: piece.addedAt,
+      })),
+    };
+  },
+};
