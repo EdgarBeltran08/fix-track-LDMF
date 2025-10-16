@@ -132,7 +132,7 @@ export default function HomeScreen() {
             <Badge
               action={getStatusColor(item.status)}
               variant="outline"
-              className={`ml-2 border-2 ${getStatusBadgeStyle(item.status)}`}
+              className={`ml border-2 ${getStatusBadgeStyle(item.status)}`}
             >
               <Text
                 className={`text-xs font-bold ${getStatusTextStyle(

@@ -41,16 +41,17 @@ export default function ActualizarEstadoScreen() {
   const estadoColors = getEstadoColor(estado);
 
   return (
-    <View className="flex-1 bg-background-100 items-center">
+    <View className="flex-1 bg-background-100 items-center" style={{backgroundColor: "#193456"}}>
       {/* Header */}
 
       {/* Título */}
-      <Text className="text-xl font-bold mt-3 mb-3 text-typography-900">
+      <Text className="text-3xl font-extrabold text-white"
+              style={{ color: "#FFB74D", marginTop: 40}}>
         Actualizar Estado
       </Text>
 
       {/* Card principal */}
-      <View className="bg-background-50 w-[90%] rounded-xl p-5 items-center border border-background-200">
+      <View className="bg-background-50 w-[90%] rounded-xl p-5 items-center border border-4" style={{margin: 40}}>
         {/* Imagen del equipo */}
         <Image
           source={{
@@ -64,16 +65,16 @@ export default function ActualizarEstadoScreen() {
           <Text className="font-bold text-base text-typography-900">
             # 201354
           </Text>
-          <Text className="text-base text-typography-900">Fabián Gómez</Text>
+          <Text className="text-base text-typography-900">Michelle Garza</Text>
           <Text className="text-sm text-typography-900">iPhone 14 Pro</Text>
           <Text className="text-xs text-typography-900 opacity-70">
-            Pantalla rota no responde al tacto
+            No funciona
           </Text>
         </View>
 
         {/* Estado actual */}
         <View className="w-full mb-3">
-          <Text className="font-bold mb-1 text-typography-900">
+          <Text className="text-xl font-bold mb-1 text-typography-900">
             Estado actual
           </Text>
           <View
@@ -85,7 +86,7 @@ export default function ActualizarEstadoScreen() {
 
         {/* Cambiar estado */}
         <View className="w-full mb-5">
-          <Text className="font-bold mb-1 text-typography-900">
+          <Text className="text-xl font-bold mb-1 text-typography-900">
             Cambiar estado
           </Text>
           <View className="border border-background-200 rounded-md bg-background-50">
@@ -108,11 +109,11 @@ export default function ActualizarEstadoScreen() {
 
         {/* Botones */}
         <TouchableOpacity className="bg-green-600 w-4/5 py-2 rounded-md items-center mb-3">
-          <Text className="text-white font-bold">Guardar</Text>
+          <Text className="text-2xl text-white font-bold">Guardar</Text>
         </TouchableOpacity>
 
         <TouchableOpacity className="bg-red-600 w-4/5 py-2 rounded-md items-center">
-          <Text className="text-white font-bold">Cancelar</Text>
+          <Text className="text-2xl text-white font-bold">Cancelar</Text>
         </TouchableOpacity>
       </View>
     </View>
