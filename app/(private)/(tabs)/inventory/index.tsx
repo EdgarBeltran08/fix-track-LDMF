@@ -345,9 +345,7 @@ const InventoryPage: React.FC = () => {
           </View>
         </View>
       </RNModal>
-    </>
-  );
-};
+
       <RNModal
         //MODAL PARA AGREGAR OBJETO AL INVENTARIO
         visible={isAddModalOpen}
