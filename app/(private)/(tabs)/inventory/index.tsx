@@ -14,8 +14,11 @@ import { InventoryItem } from "@/shared/types/inventory.type";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { Picker } from "@react-native-picker/picker";
 import React, { useEffect, useState } from "react";
 import {
+  KeyboardAvoidingView,
+  Platform,
   Modal as RNModal,
   RefreshControl,
   ScrollView,
@@ -26,8 +29,13 @@ import {
 
 const InventoryPage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [newCategory, setNewCategory] = useState("");
+  const [newItemName, setNewItemName] = useState("");
+  const [newItemCost, setNewItemCost] = useState("");
+  const [newItemSku, setNewItemSku] = useState("");
 
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
 
@@ -56,11 +64,54 @@ const InventoryPage: React.FC = () => {
 
   const handleClickVer = (item: InventoryItem) => {
     setSelectedItem(item);
-    setIsModalOpen(true);
+    setIsViewModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleOpenAddModal = () => {
+    setIsAddModalOpen(true);
+  };
+
+  const handleCloseViewModal = () => {
+    setIsViewModalOpen(false);
+    setSelectedItem(null);
+  };
+
+  const handleCloseAddModal = () => {
+    setIsAddModalOpen(false);
+    setNewItemName("");
+    setNewItemCost("");
+    setNewItemSku("");
+    setNewCategory("");
+  };
+
+  const handleAddItem = async () => {
+    if (!newItemName || !newItemCost || !newCategory) {
+      // You might want to show an error toast here
+      alert("Por favor completa todos los campos requeridos");
+      return;
+    }
+
+    try {
+      // TODO: Implement the actual repository call to add the item
+      // Example:
+      // const newItem: Omit<InventoryItem, 'id' | 'createdAt'> = {
+      //   name: newItemName,
+      //   unitCost: parseFloat(newItemCost),
+      //   sku: newItemSku || null,
+      //   state: "available",
+      //   category: { name: newCategory } // Adjust based on your Category type
+      // };
+      // await InventoryRepository.create(newItem);
+
+      handleCloseAddModal();
+      await fetchInventoryItems(); // Refresh the list
+
+      // You might want to show a success toast here
+      alert("Artículo agregado exitosamente");
+    } catch (error) {
+      console.error("Error adding inventory item:", error);
+      alert("Error al agregar el artículo");
+    }
   };
 
   const toggleFilterMenu = () => {
@@ -154,10 +205,10 @@ const InventoryPage: React.FC = () => {
                 ))}
               </View>
             )}
-
             <Button
               size="lg"
               className="rounded-full ml-4 p-2 bg-primary-400 border-2 border-primary-400 flex-row justify-center items-center h-11"
+              onPress={handleOpenAddModal}
             >
               <FontAwesome6
                 name="add"
@@ -275,67 +326,230 @@ const InventoryPage: React.FC = () => {
         </View>
       </View>
 
+      {/* Add New Item Modal */}
       <RNModal
-        visible={isModalOpen}
+        visible={isAddModalOpen}
         animationType="slide"
         transparent={true}
-        onRequestClose={handleCloseModal}
+        onRequestClose={handleCloseAddModal}
       >
-        <View className="flex-1 justify-center items-center bg-black/60 p-5">
-          <View className="bg-background-50 rounded-xl border-2 border-primary-300 p-5 w-full max-w-[400px]">
-            <Text className="text-xl font-bold mb-4 text-primary-900">
-              Detalles del Repuesto
-            </Text>
-            <ScrollView style={{ maxHeight: 300 }}>
-              <Text>
-                <Text className="text-lg font-bold text-primary-900">
-                  Repuesto:
-                </Text>{" "}
-                <Text className="text-primary-900">{selectedItem?.name}</Text>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <View className="flex-1 justify-center items-center bg-black/60 p-5">
+            <View className="bg-background-50 rounded-xl border-2 border-primary-300 p-6 w-full max-w-[400px]">
+              <Text className="text-xl font-bold mb-4 text-primary-900 text-center">
+                Agregar al inventario
               </Text>
-              <Text>
-                <Text className="text-lg font-bold text-primary-900">
-                  Costo Unitario:
-                </Text>{" "}
-                <Text className="text-primary-900">
-                  ${selectedItem?.unitCost}
-                </Text>
-              </Text>
-              <Text>
-                <Text className="text-lg font-bold text-primary-900">SKU:</Text>{" "}
-                <Text className="text-primary-900">
-                  {selectedItem?.sku || "N/A"}
-                </Text>
-              </Text>
-              <Text>
-                <Text className="text-lg font-bold text-primary-900">
-                  Categoría:
-                </Text>{" "}
-                <Text className="text-primary-900">
-                  {selectedItem?.category?.name || "N/A"}
-                </Text>
-              </Text>
-              <Text>
-                <Text className="text-lg font-bold text-primary-900">
-                  Estado:
-                </Text>{" "}
-                <Text className="text-primary-900">
-                  {selectedItem?.state === "available"
-                    ? "Disponible"
-                    : "No Disponible"}
-                </Text>
-              </Text>
-            </ScrollView>
-            <Button
-              variant="outline"
-              action="secondary"
-              onPress={handleCloseModal}
-              className="mt-4 bg-primary-300 border-primary-300 rounded-full p-2"
-            >
-              <ButtonText>Cerrar</ButtonText>
-            </Button>
+
+              {/* Formulario */}
+              <ScrollView
+                className="w-full"
+                style={{ maxHeight: 300 }}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+              >
+                <View className="mb-3">
+                  <Text className="text-primary-900 font-semibold mb-1">
+                    Nombre del repuesto
+                  </Text>
+                  <Input>
+                    <InputField
+                      placeholder="Ej. Pantalla iPhone 12"
+                      value={newItemName}
+                      onChangeText={setNewItemName}
+                    />
+                  </Input>
+                </View>
+
+                <View className="mb-3">
+                  <Text className="text-primary-900 font-semibold mb-1">
+                    Costo unitario
+                  </Text>
+                  <Input>
+                    <InputField
+                      placeholder="Ej. 250.00"
+                      keyboardType="numeric"
+                      value={newItemCost}
+                      onChangeText={setNewItemCost}
+                    />
+                  </Input>
+                </View>
+
+                <View className="mb-3">
+                  <Text className="text-primary-900 font-semibold mb-1">
+                    SKU
+                  </Text>
+                  <Input>
+                    <InputField
+                      placeholder="Ej. IP12-SCR-001"
+                      value={newItemSku}
+                      onChangeText={setNewItemSku}
+                    />
+                  </Input>
+                </View>
+
+                <View className="mb-3">
+                  <Text className="text-primary-900 font-semibold mb-1">
+                    Categoría
+                  </Text>
+                  <View className="border-2 border-primary-300 rounded-xl bg-background-50 overflow-hidden">
+                    <Picker
+                      selectedValue={newCategory}
+                      onValueChange={(itemValue: string) =>
+                        setNewCategory(itemValue)
+                      }
+                      style={{
+                        fontSize: 14,
+                      }}
+                      itemStyle={{
+                        fontSize: 14,
+                      }}
+                      dropdownIconColor="#FFB74D"
+                    >
+                      <Picker.Item label="Seleccionar categoría..." value="" />
+                      <Picker.Item label="Pantallas" value="Pantallas" />
+                      <Picker.Item label="Baterias" value="Baterias" />
+                      <Picker.Item label="Conectores" value="Conectores" />
+                      <Picker.Item label="Placas Bases" value="Placas Bases" />
+                      <Picker.Item label="Cámaras" value="Cámaras" />
+                      <Picker.Item label="Micas" value="Micas" />
+                    </Picker>
+                  </View>
+                </View>
+              </ScrollView>
+
+              {/* Botones */}
+              <View className="flex-row justify-between mt-6">
+                <Button
+                  variant="outline"
+                  action="secondary"
+                  onPress={handleCloseAddModal}
+                  className="bg-background-200 border-primary-300 rounded-full px-5"
+                >
+                  <ButtonText>Cancelar</ButtonText>
+                </Button>
+
+                <Button
+                  className="bg-primary-400 border-primary-400 rounded-full px-5"
+                  onPress={handleAddItem}
+                >
+                  <ButtonText>Agregar</ButtonText>
+                </Button>
+              </View>
+            </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
+      </RNModal>
+
+      {/* View Item Details Modal */}
+      <RNModal
+        visible={isViewModalOpen}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={handleCloseViewModal}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <View className="flex-1 justify-center items-center bg-black/60 p-5">
+            <View className="bg-background-50 rounded-xl border-2 border-primary-300 p-6 w-full max-w-[400px]">
+              <Text className="text-xl font-bold mb-4 text-primary-900 text-center">
+                Detalles del Repuesto
+              </Text>
+
+              {selectedItem && (
+                <ScrollView
+                  className="w-full"
+                  style={{ maxHeight: 300 }}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <View className="mb-4">
+                    <Text className="text-primary-900 font-semibold mb-1">
+                      Nombre del repuesto
+                    </Text>
+                    <View className="bg-background-100 border-2 border-primary-200 rounded-xl p-3">
+                      <Text className="text-secondary-900">
+                        {selectedItem.name}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View className="mb-4">
+                    <Text className="text-primary-900 font-semibold mb-1">
+                      Costo unitario
+                    </Text>
+                    <View className="bg-background-100 border-2 border-primary-200 rounded-xl p-3">
+                      <Text className="text-secondary-900">
+                        ${selectedItem.unitCost}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View className="mb-4">
+                    <Text className="text-primary-900 font-semibold mb-1">
+                      SKU
+                    </Text>
+                    <View className="bg-background-100 border-2 border-primary-200 rounded-xl p-3">
+                      <Text className="text-secondary-900">
+                        {selectedItem.sku || "N/A"}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View className="mb-4">
+                    <Text className="text-primary-900 font-semibold mb-1">
+                      Categoría
+                    </Text>
+                    <View className="bg-background-100 border-2 border-primary-200 rounded-xl p-3">
+                      <Text className="text-secondary-900">
+                        {selectedItem.category?.name || "N/A"}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View className="mb-4">
+                    <Text className="text-primary-900 font-semibold mb-1">
+                      Estado
+                    </Text>
+                    <View className="bg-background-100 border-2 border-primary-200 rounded-xl p-3">
+                      <Text className="text-secondary-900">
+                        {selectedItem.state === "available"
+                          ? "Disponible"
+                          : "No Disponible"}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View className="mb-4">
+                    <Text className="text-primary-900 font-semibold mb-1">
+                      Fecha de creación
+                    </Text>
+                    <View className="bg-background-100 border-2 border-primary-200 rounded-xl p-3">
+                      <Text className="text-secondary-900">
+                        {selectedItem.createdAt.toLocaleDateString("es-ES")}
+                      </Text>
+                    </View>
+                  </View>
+                </ScrollView>
+              )}
+
+              {/* Botones */}
+              <View className="flex-row justify-center mt-6">
+                <Button
+                  variant="outline"
+                  action="secondary"
+                  onPress={handleCloseViewModal}
+                  className="bg-background-200 border-primary-300 rounded-full px-8"
+                >
+                  <ButtonText>Cerrar</ButtonText>
+                </Button>
+              </View>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
       </RNModal>
     </>
   );
