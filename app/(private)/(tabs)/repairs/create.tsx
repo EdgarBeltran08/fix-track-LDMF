@@ -1,5 +1,7 @@
+import { RepairsRepository } from "@/shared/repositories/repairs.repository";
 import CheckBox from "expo-checkbox"; //CAMBIO PARA AGREGAR CHECKLIST
 import React, { useRef, useState } from "react";
+
 import {
   Alert,
   ScrollView,
@@ -47,6 +49,81 @@ export default function AddEquipoForm() {
     imei: "",
     descripcion: "",
   });
+  const handleRegister = async () => {
+    try {
+      if (!form.nombre || !form.marca || !form.modelo || !form.descripcion) {
+        Alert.alert(
+          "Campos incompletos",
+          "Por favor, llena todos los campos obligatorios."
+        );
+        return;
+      }
+
+      // Generar folio único de 6 dígitos
+      const folio = Math.floor(100000 + Math.random() * 900000).toString();
+
+      const newRepair = {
+        customerName: form.nombre,
+        customerEmail: form.email,
+        customerPhone: form.telefono,
+        deviceModel: `${form.marca} ${form.modelo}`,
+        imei: form.imei || null,
+        issueDescription: form.descripcion,
+        checklist: checklist,
+        status: "in_review" as const,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        assignedTo: "",
+        estimatedCost: 0,
+        finalCost: 0,
+        deliveryDate: null,
+        folio: folio,
+        notes: [],
+        pieces: [],
+      };
+
+      const repairId = await RepairsRepository.create(newRepair);
+      console.log("Repair ID:", repairId);
+
+      Alert.alert(
+        "Éxito",
+        `La reparación fue registrada correctamente.\nFolio: ${folio}`
+      );
+
+      // Limpieza de formulario
+      setForm({
+        nombre: "",
+        telefono: "",
+        email: "",
+        marca: "",
+        modelo: "",
+        imei: "",
+        descripcion: "",
+      });
+      setChecklist({
+        aparatoMojado: false,
+        noEnciende: false,
+        seApagaSolo: false,
+        noCarga: false,
+        bateriaInflada: false,
+        seDescarga: false,
+        seReinicia: false,
+        pantallaRota: false,
+        pantallaManchas: false,
+        tactilNoResponde: false,
+        sinImagen: false,
+        rayasPantalla: false,
+        pantallaNegra: false,
+      });
+      setFirma(null);
+    } catch (error) {
+      console.error("Error al registrar:", error);
+      Alert.alert(
+        "Error",
+        "No se pudo registrar la reparación. Intenta nuevamente."
+      );
+    }
+  };
 
   const [firma, setFirma] = useState<string | null>(null);
   const [scrollEnabled, setScrollEnabled] = useState(true);
@@ -300,7 +377,7 @@ export default function AddEquipoForm() {
       {/* Botones Finales */}
       <View className="flex-row justify-between mb-8 gap-4">
         <TouchableOpacity
-          onPress={() => console.log("Datos:", form, firma, checklist)}
+          onPress={handleRegister}
           className="bg-[#FFB74D] flex-1 rounded-xl p-4 shadow-lg border border-[#FFB74D]"
         >
           <Text className="text-white text-center font-bold text-lg">

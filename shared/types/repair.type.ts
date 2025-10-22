@@ -30,7 +30,9 @@ export type Repair = {
   customerEmail: string;
   customerPhone: string;
   deviceModel: string;
+  imei: string | null; 
   issueDescription: string;
+  checklist: Record<string, boolean>; 
   status: RepairStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -43,6 +45,7 @@ export type Repair = {
   pieces: RepairPiece[];
 };
 
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const Repair = {
   fromFirestore: (doc: DocumentData): Repair => {
@@ -53,7 +56,9 @@ export const Repair = {
       customerEmail: data.customerEmail,
       customerPhone: data.customerPhone,
       deviceModel: data.deviceModel,
+      imei: data.imei || null, // 
       issueDescription: data.issueDescription,
+      checklist: data.checklist || {}, // 
       status: data.status,
       createdAt: data.createdAt.toDate(),
       updatedAt: data.updatedAt.toDate(),
@@ -87,7 +92,9 @@ export const Repair = {
       customerEmail: repair.customerEmail,
       customerPhone: repair.customerPhone,
       deviceModel: repair.deviceModel,
+      imei: repair.imei || null, // 
       issueDescription: repair.issueDescription,
+      checklist: repair.checklist || {}, //
       status: repair.status,
       createdAt: repair.createdAt,
       updatedAt: repair.updatedAt,
