@@ -58,7 +58,13 @@ export default function AddEquipoForm() {
         );
         return;
       }
-
+      if (!firma) {
+        Alert.alert(
+          "Firma requerida",
+          "Por favor, dibuje la firma y presione 'Guardar' dentro del recuadro."
+        );
+        return;
+      }
       // Generar folio único de 6 dígitos
       const folio = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -80,6 +86,7 @@ export default function AddEquipoForm() {
         folio: folio,
         notes: [],
         pieces: [],
+        signature: firma || null,
       };
 
       const repairId = await RepairsRepository.create(newRepair);
@@ -334,7 +341,7 @@ export default function AddEquipoForm() {
 
         <View
           style={{
-            height: 200,
+            height: 330,
             borderWidth: 2,
             borderColor: "#FFB74D",
             borderRadius: 12,
@@ -350,8 +357,33 @@ export default function AddEquipoForm() {
             clearText="Borrar"
             confirmText="Guardar"
             webStyle={`
-              .m-signature-pad {border: none; background-color: #fff;}
-              .m-signature-pad--footer {display: none;}
+              .m-signature-pad { 
+                border: none; 
+                background-color: #fff; 
+                /* Ajusta la altura del canvas para dejar espacio al footer */
+                height: 160px; 
+              }
+              .m-signature-pad--footer { 
+                display: flex; 
+                justify-content: space-between; 
+                align-items: center;
+                height: 40px; /* Altura explícita para el footer */
+                background-color: #fff;
+              }
+              .m-signature-pad--description {
+                display: none; /* Oculta el texto 'Firme aquí' si no lo quieres */
+                
+              }
+              .m-signature-pad--footer .button.clear {
+                background-color: #E5E7EB;
+                color: #374151;
+              }
+
+              /* Estilo botón “Guardar” */
+              .m-signature-pad--footer .button.save {
+                background-color: #FFB74D;
+                color: #fff;
+              }
             `}
           />
         </View>
@@ -363,15 +395,6 @@ export default function AddEquipoForm() {
             </Text>
           </View>
         )}
-
-        <TouchableOpacity
-          onPress={handleClear}
-          className="bg-gray-200 rounded-xl p-4 mt-4 border border-gray-300"
-        >
-          <Text className="text-gray-700 text-center font-semibold">
-            Borrar Firma
-          </Text>
-        </TouchableOpacity>
       </View>
 
       {/* Botones Finales */}

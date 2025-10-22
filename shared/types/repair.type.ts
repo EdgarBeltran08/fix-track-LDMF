@@ -43,6 +43,7 @@ export type Repair = {
   folio: string | null;
   notes: RepairNote[];
   pieces: RepairPiece[];
+   signature?: string | null;
 };
 
 
@@ -83,6 +84,7 @@ export const Repair = {
           unitCost: piece.unitCost,
           addedAt: piece.addedAt.toDate(),
         })) || [],
+       signature: data.signature || null,
     };
   },
 
@@ -117,6 +119,7 @@ export const Repair = {
         unitCost: piece.unitCost,
         addedAt: piece.addedAt,
       })),
+      signature: repair.signature || null, 
     };
   },
 };
