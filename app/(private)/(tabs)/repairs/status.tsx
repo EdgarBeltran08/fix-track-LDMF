@@ -64,6 +64,7 @@ export default function ActualizarEstadoScreen() {
           setRepairData(repair);
           setEstado(repair.status);
           setEstadoVisual(repair.status);
+          setNuevoEstado("");
           console.log("Datos de reparación cargados:", repair.status);
         }
       } catch (error) {
@@ -73,6 +74,7 @@ export default function ActualizarEstadoScreen() {
 
     loadRepairData();
   }, [repairId]);
+  
   const handleEstadoChange = (itemValue: DisplayStatus) => {
     setNuevoEstado(itemValue);
 
