@@ -1,8 +1,11 @@
 import { Button, ButtonText } from "@/shared/components/ui/button";
+import { InventoryRepository } from "@/shared/repositories/inventory.repository";
+import { InventoryItem } from "@/shared/types/inventory.type";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
+import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Modal,
@@ -14,22 +17,69 @@ import {
 } from "react-native";
 
 interface Part {
-  id: number;
+  id: string;
   name: string;
   cost: number;
   quantity: number;
+
+}
+interface DetailsProps{
+  repairId: string;
 }
 
-const Details: React.FC = () => {
+const Details: React.FC<DetailsProps>= ({repairId}) => {
   const [parts, setParts] = useState<Part[]>([
-    { id: 1, name: "Pantalla LCD", cost: 120, quantity: 1 },
-    { id: 2, name: "Batería", cost: 45, quantity: 1 },
+    
   ]);
   const [notes, setNotes] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newPartName, setNewPartName] = useState("");
   const [newPartCost, setNewPartCost] = useState("");
   const [newPartQuantity, setNewPartQuantity] = useState("1");
+
+  const [inventoryItems,setInventoryItems] =useState<InventoryItem[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedPart, setSelectedPart] = useState<InventoryItem | null>(null);
+const handleAddPartFromInventory = () => {
+  if (!selectedPart) return;
+
+  const partToAdd = {
+    id: selectedPart.id,
+    name: selectedPart.name,
+    cost: selectedPart.unitCost,
+    quantity: parseInt(newPartQuantity),
+  };
+
+  setParts([...parts, partToAdd]);
+  setIsModalVisible(false);
+  setSelectedPart(null);
+  setSelectedCategory("");
+  setNewPartQuantity("1");
+};
+  //Cargar inventario
+  useEffect(() =>{
+    fetchInventory();
+  },[]);
+
+    const fetchInventory = async () => {
+      try {
+        const items = await InventoryRepository.getAll();
+        setInventoryItems(items);
+      } catch (error) {
+        console.error("Error al obtener inventario:", error);
+      }
+    };
+  
+  //Recargar el modal cada vez que se abra
+  const openModal = async () =>{
+    await fetchInventory();
+    setIsModalVisible(true);
+  };
+
+  //Categorias de piezas
+    const filteredParts = inventoryItems.filter(
+    (item) => item.category?.name === selectedCategory
+  );
 
   const laborCost = 50;
   const partsCost = parts.reduce((acc, p) => acc + p.cost * p.quantity, 0);
@@ -41,26 +91,28 @@ const Details: React.FC = () => {
     ]);
   };
 
-  const addPart = () => {
-    if (!newPartName || !newPartCost) return;
+    const addPart = () => {
+    if (!selectedPart) return;
+
     const newPart: Part = {
       id: Date.now(),
-      name: newPartName,
-      cost: parseFloat(newPartCost),
+      name: selectedPart.name,
+      cost: selectedPart.unitCost,
       quantity: parseInt(newPartQuantity),
     };
+
     setParts([...parts, newPart]);
-    setNewPartName("");
-    setNewPartCost("");
+    setSelectedPart(null);
+    setSelectedCategory("");
     setNewPartQuantity("1");
     setIsModalVisible(false);
   };
 
-  const removePart = (id: number) => {
+  const removePart = (id: string) => {
     setParts(parts.filter((p) => p.id !== id));
   };
 
-  const updateQuantity = (id: number, delta: number) => {
+  const updateQuantity = (id: string, delta: number) => {
     setParts((prev) =>
       prev.map((p) =>
         p.id === id ? { ...p, quantity: Math.max(1, p.quantity + delta) } : p
@@ -90,7 +142,7 @@ const Details: React.FC = () => {
               Piezas utilizadas
             </Text>
             <TouchableOpacity
-              onPress={() => setIsModalVisible(true)}
+              onPress= {openModal}
               className="flex-row items-center"
             >
               <AntDesign name="plus" size={20} color="#51bb54ff" />
@@ -116,7 +168,8 @@ const Details: React.FC = () => {
                 <View className="flex-row mt-2  text-primary-600">
                   <TouchableOpacity
                     onPress={() => updateQuantity(p.id, -1)}
-                    className="px-2"
+                    disabled={p.quantity <=1}
+                    className={`px-2 ${p.quantity <= 1 ? "opacity-50" : ""}`}
                   >
                     <AntDesign name="minus" size={18} color="#4CAF50" />
                   </TouchableOpacity>
@@ -211,58 +264,89 @@ const Details: React.FC = () => {
           </Button>
         </View>
       </View>
-
       {/* MODAL PARA AGREGAR PIEZA */}
-      <Modal
-        transparent={true}
-        visible={isModalVisible}
-        animationType="fade"
-        onRequestClose={() => setIsModalVisible(false)}
+<Modal
+  transparent={true}
+  visible={isModalVisible}
+  animationType="fade"
+  onRequestClose={() => setIsModalVisible(false)}
+>
+  <View className="flex-1 justify-center items-center bg-black/60 p-5">
+    <View className="bg-background-200 w-full max-w-[400px] rounded-2xl p-5 border border-background-400">
+      <Text className="text-lg font-bold mb-4 text-typography-900 text-center">
+        Agregar Pieza del Inventario
+      </Text>
+
+      {/* Selector de categoría */}
+      <Text className="text-typography-900 font-medium mb-1">Categoría:</Text>
+      <Picker
+        selectedValue={selectedCategory}
+        onValueChange={(value) => {
+          setSelectedCategory(value);
+          setSelectedPart(null);
+        }}
       >
-        <View className="flex-1 justify-center items-center bg-black/60 p-5">
-          <View className="bg-background-200 w-full max-w-[400px] rounded-2xl p-5  border border-background-400">
-            <Text className="text-lg font-bold mb-4 text-typography-900">
-              Agregar Pieza
-            </Text>
+        <Picker.Item label="Selecciona una categoría..." value="" />
+        {[...new Set(inventoryItems.map(item => item.category?.name).filter(Boolean))].map((categoryName) => (
+          <Picker.Item key={categoryName!} label={categoryName!} value={categoryName!} />
+        ))}
+      </Picker>
 
-            <TextInput
-              placeholder="Nombre de la pieza"
-              value={newPartName}
-              onChangeText={setNewPartName}
-              className="border border-background-400 rounded-xl p-3 mb-3 text-typography-900"
-            />
-            <TextInput
-              placeholder="Costo"
-              value={newPartCost}
-              onChangeText={setNewPartCost}
-              keyboardType="numeric"
-              className="border border-background-400 rounded-xl p-3 mb-3 text-typography-900"
-            />
-            <TextInput
-              placeholder="Cantidad"
-              value={newPartQuantity}
-              onChangeText={setNewPartQuantity}
-              keyboardType="numeric"
-              className="border border-background-400 rounded-xl p-3 mb-3 text-typography-400"
-            />
+      {/* Selector de pieza */}
+      {selectedCategory !== "" && (
+        <>
+          <Text className="text-typography-900 font-medium mt-3 mb-1">Pieza:</Text>
+          <Picker
+            selectedValue={selectedPart?.id || ""}
+            onValueChange={(value) => {
+              const part = inventoryItems.find((item) => item.id === value);
+              setSelectedPart(part || null);
+            }}
+          >
+            <Picker.Item label="Selecciona una pieza..." value="" />
+            {inventoryItems
+              .filter(item => item.category?.name === selectedCategory)
+              .map(item => (
+                <Picker.Item
+                  key={item.id}
+                  label={`${item.name} - $${item.unitCost}`}
+                  value={item.id}
+                />
+              ))}
+          </Picker>
+        </>
+      )}
 
-            <View className="flex-row justify-between mt-3">
-              <TouchableOpacity
-                onPress={addPart}
-                className="bg-[#4CAF50] py-2 px-6 rounded-full"
-              >
-                <Text className="text-white font-bold">Agregar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setIsModalVisible(false)}
-                className="bg-[#E57373] py-2 px-6 rounded-full"
-              >
-                <Text className="text-white font-bold">Cancelar</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      {/* Cantidad */}
+      <Text className="text-typography-900 font-medium mt-3 mb-1">Cantidad:</Text>
+      <TextInput
+        placeholder="Cantidad"
+        value={newPartQuantity}
+        onChangeText={setNewPartQuantity}
+        keyboardType="numeric"
+        className="border border-background-400 rounded-xl p-3 mb-3 text-typography-900"
+      />
+
+      {/* Botones */}
+      <View className="flex-row justify-between mt-3">
+        <TouchableOpacity
+          onPress={handleAddPartFromInventory}
+          disabled={!selectedPart || !newPartQuantity}
+          className={`py-2 px-6 rounded-full ${!selectedPart ? "bg-gray-400" : "bg-[#4CAF50]"}`}
+        >
+          <Text className="text-white font-bold">Agregar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setIsModalVisible(false)}
+          className="bg-[#E57373] py-2 px-6 rounded-full"
+        >
+          <Text className="text-white font-bold">Cancelar</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+</Modal>
+
     </ScrollView>
   );
 };

@@ -1,16 +1,16 @@
 import { Button, ButtonText } from "@/shared/components/ui/button";
-import { Picker } from "@react-native-picker/picker";
-import { router, useLocalSearchParams } from "expo-router";
-import React, { useState, useEffect } from "react";
-import { Alert, Image, ScrollView, Text, View } from "react-native";
 import { RepairsRepository } from "@/shared/repositories/repairs.repository";
 import { RepairStatus } from "@/shared/types/repair.type";
+import { Picker } from "@react-native-picker/picker";
+import { router, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { Alert, Image, ScrollView, Text, View } from "react-native";
 
 // Definir tipos para los mapeos
 type DisplayStatus = 
   | "Revisión" 
   | "En progreso" 
-  | "Pendiente" 
+  | "Esperando Piezas" 
   | "Completo" 
   | "Cancelado" 
   | "Entregado";
@@ -34,7 +34,7 @@ export default function ActualizarEstadoScreen() {
   const statusMap: StatusMapType = {
     "in_review": "Revisión",
     "repairing": "En progreso", 
-    "waiting_parts": "Pendiente",
+    "waiting_parts": "Esperando Piezas",
     "done": "Completo",
     "not_repaired": "Cancelado",
     "delivered": "Entregado"
@@ -44,7 +44,7 @@ export default function ActualizarEstadoScreen() {
   const reverseStatusMap: ReverseStatusMapType = {
     "Revisión": "in_review",
     "En progreso": "repairing",
-    "Pendiente": "waiting_parts", 
+    "Esperando Piezas": "waiting_parts", 
     "Completo": "done",
     "Cancelado": "not_repaired",
     "Entregado": "delivered"
@@ -131,7 +131,7 @@ export default function ActualizarEstadoScreen() {
     const displayStatus = statusMap[estado];
     
     switch (displayStatus) {
-      case "Pendiente":
+      case "Esperando Piezas":
       case "Revisión":
       case "En progreso":
         return {
@@ -237,7 +237,7 @@ export default function ActualizarEstadoScreen() {
               onValueChange={(itemValue) => setNuevoEstado(itemValue as DisplayStatus)}
             >
               <Picker.Item label="Seleccionar estado" value="" />
-              <Picker.Item label="Pendiente" value="Pendiente" />
+              <Picker.Item label="Esperando Piezas" value="Esperando Piezas" />
               <Picker.Item label="Revisión" value="Revisión" />
               <Picker.Item label="En progreso" value="En progreso" />
               <Picker.Item label="Completo" value="Completo" />

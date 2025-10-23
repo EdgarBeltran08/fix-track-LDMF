@@ -92,7 +92,6 @@ export default function AddEquipoForm() {
 
       const repairId = await RepairsRepository.create(newRepair);
       console.log("Repair ID:", repairId);
-
       Alert.alert(
         "Éxito",
         `La reparación fue registrada correctamente.\nFolio: ${folio}`
