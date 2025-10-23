@@ -1,11 +1,12 @@
 import { Button, ButtonText } from "@/shared/components/ui/button";
 import { Picker } from "@react-native-picker/picker";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Alert, Image, ScrollView, Text, View } from "react-native";
 import { RepairsRepository } from "@/shared/repositories/repairs.repository";
 import { RepairStatus } from "@/shared/types/repair.type";
 
+// Definir tipos para los mapeos
 type DisplayStatus = 
   | "Revisión" 
   | "En progreso" 
@@ -24,9 +25,10 @@ type ReverseStatusMapType = {
 
 export default function ActualizarEstadoScreen() {
   const { repairId, currentStatus } = useLocalSearchParams();
-  const [estado, setEstado] = useState<RepairStatus>((currentStatus as RepairStatus) || "repairing");
+  const [estado, setEstado] = useState<RepairStatus>("repairing");
   const [nuevoEstado, setNuevoEstado] = useState<DisplayStatus | "">("");
   const [loading, setLoading] = useState(false);
+  const [repairData, setRepairData] = useState<any>(null);
 
   // Mapeo de estados de la base de datos a la interfaz
   const statusMap: StatusMapType = {
@@ -48,6 +50,28 @@ export default function ActualizarEstadoScreen() {
     "Entregado": "delivered"
   };
 
+  // ✅ CONSULTAR LOS DATOS ACTUALES DE LA REPARACIÓN
+  useEffect(() => {
+    const loadRepairData = async () => {
+      if (!repairId || Array.isArray(repairId)) return;
+      
+      try {
+        const repairIdString = Array.isArray(repairId) ? repairId[0] : repairId;
+        const repair = await RepairsRepository.getById(repairIdString);
+        
+        if (repair) {
+          setRepairData(repair);
+          setEstado(repair.status);
+          console.log("📱 Datos de reparación cargados:", repair.status);
+        }
+      } catch (error) {
+        console.error("Error cargando datos de reparación:", error);
+      }
+    };
+
+    loadRepairData();
+  }, [repairId]);
+
   const handleCancel = () => {
     Alert.alert("Cancelar", "¿Estás seguro de que quieres cancelar?", [
       { text: "No" },
@@ -58,15 +82,12 @@ export default function ActualizarEstadoScreen() {
     ]);
   };
 
-  // FUNCIÓN PARA ACTUALIZAR EN FIREBASE USANDO TU REPOSITORIO
   const handleUpdate = async () => {
-    // Validar que se haya seleccionado un nuevo estado
     if (!nuevoEstado) {
       Alert.alert("Error", "Por favor selecciona un estado nuevo");
       return;
     }
 
-    // Validar que tengamos el ID de la reparación
     if (!repairId || Array.isArray(repairId)) {
       Alert.alert("Error", "No se encontró la reparación a actualizar");
       return;
@@ -75,15 +96,15 @@ export default function ActualizarEstadoScreen() {
     setLoading(true);
 
     try {
-      // Convertir el estado de la interfaz al formato de base de datos
       const firebaseStatus = reverseStatusMap[nuevoEstado];
-      console.log("Enviando a Firebase:");
-      console.log("ID:", repairId);
+      const repairIdString = Array.isArray(repairId) ? repairId[0] : repairId;
+      
+      console.log("📤 Actualizando reparación:", repairIdString);
       console.log("Nuevo estado:", firebaseStatus);
-      // Usar tu repositorio para actualizar el estado
-      await RepairsRepository.updateStatus(repairId, firebaseStatus);
-      console.log("Estado actualizado en Firebase");
-      // Actualizar el estado local
+      
+      await RepairsRepository.updateStatus(repairIdString, firebaseStatus);
+
+      // Actualizar el estado local inmediatamente
       setEstado(firebaseStatus);
       
       Alert.alert(
@@ -96,11 +117,9 @@ export default function ActualizarEstadoScreen() {
           }
         ]
       );
-      
-      console.log("Estado actualizado en Firebase:", firebaseStatus);
 
     } catch (error) {
-      console.error("Error al actualizar estado:", error);
+      console.error("❌ Error al actualizar estado:", error);
       Alert.alert("Error", "No se pudo actualizar el estado");
     } finally {
       setLoading(false);
@@ -109,7 +128,6 @@ export default function ActualizarEstadoScreen() {
 
   // ======== función para asignar color según estado ========
   const getEstadoColor = (estado: RepairStatus) => {
-    // Convertir estado de Firebase a estado de interfaz para los colores
     const displayStatus = statusMap[estado];
     
     switch (displayStatus) {
@@ -178,15 +196,19 @@ export default function ActualizarEstadoScreen() {
           className="w-20 h-20 mb-3"
         />
 
-        {/* Información del cliente */}
+        {/* Información del cliente - AHORA CON DATOS REALES */}
         <View className="items-center mb-4">
           <Text className="font-bold text-base text-typography-900">
             ID: {Array.isArray(repairId) ? repairId[0] : repairId || "N/A"}
           </Text>
-          <Text className="text-base text-typography-900">Michelle Garza</Text>
-          <Text className="text-sm text-typography-900">iPhone 14 Pro</Text>
+          <Text className="text-base text-typography-900">
+            {repairData?.customerName || "Cargando..."}
+          </Text>
+          <Text className="text-sm text-typography-900">
+            {repairData?.deviceModel || "Cargando dispositivo..."}
+          </Text>
           <Text className="text-xs text-typography-900 opacity-70">
-            No funciona
+            {repairData?.issueDescription || "Cargando descripción..."}
           </Text>
         </View>
 
