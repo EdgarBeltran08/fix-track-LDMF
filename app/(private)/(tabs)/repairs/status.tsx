@@ -1,11 +1,18 @@
 import { Button, ButtonText } from "@/shared/components/ui/button"; // ✅ IMPORTA LOS BOTONES
 import { Picker } from "@react-native-picker/picker";
+import { router } from "expo-router";
 import React, { useState } from "react";
-import { Image, ScrollView, Text, View } from "react-native";
+import { Alert, Image, ScrollView, Text, View } from "react-native";
 
 export default function ActualizarEstadoScreen() {
   const [estado, setEstado] = useState("En progreso");
   const [nuevoEstado, setNuevoEstado] = useState("");
+  const handleCancel = () => {
+      Alert.alert("Cancelar", "¿Estás seguro de que quieres cancelar?", [
+        { text: "No" },
+        { text: "Sí", onPress: () => {console.log("Estado no actualizado"); router.push("/(private)/(tabs)"); }},
+      ]);
+    };
 
   // ======== función para asignar color según estado ========
   const getEstadoColor = (estado) => {
@@ -135,7 +142,7 @@ export default function ActualizarEstadoScreen() {
             action="negative"
             size="lg"
             className="flex-1 ml-2 rounded-full bg-red-600"
-            // onPress={handleCancel}
+            onPress={handleCancel}
           >
             <ButtonText className="font-semibold text-white text-base">
               Cancelar

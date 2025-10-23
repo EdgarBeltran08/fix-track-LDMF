@@ -1,5 +1,6 @@
 import { RepairsRepository } from "@/shared/repositories/repairs.repository";
 import CheckBox from "expo-checkbox"; //CAMBIO PARA AGREGAR CHECKLIST
+import { router } from "expo-router";
 import React, { useRef, useState } from "react";
 
 import {
@@ -123,6 +124,9 @@ export default function AddEquipoForm() {
         pantallaNegra: false,
       });
       setFirma(null);
+      if(signatureRef.current){
+        signatureRef.current.clearSignature();
+      }
     } catch (error) {
       console.error("Error al registrar:", error);
       Alert.alert(
@@ -156,7 +160,7 @@ export default function AddEquipoForm() {
   const handleCancel = () => {
     Alert.alert("Cancelar", "¿Estás seguro de que quieres cancelar?", [
       { text: "No" },
-      { text: "Sí", onPress: () => console.log("Formulario cancelado") },
+      { text: "Sí", onPress: () => {console.log("Formulario cancelado"); router.push("/(private)/(tabs)"); }},
     ]);
   };
   //CAMBIO PARA AGREGAR CHECKLIST

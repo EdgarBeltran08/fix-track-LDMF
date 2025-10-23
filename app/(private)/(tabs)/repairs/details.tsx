@@ -1,8 +1,10 @@
 import { Button, ButtonText } from "@/shared/components/ui/button";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
+  Alert,
   Modal,
   ScrollView,
   Text,
@@ -32,6 +34,12 @@ const Details: React.FC = () => {
   const laborCost = 50;
   const partsCost = parts.reduce((acc, p) => acc + p.cost * p.quantity, 0);
   const totalCost = laborCost + partsCost;
+    const handleCancel = () => {
+    Alert.alert("Cancelar", "¿Estás seguro de que quieres cancelar?", [
+      { text: "No" },
+      { text: "Sí", onPress: () => {console.log("Detalles nuevos cancelados"); router.push("/(private)/(tabs)"); }},
+    ]);
+  };
 
   const addPart = () => {
     if (!newPartName || !newPartCost) return;
@@ -195,7 +203,7 @@ const Details: React.FC = () => {
             action="negative"
             size="lg"
             className="flex-1 ml-2 rounded-full"
-            //onPress={handleCancel} // //funcion que usaremos
+            onPress={handleCancel}
           >
             <ButtonText className="font-semibold text-white text-base ">
               Cancelar
