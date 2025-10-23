@@ -6,7 +6,7 @@ import { RepairsRepository } from "@/shared/repositories/repairs.repository";
 import { useUserStore } from "@/shared/stores/useUserStore";
 import { Repair } from "@/shared/types/repair.type";
 import { Ionicons } from "@expo/vector-icons";
-import { Link, router } from "expo-router";
+import { Link, router, useFocusEffect } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
@@ -75,9 +75,11 @@ export default function HomeScreen() {
   const { user, signOut } = useUserStore();
 
   // Load repairs on component mount
-  useEffect(() => {
-    loadRepairs();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      loadRepairs();
+    }, [])
+  );
 
   const loadRepairs = async () => {
     try {
@@ -128,21 +130,29 @@ export default function HomeScreen() {
             <Text className="text-sm text-typography-1000">{item.folio}</Text>
           </View>
 
-          <Link href={"/(private)/(tabs)/repairs/status"}>
-            <Badge
-              action={getStatusColor(item.status)}
-              variant="outline"
-              className={`ml-2 border-2 ${getStatusBadgeStyle(item.status)}`}
+          <Pressable 
+          onPress={() => router.push({
+            pathname: "/(private)/(tabs)/repairs/status",
+            params: { 
+              repairId: item.id, 
+              currentStatus: item.status 
+            }
+          })}
+        >
+          <Badge
+            action={getStatusColor(item.status)}
+            variant="outline"
+            className={`ml-2 border-2 ${getStatusBadgeStyle(item.status)}`}
+          >
+            <Text
+              className={`text-xs font-bold ${getStatusTextStyle(
+                item.status
+              )}`}
             >
-              <Text
-                className={`text-xs font-bold ${getStatusTextStyle(
-                  item.status
-                )}`}
-              >
-                {getStatusText(item.status)}
-              </Text>
-            </Badge>
-          </Link>
+              {getStatusText(item.status)}
+            </Text>
+          </Badge>
+        </Pressable>
         </View>
 
         {/* Device Info */}

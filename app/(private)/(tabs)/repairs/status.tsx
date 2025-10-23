@@ -77,10 +77,12 @@ export default function ActualizarEstadoScreen() {
     try {
       // Convertir el estado de la interfaz al formato de base de datos
       const firebaseStatus = reverseStatusMap[nuevoEstado];
-      
+      console.log("Enviando a Firebase:");
+      console.log("ID:", repairId);
+      console.log("Nuevo estado:", firebaseStatus);
       // Usar tu repositorio para actualizar el estado
       await RepairsRepository.updateStatus(repairId, firebaseStatus);
-
+      console.log("Estado actualizado en Firebase");
       // Actualizar el estado local
       setEstado(firebaseStatus);
       
