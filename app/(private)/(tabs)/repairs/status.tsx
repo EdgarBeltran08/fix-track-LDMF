@@ -29,6 +29,7 @@ export default function ActualizarEstadoScreen() {
   const [nuevoEstado, setNuevoEstado] = useState<DisplayStatus | "">("");
   const [loading, setLoading] = useState(false);
   const [repairData, setRepairData] = useState<any>(null);
+  const [estadoVisual, setEstadoVisual] = useState<RepairStatus>("repairing");
 
   // Mapeo de estados de la base de datos a la interfaz
   const statusMap: StatusMapType = {
@@ -50,7 +51,7 @@ export default function ActualizarEstadoScreen() {
     "Entregado": "delivered"
   };
 
-  // ✅ CONSULTAR LOS DATOS ACTUALES DE LA REPARACIÓN
+  // CONSULTAR LOS DATOS ACTUALES DE LA REPARACIÓN
   useEffect(() => {
     const loadRepairData = async () => {
       if (!repairId || Array.isArray(repairId)) return;
@@ -62,7 +63,9 @@ export default function ActualizarEstadoScreen() {
         if (repair) {
           setRepairData(repair);
           setEstado(repair.status);
-          console.log("📱 Datos de reparación cargados:", repair.status);
+          setEstadoVisual(repair.status);
+          setNuevoEstado("");
+          console.log("Datos de reparación cargados:", repair.status);
         }
       } catch (error) {
         console.error("Error cargando datos de reparación:", error);
@@ -71,8 +74,20 @@ export default function ActualizarEstadoScreen() {
 
     loadRepairData();
   }, [repairId]);
+  
+  const handleEstadoChange = (itemValue: DisplayStatus) => {
+    setNuevoEstado(itemValue);
+
+    if (itemValue) {
+      const firebaseStatus = reverseStatusMap[itemValue];
+      setEstadoVisual(firebaseStatus);
+    }
+  }
 
   const handleCancel = () => {
+    setEstadoVisual(estado);
+    setNuevoEstado("");
+
     Alert.alert("Cancelar", "¿Estás seguro de que quieres cancelar?", [
       { text: "No" },
       { text: "Sí", onPress: () => { 
@@ -99,13 +114,14 @@ export default function ActualizarEstadoScreen() {
       const firebaseStatus = reverseStatusMap[nuevoEstado];
       const repairIdString = Array.isArray(repairId) ? repairId[0] : repairId;
       
-      console.log("📤 Actualizando reparación:", repairIdString);
+      console.log("Actualizando reparación:", repairIdString);
       console.log("Nuevo estado:", firebaseStatus);
       
       await RepairsRepository.updateStatus(repairIdString, firebaseStatus);
 
       // Actualizar el estado local inmediatamente
       setEstado(firebaseStatus);
+      setEstadoVisual(firebaseStatus);
       
       Alert.alert(
         "Éxito", 
@@ -119,7 +135,7 @@ export default function ActualizarEstadoScreen() {
       );
 
     } catch (error) {
-      console.error("❌ Error al actualizar estado:", error);
+      console.error("Error al actualizar estado:", error);
       Alert.alert("Error", "No se pudo actualizar el estado");
     } finally {
       setLoading(false);
@@ -162,9 +178,8 @@ export default function ActualizarEstadoScreen() {
   };
 
   // Convertir estado actual para mostrar en la interfaz
-  const displayEstado = statusMap[estado];
-
-  const estadoColors = getEstadoColor(estado);
+  const displayEstado = statusMap[estadoVisual];
+  const estadoColors = getEstadoColor(estadoVisual);
 
   return (
     <ScrollView
@@ -234,7 +249,7 @@ export default function ActualizarEstadoScreen() {
           <View className="border border-background-200 rounded-md bg-background-50">
             <Picker
               selectedValue={nuevoEstado}
-              onValueChange={(itemValue) => setNuevoEstado(itemValue as DisplayStatus)}
+              onValueChange={handleEstadoChange} 
             >
               <Picker.Item label="Seleccionar estado" value="" />
               <Picker.Item label="Esperando Piezas" value="Esperando Piezas" />
