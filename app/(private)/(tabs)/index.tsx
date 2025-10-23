@@ -6,7 +6,7 @@ import { RepairsRepository } from "@/shared/repositories/repairs.repository";
 import { useUserStore } from "@/shared/stores/useUserStore";
 import { Repair } from "@/shared/types/repair.type";
 import { Ionicons } from "@expo/vector-icons";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
@@ -128,11 +128,16 @@ export default function HomeScreen() {
             <Text className="text-sm text-typography-1000">{item.folio}</Text>
           </View>
 
-          <Link href={"/(private)/(tabs)/repairs/status"}>
+          <Pressable
+          onPress={() => {            
+          console.log("Folio del cliente seleccionado:", item.folio);
+          router.push(`/(private)/(tabs)/repairs/status?folio=${item.folio}`);
+          }}>
+          
             <Badge
               action={getStatusColor(item.status)}
               variant="outline"
-              className={`ml-2 border-2 ${getStatusBadgeStyle(item.status)}`}
+              className={`ml border-2 ${getStatusBadgeStyle(item.status)}`}
             >
               <Text
                 className={`text-xs font-bold ${getStatusTextStyle(
@@ -142,7 +147,7 @@ export default function HomeScreen() {
                 {getStatusText(item.status)}
               </Text>
             </Badge>
-          </Link>
+          </Pressable>
         </View>
 
         {/* Device Info */}

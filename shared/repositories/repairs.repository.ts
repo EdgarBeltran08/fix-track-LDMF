@@ -1,21 +1,32 @@
 import {
-    addDoc,
-    collection,
-    deleteDoc,
-    doc,
-    getDoc,
-    getDocs,
-    limit,
-    orderBy,
-    query,
-    updateDoc,
-    where,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 
 import { db } from "../services/firebase";
 import { Repair, RepairStatus } from "../types/repair.type";
 
 export class RepairsRepository {
+  static async getByFolio(folio: string): Promise<Repair | null> {
+  const snapshot = await getDocs(
+    query(collection(db, "repairs"), where("folio", "==", folio))
+  );
+
+  if (!snapshot.empty) {
+    return Repair.fromFirestore(snapshot.docs[0]);
+  }
+
+  return null;
+}
   static async getAll(): Promise<Repair[]> {
     const snapshot = await getDocs(
       query(collection(db, "repairs"), orderBy("createdAt", "desc"))
