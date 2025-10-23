@@ -1,22 +1,116 @@
-import { Button, ButtonText } from "@/shared/components/ui/button"; // ✅ IMPORTA LOS BOTONES
+import { Button, ButtonText } from "@/shared/components/ui/button";
 import { Picker } from "@react-native-picker/picker";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Image, ScrollView, Text, View } from "react-native";
+import { RepairsRepository } from "@/shared/repositories/repairs.repository";
+import { RepairStatus } from "@/shared/types/repair.type";
+
+type DisplayStatus = 
+  | "Revisión" 
+  | "En progreso" 
+  | "Pendiente" 
+  | "Completo" 
+  | "Cancelado" 
+  | "Entregado";
+
+type StatusMapType = {
+  [key in RepairStatus]: DisplayStatus;
+};
+
+type ReverseStatusMapType = {
+  [key in DisplayStatus]: RepairStatus;
+};
 
 export default function ActualizarEstadoScreen() {
-  const [estado, setEstado] = useState("En progreso");
-  const [nuevoEstado, setNuevoEstado] = useState("");
+  const { repairId, currentStatus } = useLocalSearchParams();
+  const [estado, setEstado] = useState<RepairStatus>((currentStatus as RepairStatus) || "repairing");
+  const [nuevoEstado, setNuevoEstado] = useState<DisplayStatus | "">("");
+  const [loading, setLoading] = useState(false);
+
+  // Mapeo de estados de la base de datos a la interfaz
+  const statusMap: StatusMapType = {
+    "in_review": "Revisión",
+    "repairing": "En progreso", 
+    "waiting_parts": "Pendiente",
+    "done": "Completo",
+    "not_repaired": "Cancelado",
+    "delivered": "Entregado"
+  };
+
+  // Mapeo inverso para enviar a Firebase
+  const reverseStatusMap: ReverseStatusMapType = {
+    "Revisión": "in_review",
+    "En progreso": "repairing",
+    "Pendiente": "waiting_parts", 
+    "Completo": "done",
+    "Cancelado": "not_repaired",
+    "Entregado": "delivered"
+  };
+
   const handleCancel = () => {
-      Alert.alert("Cancelar", "¿Estás seguro de que quieres cancelar?", [
-        { text: "No" },
-        { text: "Sí", onPress: () => {console.log("Estado no actualizado"); router.push("/(private)/(tabs)"); }},
-      ]);
-    };
+    Alert.alert("Cancelar", "¿Estás seguro de que quieres cancelar?", [
+      { text: "No" },
+      { text: "Sí", onPress: () => { 
+        console.log("Estado no actualizado"); 
+        router.push("/(private)/(tabs)"); 
+      }},
+    ]);
+  };
+
+  // FUNCIÓN PARA ACTUALIZAR EN FIREBASE USANDO TU REPOSITORIO
+  const handleUpdate = async () => {
+    // Validar que se haya seleccionado un nuevo estado
+    if (!nuevoEstado) {
+      Alert.alert("Error", "Por favor selecciona un estado nuevo");
+      return;
+    }
+
+    // Validar que tengamos el ID de la reparación
+    if (!repairId || Array.isArray(repairId)) {
+      Alert.alert("Error", "No se encontró la reparación a actualizar");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Convertir el estado de la interfaz al formato de base de datos
+      const firebaseStatus = reverseStatusMap[nuevoEstado];
+      
+      // Usar tu repositorio para actualizar el estado
+      await RepairsRepository.updateStatus(repairId, firebaseStatus);
+
+      // Actualizar el estado local
+      setEstado(firebaseStatus);
+      
+      Alert.alert(
+        "Éxito", 
+        `Estado actualizado a: ${nuevoEstado}`,
+        [
+          { 
+            text: "OK", 
+            onPress: () => router.push("/(private)/(tabs)") 
+          }
+        ]
+      );
+      
+      console.log("Estado actualizado en Firebase:", firebaseStatus);
+
+    } catch (error) {
+      console.error("Error al actualizar estado:", error);
+      Alert.alert("Error", "No se pudo actualizar el estado");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ======== función para asignar color según estado ========
-  const getEstadoColor = (estado) => {
-    switch (estado) {
+  const getEstadoColor = (estado: RepairStatus) => {
+    // Convertir estado de Firebase a estado de interfaz para los colores
+    const displayStatus = statusMap[estado];
+    
+    switch (displayStatus) {
       case "Pendiente":
       case "Revisión":
       case "En progreso":
@@ -26,6 +120,7 @@ export default function ActualizarEstadoScreen() {
           border: "border-yellow-300 dark:border-yellow-700",
         };
       case "Completo":
+      case "Entregado":
         return {
           bg: "bg-green-100 dark:bg-green-800",
           text: "text-green-800 dark:text-green-100",
@@ -46,6 +141,9 @@ export default function ActualizarEstadoScreen() {
     }
   };
 
+  // Convertir estado actual para mostrar en la interfaz
+  const displayEstado = statusMap[estado];
+
   const estadoColors = getEstadoColor(estado);
 
   return (
@@ -54,7 +152,7 @@ export default function ActualizarEstadoScreen() {
       style={{ backgroundColor: "#193456" }}
       contentContainerStyle={{
         alignItems: "center",
-        paddingBottom: 100, // espacio extra al final para que no tape la barra
+        paddingBottom: 100,
       }}
     >
       {/* Título */}
@@ -81,7 +179,7 @@ export default function ActualizarEstadoScreen() {
         {/* Información del cliente */}
         <View className="items-center mb-4">
           <Text className="font-bold text-base text-typography-900">
-            # 201354
+            ID: {Array.isArray(repairId) ? repairId[0] : repairId || "N/A"}
           </Text>
           <Text className="text-base text-typography-900">Michelle Garza</Text>
           <Text className="text-sm text-typography-900">iPhone 14 Pro</Text>
@@ -98,7 +196,9 @@ export default function ActualizarEstadoScreen() {
           <View
             className={`p-3 rounded-md items-center border ${estadoColors.bg} ${estadoColors.border}`}
           >
-            <Text className={`font-bold ${estadoColors.text}`}>{estado}</Text>
+            <Text className={`font-bold ${estadoColors.text}`}>
+              {displayEstado}
+            </Text>
           </View>
         </View>
 
@@ -110,16 +210,14 @@ export default function ActualizarEstadoScreen() {
           <View className="border border-background-200 rounded-md bg-background-50">
             <Picker
               selectedValue={nuevoEstado}
-              onValueChange={(itemValue) => {
-                setNuevoEstado(itemValue);
-                if (itemValue) setEstado(itemValue);
-              }}
+              onValueChange={(itemValue) => setNuevoEstado(itemValue as DisplayStatus)}
             >
               <Picker.Item label="Seleccionar estado" value="" />
               <Picker.Item label="Pendiente" value="Pendiente" />
               <Picker.Item label="Revisión" value="Revisión" />
               <Picker.Item label="En progreso" value="En progreso" />
               <Picker.Item label="Completo" value="Completo" />
+              <Picker.Item label="Entregado" value="Entregado" />
               <Picker.Item label="Cancelado" value="Cancelado" />
             </Picker>
           </View>
@@ -131,10 +229,11 @@ export default function ActualizarEstadoScreen() {
             action="primary"
             size="lg"
             className="flex-1 mr-2 rounded-full bg-green-600"
-            // onPress={handleUpdate}
+            onPress={handleUpdate}
+            disabled={loading}
           >
             <ButtonText className="font-semibold text-white text-base">
-              Actualizar
+              {loading ? "Actualizando..." : "Actualizar"}
             </ButtonText>
           </Button>
 
@@ -143,6 +242,7 @@ export default function ActualizarEstadoScreen() {
             size="lg"
             className="flex-1 ml-2 rounded-full bg-red-600"
             onPress={handleCancel}
+            disabled={loading}
           >
             <ButtonText className="font-semibold text-white text-base">
               Cancelar
