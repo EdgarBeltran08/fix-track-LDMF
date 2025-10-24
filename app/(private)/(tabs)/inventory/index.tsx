@@ -76,14 +76,43 @@ const InventoryPage: React.FC = () => {
     setIsFilterMenuOpen(false);
   };
 
-  const fetchInventoryItems = async () => {
+  const fetchInventoryItems = async (): Promise<InventoryItem[]> => {
     try {
       const items = await InventoryRepository.getAll();
       setInventoryItems(items);
+      return items; // Retorno de los items
     } catch (error) {
       console.error("Error fetching inventory items:", error);
+      return []; // En caso de error, retornamos arreglo vacío
     }
   };
+
+  const handleQuantityChange = async (
+    item: InventoryItem,
+    newQuantity: number
+  ) => {
+    if (newQuantity < 0) return;
+
+    try {
+      await InventoryRepository.updateQuantity(item.id, newQuantity);
+
+      setInventoryItems((prev) =>
+        prev.map((i) =>
+          i.id === item.id
+            ? {
+                ...i,
+                quantity: newQuantity,
+                state: newQuantity > 0 ? "available" : "unavailable",
+              }
+            : i
+        )
+      );
+    } catch (error) {
+      console.error("Error actualizando cantidad:", error);
+      alert("No se pudo actualizar la cantidad");
+    }
+  };
+
   const handleAddItem = async () => {
     if (!newName || !newUnitCost || !newCategory || !newQuantity) {
       alert("Por favor llena todos los campos obligatorios");
@@ -102,6 +131,7 @@ const InventoryPage: React.FC = () => {
 
       setIsAddModalOpen(false);
       fetchInventoryItems();
+      alert("Producto agregado exitosamente al inventario");
 
       // Limpia campos
       setNewName("");
@@ -122,8 +152,17 @@ const InventoryPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchInventoryItems();
+    const fixStates = async (items: InventoryItem[]) => {
+      for (const item of items) {
+        if (item.quantity === 0 && item.state !== "unavailable") {
+          await InventoryRepository.updateQuantity(item.id, 0);
+        }
+      }
+    };
+
+    fetchInventoryItems().then((items) => fixStates(items));
   }, []);
+
   // Estados del nuevo repuesto
   const [newCategory, setNewCategory] = useState("");
   //Cambio para agregar repuesto a base de datos
@@ -271,15 +310,46 @@ const InventoryPage: React.FC = () => {
                       <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md">
                         {item.category?.name || "N/A"}
                       </TableData>
+
+                      {/* Cantidad con botones + y - */}
                       <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md">
-                        {item.quantity}
+                        <View className="flex flex-row items-center justify-center space-x-2">
+                          <TouchableOpacity
+                            onPress={() =>
+                              handleQuantityChange(item, item.quantity - 1)
+                            }
+                            disabled={item.quantity === 0}
+                          >
+                            <AntDesign
+                              name="minus-circle"
+                              size={22}
+                              color={item.quantity === 0 ? "gray" : "#FFB74D"}
+                            />
+                          </TouchableOpacity>
+
+                          <Text className="text-secondary-900 font-bold mx-2">
+                            {item.quantity}
+                          </Text>
+
+                          <TouchableOpacity
+                            onPress={() =>
+                              handleQuantityChange(item, item.quantity + 1)
+                            }
+                          >
+                            <AntDesign
+                              name="plus-circle"
+                              size={22}
+                              color="#FFB74D"
+                            />
+                          </TouchableOpacity>
+                        </View>
                       </TableData>
 
+                      {/* Estado dinámico */}
                       <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md">
-                        {item.state === "available"
-                          ? "Disponible"
-                          : "No Disponible"}
+                        {item.quantity === 0 ? "No Disponible" : "Disponible"}
                       </TableData>
+
                       <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md flex justify-center items-center">
                         <Button
                           variant="link"
@@ -454,7 +524,19 @@ const InventoryPage: React.FC = () => {
                     />
                   </Input>
                 </View>
-
+                <View className="mb-3">
+                  <Text className="text-primary-900 font-semibold mb-1">
+                    Cantidad
+                  </Text>
+                  <Input>
+                    <InputField
+                      placeholder="Ej. 10"
+                      keyboardType="numeric"
+                      value={newQuantity}
+                      onChangeText={setNewQuantity}
+                    />
+                  </Input>
+                </View>
                 <View className="mb-3">
                   <Text className="text-primary-900 font-semibold mb-1">
                     Categoría
@@ -479,19 +561,6 @@ const InventoryPage: React.FC = () => {
                       <Picker.Item label="Cámaras" value="Cámaras" />
                       <Picker.Item label="Micas" value="Micas" />
                     </Picker>
-                  </View>
-                  <View className="mb-3">
-                    <Text className="text-primary-900 font-semibold mb-1">
-                      Cantidad
-                    </Text>
-                    <Input>
-                      <InputField
-                        placeholder="Ej. 10"
-                        keyboardType="numeric"
-                        value={newQuantity}
-                        onChangeText={setNewQuantity}
-                      />
-                    </Input>
                   </View>
                 </View>
               </ScrollView>
