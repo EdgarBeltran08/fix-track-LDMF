@@ -10,6 +10,7 @@ export type InventoryItem = {
   createdAt: Date;
 
   category: Category | null;
+   quantity: number; 
 };
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -23,6 +24,8 @@ export const InventoryItem = {
       unitCost: doc.data().unitCost,
       createdAt: doc.data().createdAt.toDate(),
       category: doc.data().category || null,
+       quantity: doc.data().quantity || 0,
+      
     };
   },
 };

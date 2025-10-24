@@ -85,39 +85,30 @@ const InventoryPage: React.FC = () => {
     }
   };
   const handleAddItem = async () => {
-    if (!newName || !newUnitCost || !newCategory) {
+    if (!newName || !newUnitCost || !newCategory || !newQuantity) {
       alert("Por favor llena todos los campos obligatorios");
       return;
     }
 
     try {
-      const newItem = {
-        name: newName,
-        unitCost: parseFloat(newUnitCost),
-        sku: newSku || "",
-        category: { name: newCategory },
-        state: "available",
-        createdAt: new Date(),
-      };
-
       await InventoryRepository.create({
         name: newName,
         sku: newSku || null,
         unitCost: parseFloat(newUnitCost),
         category: { id: "", name: newCategory, createdAt: new Date() },
         state: "available",
+        quantity: parseInt(newQuantity, 10),
       });
+
       setIsAddModalOpen(false);
       fetchInventoryItems();
-      // Cierra el modal y limpia los campos
-      setIsAddModalOpen(false);
+
+      // Limpia campos
       setNewName("");
       setNewUnitCost("");
       setNewSku("");
       setNewCategory("");
-
-      // Recarga la tabla
-      fetchInventoryItems();
+      setNewQuantity("");
     } catch (error) {
       console.error("Error agregando repuesto:", error);
       alert("Error al agregar el repuesto");
@@ -139,6 +130,7 @@ const InventoryPage: React.FC = () => {
   const [newName, setNewName] = useState("");
   const [newUnitCost, setNewUnitCost] = useState("");
   const [newSku, setNewSku] = useState("");
+  const [newQuantity, setNewQuantity] = useState("");
 
   return (
     <>
@@ -252,6 +244,10 @@ const InventoryPage: React.FC = () => {
                       Categoría
                     </TableHead>
                     <TableHead className="text-secondary-900 text-center px-5 py-3 text-lg">
+                      Cantidad
+                    </TableHead>
+
+                    <TableHead className="text-secondary-900 text-center px-5 py-3 text-lg">
                       Estado
                     </TableHead>
                     <TableHead className="text-secondary-900 text-center px-5 py-3 text-lg">
@@ -275,6 +271,10 @@ const InventoryPage: React.FC = () => {
                       <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md">
                         {item.category?.name || "N/A"}
                       </TableData>
+                      <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md">
+                        {item.quantity}
+                      </TableData>
+
                       <TableData className="px-5 py-3 text-secondary-900 text-center border-b-1 border-secondary-300 text-md">
                         {item.state === "available"
                           ? "Disponible"
@@ -479,6 +479,19 @@ const InventoryPage: React.FC = () => {
                       <Picker.Item label="Cámaras" value="Cámaras" />
                       <Picker.Item label="Micas" value="Micas" />
                     </Picker>
+                  </View>
+                  <View className="mb-3">
+                    <Text className="text-primary-900 font-semibold mb-1">
+                      Cantidad
+                    </Text>
+                    <Input>
+                      <InputField
+                        placeholder="Ej. 10"
+                        keyboardType="numeric"
+                        value={newQuantity}
+                        onChangeText={setNewQuantity}
+                      />
+                    </Input>
                   </View>
                 </View>
               </ScrollView>

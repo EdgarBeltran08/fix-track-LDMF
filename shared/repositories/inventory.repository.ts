@@ -12,6 +12,7 @@ export class InventoryRepository {
     await addDoc(collection(db, "inventory"), {
       ...item,
       createdAt: serverTimestamp(), 
+       quantity: item.quantity || 0,
     });
   }
 }
