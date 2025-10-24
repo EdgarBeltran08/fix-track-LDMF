@@ -123,7 +123,7 @@ export default function AddEquipoForm() {
         pantallaNegra: false,
       });
       setFirma(null);
-      if(signatureRef.current){
+      if (signatureRef.current) {
         signatureRef.current.clearSignature();
       }
     } catch (error) {
@@ -159,7 +159,13 @@ export default function AddEquipoForm() {
   const handleCancel = () => {
     Alert.alert("Cancelar", "¿Estás seguro de que quieres cancelar?", [
       { text: "No" },
-      { text: "Sí", onPress: () => {console.log("Formulario cancelado"); router.push("/(private)/(tabs)"); }},
+      {
+        text: "Sí",
+        onPress: () => {
+          console.log("Formulario cancelado");
+          router.push("/(private)/(tabs)");
+        },
+      },
     ]);
   };
   //CAMBIO PARA AGREGAR CHECKLIST
