@@ -103,6 +103,29 @@ export class RepairsRepository {
     await this.update(id, { status });
   }
 
+  // Guardar o actualizar notas de la reparación
+  static async updateNotes(repairId: string, notes: string): Promise<void> {
+    const repairRef = doc(db, "repairs", repairId);
+    await updateDoc(repairRef, {
+      notes,
+      updatedAt: new Date(),
+    });
+  }
+
+  // Agregar una pieza a la subcolección "pieces" dentro de una reparación
+  static async addPieceToRepair(
+    repairId: string,
+    piece: { name: string; quantity: number; unitCost: number; inventoryId?: string }
+  ): Promise<void> {
+    const piecesRef = collection(db, "repairs", repairId, "pieces");
+    await addDoc(piecesRef, {
+      name: piece.name,
+      quantity: piece.quantity,
+      unitCost: piece.unitCost,
+      inventoryId: piece.inventoryId || null,
+      addedAt: new Date(),
+    });
+  }
 
 
  

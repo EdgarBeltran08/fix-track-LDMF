@@ -1,8 +1,10 @@
 import { Button, ButtonText } from "@/shared/components/ui/button";
 import { InventoryRepository } from "@/shared/repositories/inventory.repository";
+import { RepairsRepository } from "@/shared/repositories/repairs.repository";
 import { InventoryItem } from "@/shared/types/inventory.type";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
+
 import { Picker } from "@react-native-picker/picker";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -28,6 +30,7 @@ interface DetailsProps {
 
 const Details: React.FC = () => {
   const { repairId } = useLocalSearchParams<{ repairId: string }>();
+  console.log("Repair ID recibido desde la ruta:", repairId);
 
   const [parts, setParts] = useState<Part[]>([]);
   const [notes, setNotes] = useState("");
@@ -127,6 +130,30 @@ const Details: React.FC = () => {
     );
   };
   const [scrollEnabled, setScrollEnabled] = useState(true);
+  const handleUpdate = async () => {
+    try {
+      // 1️⃣ Guardar las notas
+      await RepairsRepository.updateNotes(repairId, notes);
+
+      // 2️⃣ Guardar las piezas (solo si hay)
+      if (parts.length > 0) {
+        for (const part of parts) {
+          await RepairsRepository.addPieceToRepair(repairId, {
+            name: part.name,
+            quantity: part.quantity,
+            unitCost: part.cost,
+          });
+        }
+      }
+
+      Alert.alert("Éxito", "El reporte se actualizó correctamente");
+      router.push("/(private)/(tabs)");
+    } catch (error) {
+      console.error("Error al actualizar la reparación:", error);
+      Alert.alert("Error", "No se pudo guardar el reporte");
+    }
+  };
+
   return (
     <ScrollView
       className="flex-1 bg-background-50 p-5"
@@ -251,7 +278,7 @@ const Details: React.FC = () => {
             action="primary"
             size="lg"
             className="flex-1 mr-2 rounded-full"
-            // onPress={handleUpdate} //funcion que usaremos
+            onPress={handleUpdate}
           >
             <ButtonText className="font-semibold text-white text-base">
               Actualizar
