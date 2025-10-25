@@ -23,7 +23,9 @@ interface Part {
   name: string;
   cost: number;
   quantity: number;
+  inventoryId?: string;
 }
+
 interface DetailsProps {
   repairId: string;
 }
@@ -52,6 +54,7 @@ const Details: React.FC = () => {
       name: selectedPart.name,
       cost: selectedPart.unitCost,
       quantity: parseInt(newPartQuantity),
+      inventoryId: selectedPart.id,
     };
 
     setParts([...parts, partToAdd]);
@@ -109,6 +112,7 @@ const Details: React.FC = () => {
       name: selectedPart.name,
       cost: selectedPart.unitCost,
       quantity: parseInt(newPartQuantity),
+      inventoryId: selectedPart.id,
     };
 
     setParts([...parts, newPart]);
@@ -142,6 +146,7 @@ const Details: React.FC = () => {
             name: part.name,
             quantity: part.quantity,
             unitCost: part.cost,
+            inventoryId: part.inventoryId,
           });
         }
       }
