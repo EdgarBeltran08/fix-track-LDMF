@@ -121,7 +121,12 @@ export default function HomeScreen() {
   const renderRepairCard = ({ item }: { item: Repair }) => (
     <Pressable
       className="mb-3"
-      onPress={() => router.push(`/(private)/(tabs)/repairs/details`)}
+      onPress={() =>
+        router.push({
+          pathname: "/(private)/(tabs)/repairs/details",
+          params: { repairId: item.id },
+        })
+      }
     >
       <Card className="p-6 rounded-xl border-4">
         {/* Header */}
@@ -131,29 +136,31 @@ export default function HomeScreen() {
             <Text className="text-sm text-typography-1000">{item.folio}</Text>
           </View>
 
-          <Pressable 
-          onPress={() => router.push({
-            pathname: "/(private)/(tabs)/repairs/status",
-            params: { 
-              repairId: item.id, 
-              currentStatus: item.status 
+          <Pressable
+            onPress={() =>
+              router.push({
+                pathname: "/(private)/(tabs)/repairs/status",
+                params: {
+                  repairId: item.id,
+                  currentStatus: item.status,
+                },
+              })
             }
-          })}
-        >
-          <Badge
-            action={getStatusColor(item.status)}
-            variant="outline"
-            className={`ml-2 border-2 ${getStatusBadgeStyle(item.status)}`}
           >
-            <Text
-              className={`text-xs font-bold ${getStatusTextStyle(
-                item.status
-              )}`}
+            <Badge
+              action={getStatusColor(item.status)}
+              variant="outline"
+              className={`ml-2 border-2 ${getStatusBadgeStyle(item.status)}`}
             >
-              {getStatusText(item.status)}
-            </Text>
-          </Badge>
-        </Pressable>
+              <Text
+                className={`text-xs font-bold ${getStatusTextStyle(
+                  item.status
+                )}`}
+              >
+                {getStatusText(item.status)}
+              </Text>
+            </Badge>
+          </Pressable>
         </View>
 
         {/* Device Info */}

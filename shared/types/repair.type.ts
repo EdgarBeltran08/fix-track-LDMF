@@ -41,8 +41,7 @@ export type Repair = {
   finalCost: number;
   deliveryDate: Date | null;
   folio: string | null;
-  notes: RepairNote[];
-  pieces: RepairPiece[];
+notes?: string; // lo agregaremos luego desde details.tsx
    signature?: string | null;
 };
 
@@ -68,22 +67,7 @@ export const Repair = {
       finalCost: data.finalCost,
       deliveryDate: data.deliveryDate ? data.deliveryDate.toDate() : null,
       folio: data.folio || null,
-      notes:
-        data.notes?.map((note: any) => ({
-          id: note.id,
-          authorId: note.authorId,
-          text: note.text,
-          createdAt: note.createdAt.toDate(),
-        })) || [],
-      pieces:
-        data.pieces?.map((piece: any) => ({
-          id: piece.id,
-          inventoryId: piece.inventoryId || null,
-          name: piece.name,
-          quantity: piece.quantity,
-          unitCost: piece.unitCost,
-          addedAt: piece.addedAt.toDate(),
-        })) || [],
+ 
        signature: data.signature || null,
     };
   },
@@ -105,20 +89,7 @@ export const Repair = {
       finalCost: repair.finalCost,
       deliveryDate: repair.deliveryDate,
       folio: repair.folio,
-      notes: repair.notes.map((note) => ({
-        id: note.id,
-        authorId: note.authorId,
-        text: note.text,
-        createdAt: note.createdAt,
-      })),
-      pieces: repair.pieces.map((piece) => ({
-        id: piece.id,
-        inventoryId: piece.inventoryId,
-        name: piece.name,
-        quantity: piece.quantity,
-        unitCost: piece.unitCost,
-        addedAt: piece.addedAt,
-      })),
+    
       signature: repair.signature || null, 
     };
   },

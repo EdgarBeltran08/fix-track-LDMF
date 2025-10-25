@@ -4,7 +4,7 @@ import { InventoryItem } from "@/shared/types/inventory.type";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import { Picker } from "@react-native-picker/picker";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -21,81 +21,88 @@ interface Part {
   name: string;
   cost: number;
   quantity: number;
-
 }
-interface DetailsProps{
+interface DetailsProps {
   repairId: string;
 }
 
-const Details: React.FC<DetailsProps>= ({repairId}) => {
-  const [parts, setParts] = useState<Part[]>([
-    
-  ]);
+const Details: React.FC = () => {
+  const { repairId } = useLocalSearchParams<{ repairId: string }>();
+
+  const [parts, setParts] = useState<Part[]>([]);
   const [notes, setNotes] = useState("");
+  // ... resto de tu código
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newPartName, setNewPartName] = useState("");
   const [newPartCost, setNewPartCost] = useState("");
   const [newPartQuantity, setNewPartQuantity] = useState("1");
 
-  const [inventoryItems,setInventoryItems] =useState<InventoryItem[]>([]);
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedPart, setSelectedPart] = useState<InventoryItem | null>(null);
-const handleAddPartFromInventory = () => {
-  if (!selectedPart) return;
+  const handleAddPartFromInventory = () => {
+    if (!selectedPart) return;
 
-  const partToAdd = {
-    id: selectedPart.id,
-    name: selectedPart.name,
-    cost: selectedPart.unitCost,
-    quantity: parseInt(newPartQuantity),
+    const partToAdd = {
+      id: selectedPart.id,
+      name: selectedPart.name,
+      cost: selectedPart.unitCost,
+      quantity: parseInt(newPartQuantity),
+    };
+
+    setParts([...parts, partToAdd]);
+    setIsModalVisible(false);
+    setSelectedPart(null);
+    setSelectedCategory("");
+    setNewPartQuantity("1");
+  };
+  //Cargar inventario
+  useEffect(() => {
+    fetchInventory();
+  }, []);
+
+  const fetchInventory = async () => {
+    try {
+      const items = await InventoryRepository.getAll();
+      setInventoryItems(items);
+    } catch (error) {
+      console.error("Error al obtener inventario:", error);
+    }
   };
 
-  setParts([...parts, partToAdd]);
-  setIsModalVisible(false);
-  setSelectedPart(null);
-  setSelectedCategory("");
-  setNewPartQuantity("1");
-};
-  //Cargar inventario
-  useEffect(() =>{
-    fetchInventory();
-  },[]);
-
-    const fetchInventory = async () => {
-      try {
-        const items = await InventoryRepository.getAll();
-        setInventoryItems(items);
-      } catch (error) {
-        console.error("Error al obtener inventario:", error);
-      }
-    };
-  
   //Recargar el modal cada vez que se abra
-  const openModal = async () =>{
+  const openModal = async () => {
     await fetchInventory();
     setIsModalVisible(true);
   };
 
   //Categorias de piezas
-    const filteredParts = inventoryItems.filter(
+  const filteredParts = inventoryItems.filter(
     (item) => item.category?.name === selectedCategory
   );
 
   const laborCost = 50;
   const partsCost = parts.reduce((acc, p) => acc + p.cost * p.quantity, 0);
   const totalCost = laborCost + partsCost;
-    const handleCancel = () => {
+  const handleCancel = () => {
     Alert.alert("Cancelar", "¿Estás seguro de que quieres cancelar?", [
       { text: "No" },
-      { text: "Sí", onPress: () => {console.log("Detalles nuevos cancelados"); router.push("/(private)/(tabs)"); }},
+      {
+        text: "Sí",
+        onPress: () => {
+          console.log("Detalles nuevos cancelados");
+          router.push("/(private)/(tabs)");
+        },
+      },
     ]);
   };
 
-    const addPart = () => {
+  const addPart = () => {
     if (!selectedPart) return;
 
     const newPart: Part = {
-      id: Date.now(),
+      id: Date.now().toString(),
       name: selectedPart.name,
       cost: selectedPart.unitCost,
       quantity: parseInt(newPartQuantity),
@@ -142,7 +149,7 @@ const handleAddPartFromInventory = () => {
               Piezas utilizadas
             </Text>
             <TouchableOpacity
-              onPress= {openModal}
+              onPress={openModal}
               className="flex-row items-center"
             >
               <AntDesign name="plus" size={20} color="#51bb54ff" />
@@ -168,7 +175,7 @@ const handleAddPartFromInventory = () => {
                 <View className="flex-row mt-2  text-primary-600">
                   <TouchableOpacity
                     onPress={() => updateQuantity(p.id, -1)}
-                    disabled={p.quantity <=1}
+                    disabled={p.quantity <= 1}
                     className={`px-2 ${p.quantity <= 1 ? "opacity-50" : ""}`}
                   >
                     <AntDesign name="minus" size={18} color="#4CAF50" />
@@ -265,88 +272,107 @@ const handleAddPartFromInventory = () => {
         </View>
       </View>
       {/* MODAL PARA AGREGAR PIEZA */}
-<Modal
-  transparent={true}
-  visible={isModalVisible}
-  animationType="fade"
-  onRequestClose={() => setIsModalVisible(false)}
->
-  <View className="flex-1 justify-center items-center bg-black/60 p-5">
-    <View className="bg-background-200 w-full max-w-[400px] rounded-2xl p-5 border border-background-400">
-      <Text className="text-lg font-bold mb-4 text-typography-900 text-center">
-        Agregar Pieza del Inventario
-      </Text>
-
-      {/* Selector de categoría */}
-      <Text className="text-typography-900 font-medium mb-1">Categoría:</Text>
-      <Picker
-        selectedValue={selectedCategory}
-        onValueChange={(value) => {
-          setSelectedCategory(value);
-          setSelectedPart(null);
-        }}
+      <Modal
+        transparent={true}
+        visible={isModalVisible}
+        animationType="fade"
+        onRequestClose={() => setIsModalVisible(false)}
       >
-        <Picker.Item label="Selecciona una categoría..." value="" />
-        {[...new Set(inventoryItems.map(item => item.category?.name).filter(Boolean))].map((categoryName) => (
-          <Picker.Item key={categoryName!} label={categoryName!} value={categoryName!} />
-        ))}
-      </Picker>
+        <View className="flex-1 justify-center items-center bg-black/60 p-5">
+          <View className="bg-background-200 w-full max-w-[400px] rounded-2xl p-5 border border-background-400">
+            <Text className="text-lg font-bold mb-4 text-typography-900 text-center">
+              Agregar Pieza del Inventario
+            </Text>
 
-      {/* Selector de pieza */}
-      {selectedCategory !== "" && (
-        <>
-          <Text className="text-typography-900 font-medium mt-3 mb-1">Pieza:</Text>
-          <Picker
-            selectedValue={selectedPart?.id || ""}
-            onValueChange={(value) => {
-              const part = inventoryItems.find((item) => item.id === value);
-              setSelectedPart(part || null);
-            }}
-          >
-            <Picker.Item label="Selecciona una pieza..." value="" />
-            {inventoryItems
-              .filter(item => item.category?.name === selectedCategory)
-              .map(item => (
+            {/* Selector de categoría */}
+            <Text className="text-typography-900 font-medium mb-1">
+              Categoría:
+            </Text>
+            <Picker
+              selectedValue={selectedCategory}
+              onValueChange={(value) => {
+                setSelectedCategory(value);
+                setSelectedPart(null);
+              }}
+            >
+              <Picker.Item label="Selecciona una categoría..." value="" />
+              {[
+                ...new Set(
+                  inventoryItems
+                    .map((item) => item.category?.name)
+                    .filter(Boolean)
+                ),
+              ].map((categoryName) => (
                 <Picker.Item
-                  key={item.id}
-                  label={`${item.name} - $${item.unitCost}`}
-                  value={item.id}
+                  key={categoryName!}
+                  label={categoryName!}
+                  value={categoryName!}
                 />
               ))}
-          </Picker>
-        </>
-      )}
+            </Picker>
 
-      {/* Cantidad */}
-      <Text className="text-typography-900 font-medium mt-3 mb-1">Cantidad:</Text>
-      <TextInput
-        placeholder="Cantidad"
-        value={newPartQuantity}
-        onChangeText={setNewPartQuantity}
-        keyboardType="numeric"
-        className="border border-background-400 rounded-xl p-3 mb-3 text-typography-900"
-      />
+            {/* Selector de pieza */}
+            {selectedCategory !== "" && (
+              <>
+                <Text className="text-typography-900 font-medium mt-3 mb-1">
+                  Pieza:
+                </Text>
+                <Picker
+                  selectedValue={selectedPart?.id || ""}
+                  onValueChange={(value) => {
+                    const part = inventoryItems.find(
+                      (item) => item.id === value
+                    );
+                    setSelectedPart(part || null);
+                  }}
+                >
+                  <Picker.Item label="Selecciona una pieza..." value="" />
+                  {inventoryItems
+                    .filter((item) => item.category?.name === selectedCategory)
+                    .map((item) => (
+                      <Picker.Item
+                        key={item.id}
+                        label={`${item.name} - $${item.unitCost}`}
+                        value={item.id}
+                      />
+                    ))}
+                </Picker>
+              </>
+            )}
 
-      {/* Botones */}
-      <View className="flex-row justify-between mt-3">
-        <TouchableOpacity
-          onPress={handleAddPartFromInventory}
-          disabled={!selectedPart || !newPartQuantity}
-          className={`py-2 px-6 rounded-full ${!selectedPart ? "bg-gray-400" : "bg-[#4CAF50]"}`}
-        >
-          <Text className="text-white font-bold">Agregar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => setIsModalVisible(false)}
-          className="bg-[#E57373] py-2 px-6 rounded-full"
-        >
-          <Text className="text-white font-bold">Cancelar</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </View>
-</Modal>
+            {/* Cantidad */}
+            <Text className="text-typography-900 font-medium mt-3 mb-1">
+              Cantidad:
+            </Text>
+            <TextInput
+              placeholder="Cantidad"
+              value={newPartQuantity}
+              onChangeText={setNewPartQuantity}
+              keyboardType="numeric"
+              className="border border-background-400 rounded-xl p-3 mb-3 text-typography-900"
+            />
 
+            {/* Botones */}
+            <View className="flex-row justify-between mt-3">
+              <TouchableOpacity
+                onPress={handleAddPartFromInventory}
+                disabled={!selectedPart || !newPartQuantity}
+                className={`py-2 px-6 rounded-full ${
+                  !selectedPart ? "bg-gray-400" : "bg-[#4CAF50]"
+                }`}
+              >
+                <Text className="text-white font-bold">Agregar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setIsModalVisible(false)}
+                className="bg-[#E57373] py-2 px-6 rounded-full"
+              >
+                <Text className="text-white font-bold">Cancelar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };

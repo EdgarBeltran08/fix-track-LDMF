@@ -7,12 +7,12 @@ import React, { useEffect, useState } from "react";
 import { Alert, Image, ScrollView, Text, View } from "react-native";
 
 // Definir tipos para los mapeos
-type DisplayStatus = 
-  | "Revisión" 
-  | "En progreso" 
-  | "Esperando Piezas" 
-  | "Completo" 
-  | "Cancelado" 
+type DisplayStatus =
+  | "Revisión"
+  | "En progreso"
+  | "Esperando Piezas"
+  | "Completo"
+  | "Cancelado"
   | "Entregado";
 
 type StatusMapType = {
@@ -26,45 +26,47 @@ type ReverseStatusMapType = {
 export default function ActualizarEstadoScreen() {
   const { repairId, currentStatus } = useLocalSearchParams();
   const [estado, setEstado] = useState<RepairStatus>("repairing");
-  const [nuevoEstado, setNuevoEstado] = useState<DisplayStatus | "">("");
+  const [nuevoEstado, setNuevoEstado] = useState<DisplayStatus | undefined>(
+    undefined
+  );
   const [loading, setLoading] = useState(false);
   const [repairData, setRepairData] = useState<any>(null);
   const [estadoVisual, setEstadoVisual] = useState<RepairStatus>("repairing");
 
   // Mapeo de estados de la base de datos a la interfaz
   const statusMap: StatusMapType = {
-    "in_review": "Revisión",
-    "repairing": "En progreso", 
-    "waiting_parts": "Esperando Piezas",
-    "done": "Completo",
-    "not_repaired": "Cancelado",
-    "delivered": "Entregado"
+    in_review: "Revisión",
+    repairing: "En progreso",
+    waiting_parts: "Esperando Piezas",
+    done: "Completo",
+    not_repaired: "Cancelado",
+    delivered: "Entregado",
   };
 
   // Mapeo inverso para enviar a Firebase
   const reverseStatusMap: ReverseStatusMapType = {
-    "Revisión": "in_review",
+    Revisión: "in_review",
     "En progreso": "repairing",
-    "Esperando Piezas": "waiting_parts", 
-    "Completo": "done",
-    "Cancelado": "not_repaired",
-    "Entregado": "delivered"
+    "Esperando Piezas": "waiting_parts",
+    Completo: "done",
+    Cancelado: "not_repaired",
+    Entregado: "delivered",
   };
 
   // CONSULTAR LOS DATOS ACTUALES DE LA REPARACIÓN
   useEffect(() => {
     const loadRepairData = async () => {
       if (!repairId || Array.isArray(repairId)) return;
-      
+
       try {
         const repairIdString = Array.isArray(repairId) ? repairId[0] : repairId;
         const repair = await RepairsRepository.getById(repairIdString);
-        
+
         if (repair) {
           setRepairData(repair);
           setEstado(repair.status);
           setEstadoVisual(repair.status);
-          setNuevoEstado("");
+          setNuevoEstado(undefined);
           console.log("Datos de reparación cargados:", repair.status);
         }
       } catch (error) {
@@ -74,7 +76,7 @@ export default function ActualizarEstadoScreen() {
 
     loadRepairData();
   }, [repairId]);
-  
+
   const handleEstadoChange = (itemValue: DisplayStatus) => {
     setNuevoEstado(itemValue);
 
@@ -82,18 +84,21 @@ export default function ActualizarEstadoScreen() {
       const firebaseStatus = reverseStatusMap[itemValue];
       setEstadoVisual(firebaseStatus);
     }
-  }
+  };
 
   const handleCancel = () => {
     setEstadoVisual(estado);
-    setNuevoEstado("");
+    setNuevoEstado(undefined);
 
     Alert.alert("Cancelar", "¿Estás seguro de que quieres cancelar?", [
       { text: "No" },
-      { text: "Sí", onPress: () => { 
-        console.log("Estado no actualizado"); 
-        router.push("/(private)/(tabs)"); 
-      }},
+      {
+        text: "Sí",
+        onPress: () => {
+          console.log("Estado no actualizado");
+          router.push("/(private)/(tabs)");
+        },
+      },
     ]);
   };
 
@@ -113,27 +118,22 @@ export default function ActualizarEstadoScreen() {
     try {
       const firebaseStatus = reverseStatusMap[nuevoEstado];
       const repairIdString = Array.isArray(repairId) ? repairId[0] : repairId;
-      
+
       console.log("Actualizando reparación:", repairIdString);
       console.log("Nuevo estado:", firebaseStatus);
-      
+
       await RepairsRepository.updateStatus(repairIdString, firebaseStatus);
 
       // Actualizar el estado local inmediatamente
       setEstado(firebaseStatus);
       setEstadoVisual(firebaseStatus);
-      
-      Alert.alert(
-        "Éxito", 
-        `Estado actualizado a: ${nuevoEstado}`,
-        [
-          { 
-            text: "OK", 
-            onPress: () => router.push("/(private)/(tabs)") 
-          }
-        ]
-      );
 
+      Alert.alert("Éxito", `Estado actualizado a: ${nuevoEstado}`, [
+        {
+          text: "OK",
+          onPress: () => router.push("/(private)/(tabs)"),
+        },
+      ]);
     } catch (error) {
       console.error("Error al actualizar estado:", error);
       Alert.alert("Error", "No se pudo actualizar el estado");
@@ -145,7 +145,7 @@ export default function ActualizarEstadoScreen() {
   // ======== función para asignar color según estado ========
   const getEstadoColor = (estado: RepairStatus) => {
     const displayStatus = statusMap[estado];
-    
+
     switch (displayStatus) {
       case "Esperando Piezas":
       case "Revisión":
@@ -249,7 +249,7 @@ export default function ActualizarEstadoScreen() {
           <View className="border border-background-200 rounded-md bg-background-50">
             <Picker
               selectedValue={nuevoEstado}
-              onValueChange={handleEstadoChange} 
+              onValueChange={handleEstadoChange}
             >
               <Picker.Item label="Seleccionar estado" value="" />
               <Picker.Item label="Esperando Piezas" value="Esperando Piezas" />

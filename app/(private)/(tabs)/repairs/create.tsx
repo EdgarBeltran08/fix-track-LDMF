@@ -85,8 +85,7 @@ export default function AddEquipoForm() {
         finalCost: 0,
         deliveryDate: null,
         folio: folio,
-        notes: [],
-        pieces: [],
+
         signature: firma || null,
       };
 

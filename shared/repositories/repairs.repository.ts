@@ -103,46 +103,7 @@ export class RepairsRepository {
     await this.update(id, { status });
   }
 
-  static async addNote(
-    repairId: string,
-    note: { authorId: string; text: string }
-  ): Promise<void> {
-    const repair = await this.getById(repairId);
-    if (!repair) throw new Error("Repair not found");
 
-    const newNote = {
-      id: Date.now().toString(), // You might want to use a better ID generation strategy
-      authorId: note.authorId,
-      text: note.text,
-      createdAt: new Date(),
-    };
 
-    const updatedNotes = [...repair.notes, newNote];
-    await this.update(repairId, { notes: updatedNotes });
-  }
-
-  static async addPiece(
-    repairId: string,
-    piece: {
-      inventoryId?: string;
-      name: string;
-      quantity: number;
-      unitCost: number;
-    }
-  ): Promise<void> {
-    const repair = await this.getById(repairId);
-    if (!repair) throw new Error("Repair not found");
-
-    const newPiece = {
-      id: Date.now().toString(), // You might want to use a better ID generation strategy
-      inventoryId: piece.inventoryId || null,
-      name: piece.name,
-      quantity: piece.quantity,
-      unitCost: piece.unitCost,
-      addedAt: new Date(),
-    };
-
-    const updatedPieces = [...repair.pieces, newPiece];
-    await this.update(repairId, { pieces: updatedPieces });
-  }
+ 
 }
