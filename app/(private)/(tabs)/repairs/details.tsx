@@ -84,17 +84,17 @@ const Details: React.FC = () => {
   }, []);
   useEffect(() => {
     if (repairId) {
+      setNotes("");
       loadExistingData();
     }
   }, [repairId]);
-
   const loadExistingData = async () => {
     try {
       // Obtener la reparación completa
       const repair = await RepairsRepository.getById(repairId);
-      if (repair && repair.notes) {
-        setNotes(repair.notes);
-      }
+
+      // Siempre asignar notes; si no existe, será ""
+      setNotes(repair?.notes || "");
 
       // Obtener las piezas
       const existingPieces = await RepairsRepository.getPieces(repairId);

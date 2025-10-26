@@ -10,7 +10,7 @@ export type RepairStatus =
 
 export type RepairNote = {
   id: string;
-  authorId: string; // userId
+  authorId: string;
   text: string;
   createdAt: Date;
 };
@@ -30,21 +30,20 @@ export type Repair = {
   customerEmail: string;
   customerPhone: string;
   deviceModel: string;
-  imei: string | null; 
+  imei: string | null;
   issueDescription: string;
-  checklist: Record<string, boolean>; 
+  checklist: Record<string, boolean>;
   status: RepairStatus;
   createdAt: Date;
   updatedAt: Date;
-  assignedTo: string; // userId
+  assignedTo: string;
   estimatedCost: number;
   finalCost: number;
   deliveryDate: Date | null;
   folio: string | null;
-notes?: string; // lo agregaremos luego desde details.tsx
-   signature?: string | null;
+  notes?: string; //campo opcional para notas
+  signature?: string | null;
 };
-
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const Repair = {
@@ -56,9 +55,9 @@ export const Repair = {
       customerEmail: data.customerEmail,
       customerPhone: data.customerPhone,
       deviceModel: data.deviceModel,
-      imei: data.imei || null, // 
+      imei: data.imei || null,
       issueDescription: data.issueDescription,
-      checklist: data.checklist || {}, // 
+      checklist: data.checklist || {},
       status: data.status,
       createdAt: data.createdAt.toDate(),
       updatedAt: data.updatedAt.toDate(),
@@ -67,8 +66,8 @@ export const Repair = {
       finalCost: data.finalCost,
       deliveryDate: data.deliveryDate ? data.deliveryDate.toDate() : null,
       folio: data.folio || null,
- 
-       signature: data.signature || null,
+      notes: data.notes ?? "", // ahora sí lee el campo notes del documento
+      signature: data.signature || null,
     };
   },
 
@@ -78,9 +77,9 @@ export const Repair = {
       customerEmail: repair.customerEmail,
       customerPhone: repair.customerPhone,
       deviceModel: repair.deviceModel,
-      imei: repair.imei || null, // 
+      imei: repair.imei || null,
       issueDescription: repair.issueDescription,
-      checklist: repair.checklist || {}, //
+      checklist: repair.checklist || {},
       status: repair.status,
       createdAt: repair.createdAt,
       updatedAt: repair.updatedAt,
@@ -89,8 +88,8 @@ export const Repair = {
       finalCost: repair.finalCost,
       deliveryDate: repair.deliveryDate,
       folio: repair.folio,
-    
-      signature: repair.signature || null, 
+      notes: repair.notes ?? "", //también lo agregamos al guardar
+      signature: repair.signature || null,
     };
   },
 };
