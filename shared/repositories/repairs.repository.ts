@@ -128,5 +128,53 @@ export class RepairsRepository {
   }
 
 
+  // 🔹 Obtener piezas de una reparación específica
+  static async getPieces(repairId: string) {
+    const piecesRef = collection(db, "repairs", repairId, "pieces");
+    const snapshot = await getDocs(piecesRef);
+    return snapshot.docs.map((docSnap) => ({
+      id: docSnap.id,
+      ...docSnap.data(),
+    }));
+  }
+
+// 🔹 Verificar si ya existe una pieza con el mismo inventoryId
+static async findPieceByInventoryId(
+  repairId: string,
+  inventoryId: string
+): Promise<{ id: string; name: string; quantity: number; unitCost: number; inventoryId: string } | null> {
+  const piecesRef = collection(db, "repairs", repairId, "pieces");
+  const q = query(piecesRef, where("inventoryId", "==", inventoryId));
+  const snapshot = await getDocs(q);
+
+  if (!snapshot.empty) {
+    const docSnap = snapshot.docs[0];
+    const data = docSnap.data();
+    return {
+      id: docSnap.id,
+      name: data.name,
+      quantity: data.quantity,
+      unitCost: data.unitCost,
+      inventoryId: data.inventoryId,
+    };
+  }
+
+  return null;
+}
+
+
+  // 🔹 Actualizar cantidad de una pieza existente
+  static async updatePieceQuantity(
+    repairId: string,
+    pieceId: string,
+    newQuantity: number
+  ) {
+    const pieceRef = doc(db, "repairs", repairId, "pieces", pieceId);
+    await updateDoc(pieceRef, {
+      quantity: newQuantity,
+      updatedAt: new Date(),
+    });
+  }
+  
  
 }
