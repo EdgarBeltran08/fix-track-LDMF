@@ -175,6 +175,11 @@ static async findPieceByInventoryId(
       updatedAt: new Date(),
     });
   }
-  
+  // 🔹 Eliminar una pieza específica de una reparación
+static async deletePiece(repairId: string, pieceId: string): Promise<void> {
+  const pieceRef = doc(db, "repairs", repairId, "pieces", pieceId);
+  await deleteDoc(pieceRef);
+}
+
  
 }

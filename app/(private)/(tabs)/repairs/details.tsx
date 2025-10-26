@@ -165,9 +165,33 @@ const Details: React.FC = () => {
     setNewPartQuantity("1");
     setIsModalVisible(false);
   };
+  const removePart = async (id: string) => {
+    try {
+      const partToRemove = parts.find((p) => p.id === id);
 
-  const removePart = (id: string) => {
-    setParts(parts.filter((p) => p.id !== id));
+      if (!partToRemove) return;
+
+      // Si existe en Firestore, eliminarla también
+      if (repairId && partToRemove.inventoryId) {
+        // Buscar si la pieza existe en Firestore
+        const existingPiece = await RepairsRepository.findPieceByInventoryId(
+          repairId,
+          partToRemove.inventoryId
+        );
+
+        if (existingPiece) {
+          await RepairsRepository.deletePiece(repairId, existingPiece.id);
+        }
+      }
+
+      // Eliminar de la interfaz local
+      setParts((prevParts) => prevParts.filter((p) => p.id !== id));
+
+      Alert.alert("Eliminado", "La pieza fue eliminada correctamente.");
+    } catch (error) {
+      console.error("Error al eliminar pieza:", error);
+      Alert.alert("Error", "No se pudo eliminar la pieza.");
+    }
   };
 
   const updateQuantity = (id: string, delta: number) => {
