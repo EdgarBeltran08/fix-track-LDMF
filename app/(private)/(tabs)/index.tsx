@@ -71,7 +71,6 @@ export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [repairs, setRepairs] = useState<Repair[]>([]);
-  const [loading, setLoading] = useState(true);
   const { user, signOut } = useUserStore();
 
   // Load repairs on component mount
@@ -81,13 +80,10 @@ export default function HomeScreen() {
 
   const loadRepairs = async () => {
     try {
-      setLoading(true);
       const repairsData = await RepairsRepository.getAll();
       setRepairs(repairsData);
     } catch (error) {
       console.error("Error loading repairs:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
