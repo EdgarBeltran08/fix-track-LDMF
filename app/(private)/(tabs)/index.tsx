@@ -6,7 +6,7 @@ import { RepairsRepository } from "@/shared/repositories/repairs.repository";
 import { useUserStore } from "@/shared/stores/useUserStore";
 import { Repair } from "@/shared/types/repair.type";
 import { Ionicons } from "@expo/vector-icons";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
@@ -108,10 +108,7 @@ export default function HomeScreen() {
   };
 
   const renderRepairCard = ({ item }: { item: Repair }) => (
-    <Pressable
-      className="mb-3"
-      onPress={() => router.push(`/(private)/(tabs)/repairs/details`)}
-    >
+    <Pressable className="mb-3">
       <Card className="p-4 bg-background-50 border border-background-200">
         {/* Header */}
         <View className="flex-row justify-between items-start mb-3">
@@ -121,21 +118,18 @@ export default function HomeScreen() {
             </Text>
             <Text className="text-sm text-typography-600">{item.folio}</Text>
           </View>
-          <Link href={"/(private)/(tabs)/repairs/status"}>
-            <Badge
-              action={getStatusColor(item.status)}
-              variant="outline"
-              className={`ml-2 border-2 ${getStatusBadgeStyle(item.status)}`}
+
+          <Badge
+            action={getStatusColor(item.status)}
+            variant="outline"
+            className={`ml-2 border-2 ${getStatusBadgeStyle(item.status)}`}
+          >
+            <Text
+              className={`text-xs font-bold ${getStatusTextStyle(item.status)}`}
             >
-              <Text
-                className={`text-xs font-bold ${getStatusTextStyle(
-                  item.status
-                )}`}
-              >
-                {getStatusText(item.status)}
-              </Text>
-            </Badge>
-          </Link>
+              {getStatusText(item.status)}
+            </Text>
+          </Badge>
         </View>
 
         {/* Device Info */}
