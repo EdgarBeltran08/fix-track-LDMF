@@ -1,4 +1,13 @@
+import {
+  AlertText,
+  Alert as GluestackAlert,
+} from "@/shared/components/ui/alert";
 import { Button, ButtonText } from "@/shared/components/ui/button";
+import {
+  FormControl,
+  FormControlError,
+  FormControlErrorText,
+} from "@/shared/components/ui/form-control";
 import { Input, InputField, InputSlot } from "@/shared/components/ui/input";
 import {
   Table,
@@ -10,13 +19,16 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 import { InventoryRepository } from "@/shared/repositories/inventory.repository";
+import { createInventoryItemSchema } from "@/shared/schemas/inventory.schemas";
 import { InventoryItem } from "@/shared/types/inventory.type";
+import { Ionicons } from "@expo/vector-icons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Picker } from "@react-native-picker/picker";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Modal as RNModal,
@@ -26,6 +38,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { ValidationError } from "yup";
+
+type FormField = "name" | "unitCost" | "sku" | "category";
 
 const InventoryPage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
@@ -43,6 +58,17 @@ const InventoryPage: React.FC = () => {
 
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Partial<Record<FormField, string>>>({});
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    type: "success" | "error";
+    message: string;
+  }>({
+    visible: false,
+    type: "success",
+    message: "",
+  });
 
   const categories = [
     "",
@@ -82,35 +108,71 @@ const InventoryPage: React.FC = () => {
     setNewItemCost("");
     setNewItemSku("");
     setNewCategory("");
+    setErrors({});
   };
 
   const handleAddItem = async () => {
-    if (!newItemName || !newItemCost || !newCategory) {
-      // You might want to show an error toast here
-      alert("Por favor completa todos los campos requeridos");
-      return;
-    }
-
     try {
-      // TODO: Implement the actual repository call to add the item
-      // Example:
-      // const newItem: Omit<InventoryItem, 'id' | 'createdAt'> = {
-      //   name: newItemName,
-      //   unitCost: parseFloat(newItemCost),
-      //   sku: newItemSku || null,
-      //   state: "available",
-      //   category: { name: newCategory } // Adjust based on your Category type
-      // };
-      // await InventoryRepository.create(newItem);
+      // Clear previous errors
+      setErrors({});
+
+      // Validate form data
+      await createInventoryItemSchema.validate(
+        {
+          name: newItemName,
+          unitCost: newItemCost,
+          sku: newItemSku,
+          category: newCategory,
+        },
+        { abortEarly: false }
+      );
+
+      setLoading(true);
+
+      const newItem: Omit<InventoryItem, "id" | "createdAt"> = {
+        name: newItemName,
+        unitCost: parseFloat(newItemCost),
+        sku: newItemSku || null,
+        state: "available",
+        category: newCategory
+          ? {
+              id: "",
+              name: newCategory,
+              createdAt: new Date(),
+            }
+          : null,
+      };
+
+      await InventoryRepository.create(newItem);
 
       handleCloseAddModal();
       await fetchInventoryItems(); // Refresh the list
 
-      // You might want to show a success toast here
-      alert("Artículo agregado exitosamente");
+      setAlertConfig({
+        visible: true,
+        type: "success",
+        message: "¡Artículo agregado exitosamente!",
+      });
     } catch (error) {
-      console.error("Error adding inventory item:", error);
-      alert("Error al agregar el artículo");
+      if (error instanceof ValidationError) {
+        const validationErrors: Partial<Record<FormField, string>> = {};
+        error.inner.forEach((err) => {
+          if (err.path) {
+            validationErrors[err.path as FormField] = err.message;
+          }
+        });
+        setErrors(validationErrors);
+        // Errors will be displayed by FormControl components
+      } else {
+        console.error("Error adding inventory item:", error);
+        setAlertConfig({
+          visible: true,
+          type: "error",
+          message: "Error al agregar el artículo. Por favor, intenta de nuevo.",
+        });
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -141,6 +203,16 @@ const InventoryPage: React.FC = () => {
   useEffect(() => {
     fetchInventoryItems();
   }, []);
+
+  // Auto-dismiss alert after 4 seconds
+  useEffect(() => {
+    if (alertConfig.visible) {
+      const timer = setTimeout(() => {
+        setAlertConfig((prev) => ({ ...prev, visible: false }));
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [alertConfig.visible]);
 
   return (
     <>
@@ -350,56 +422,91 @@ const InventoryPage: React.FC = () => {
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
               >
-                <View className="mb-3">
+                <FormControl className="mb-3" isInvalid={!!errors.name}>
                   <Text className="text-primary-900 font-semibold mb-1">
                     Nombre del repuesto
                   </Text>
-                  <Input>
+                  <Input className={errors.name ? "border-error-500" : ""}>
                     <InputField
                       placeholder="Ej. Pantalla iPhone 12"
                       value={newItemName}
-                      onChangeText={setNewItemName}
+                      onChangeText={(value) => {
+                        setNewItemName(value);
+                        if (errors.name) {
+                          setErrors({ ...errors, name: undefined });
+                        }
+                      }}
                     />
                   </Input>
-                </View>
+                  <FormControlError>
+                    <FormControlErrorText>{errors.name}</FormControlErrorText>
+                  </FormControlError>
+                </FormControl>
 
-                <View className="mb-3">
+                <FormControl className="mb-3" isInvalid={!!errors.unitCost}>
                   <Text className="text-primary-900 font-semibold mb-1">
                     Costo unitario
                   </Text>
-                  <Input>
+                  <Input className={errors.unitCost ? "border-error-500" : ""}>
                     <InputField
                       placeholder="Ej. 250.00"
                       keyboardType="numeric"
                       value={newItemCost}
-                      onChangeText={setNewItemCost}
+                      onChangeText={(value) => {
+                        setNewItemCost(value);
+                        if (errors.unitCost) {
+                          setErrors({ ...errors, unitCost: undefined });
+                        }
+                      }}
                     />
                   </Input>
-                </View>
+                  <FormControlError>
+                    <FormControlErrorText>
+                      {errors.unitCost}
+                    </FormControlErrorText>
+                  </FormControlError>
+                </FormControl>
 
-                <View className="mb-3">
+                <FormControl className="mb-3" isInvalid={!!errors.sku}>
                   <Text className="text-primary-900 font-semibold mb-1">
                     SKU
                   </Text>
-                  <Input>
+                  <Input className={errors.sku ? "border-error-500" : ""}>
                     <InputField
                       placeholder="Ej. IP12-SCR-001"
                       value={newItemSku}
-                      onChangeText={setNewItemSku}
+                      onChangeText={(value) => {
+                        setNewItemSku(value);
+                        if (errors.sku) {
+                          setErrors({ ...errors, sku: undefined });
+                        }
+                      }}
                     />
                   </Input>
-                </View>
+                  <FormControlError>
+                    <FormControlErrorText>{errors.sku}</FormControlErrorText>
+                  </FormControlError>
+                </FormControl>
 
-                <View className="mb-3">
+                <FormControl className="mb-3" isInvalid={!!errors.category}>
                   <Text className="text-primary-900 font-semibold mb-1">
                     Categoría
                   </Text>
-                  <View className="border-2 border-primary-300 rounded-xl bg-background-50 overflow-hidden">
+                  <View
+                    className={`border-2 ${
+                      errors.category
+                        ? "border-error-500"
+                        : "border-primary-300"
+                    } rounded-xl bg-background-50 overflow-hidden`}
+                  >
                     <Picker
                       selectedValue={newCategory}
-                      onValueChange={(itemValue: string) =>
-                        setNewCategory(itemValue)
-                      }
+                      onValueChange={(itemValue: string) => {
+                        setNewCategory(itemValue);
+                        if (errors.category) {
+                          setErrors({ ...errors, category: undefined });
+                        }
+                      }}
                       style={{
                         fontSize: 14,
                       }}
@@ -417,7 +524,12 @@ const InventoryPage: React.FC = () => {
                       <Picker.Item label="Micas" value="Micas" />
                     </Picker>
                   </View>
-                </View>
+                  <FormControlError>
+                    <FormControlErrorText>
+                      {errors.category}
+                    </FormControlErrorText>
+                  </FormControlError>
+                </FormControl>
               </ScrollView>
 
               {/* Botones */}
@@ -427,6 +539,7 @@ const InventoryPage: React.FC = () => {
                   action="secondary"
                   onPress={handleCloseAddModal}
                   className="bg-background-200 border-primary-300 rounded-full px-5"
+                  isDisabled={loading}
                 >
                   <ButtonText>Cancelar</ButtonText>
                 </Button>
@@ -434,8 +547,13 @@ const InventoryPage: React.FC = () => {
                 <Button
                   className="bg-primary-400 border-primary-400 rounded-full px-5"
                   onPress={handleAddItem}
+                  isDisabled={loading}
                 >
-                  <ButtonText>Agregar</ButtonText>
+                  {loading ? (
+                    <ActivityIndicator color="#000000" size="small" />
+                  ) : (
+                    <ButtonText>Agregar</ButtonText>
+                  )}
                 </Button>
               </View>
             </View>
@@ -551,6 +669,48 @@ const InventoryPage: React.FC = () => {
           </View>
         </KeyboardAvoidingView>
       </RNModal>
+
+      {/* Alert Component */}
+      {alertConfig.visible && (
+        <View className="absolute top-16 left-4 right-4 z-50">
+          <GluestackAlert
+            action={alertConfig.type}
+            className={`${
+              alertConfig.type === "success" ? "bg-success-700" : "bg-error-700"
+            } rounded-xl shadow-2xl p-4`}
+          >
+            <View className="flex-row items-start justify-between w-full">
+              <View className="flex-row items-start flex-1 gap-3">
+                <Ionicons
+                  name={
+                    alertConfig.type === "success"
+                      ? "checkmark-circle"
+                      : "close-circle"
+                  }
+                  size={24}
+                  color="white"
+                />
+                <View className="flex-1">
+                  <AlertText className="text-white font-bold text-base mb-1">
+                    {alertConfig.type === "success" ? "¡Éxito!" : "Error"}
+                  </AlertText>
+                  <AlertText className="text-white text-sm">
+                    {alertConfig.message}
+                  </AlertText>
+                </View>
+              </View>
+              <TouchableOpacity
+                onPress={() =>
+                  setAlertConfig((prev) => ({ ...prev, visible: false }))
+                }
+                className="ml-2"
+              >
+                <Ionicons name="close" size={20} color="white" />
+              </TouchableOpacity>
+            </View>
+          </GluestackAlert>
+        </View>
+      )}
     </>
   );
 };
