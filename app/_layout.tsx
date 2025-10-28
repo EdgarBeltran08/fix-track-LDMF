@@ -3,7 +3,6 @@ import { useUserStore } from "@/shared/stores/useUserStore";
 import "@/shared/styles/globals.css";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useColorScheme } from "nativewind";
 import { View } from "react-native";
 import {
   SafeAreaProvider,
@@ -12,9 +11,9 @@ import {
 
 function LayoutContainer({ children }: { children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
-  const { colorScheme } = useColorScheme();
+  const  colorScheme  = "light";
 
-  const backgroundColor = colorScheme === "dark" ? "#0d0d0d" : "#193456";
+  const backgroundColor = "#193456";
 
   return (
     <View
@@ -34,7 +33,7 @@ export default function RootLayout() {
   const { isAuthenticated } = useUserStore();
 
   return (
-    <GluestackUIProvider mode="system">
+    <GluestackUIProvider mode="light">
       <SafeAreaProvider>
         <LayoutContainer>
           <Stack>
