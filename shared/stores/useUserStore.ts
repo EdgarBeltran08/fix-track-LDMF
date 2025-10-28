@@ -5,9 +5,10 @@ import {
   signOut,
   User,
 } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { auth } from "../services/firebase";
+import { auth, db } from "../services/firebase";
 
 // Define la interfaz para el usuario
 interface UserState {
@@ -50,13 +51,23 @@ export const useUserStore = create<UserState>()(
         if (firebaseUser) {
           try {
             // Obtenemos los custom claims para el rol
-            const idTokenResult = await firebaseUser.getIdTokenResult();
-            const role = (idTokenResult.claims.role as string) || null;
-
+          const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
+          let role = null;
+          let displayNameFromDB = firebaseUser.displayName;
+          
+          if (userDoc.exists()) {
+            const data = userDoc.data();
+            role = data.role || null;
+            if(data.name){
+              displayNameFromDB = data.name;
+            }
+          }
+                console.log(`✅ Usuario autenticado: ${firebaseUser.email}`);
+      console.log(`🔹 Rol detectado: ${role}`);
             set({
               user: {
                 id: firebaseUser.uid,
-                displayName: firebaseUser.displayName,
+                displayName: displayNameFromDB,
                 role: role,
               },
               isAuthenticated: true,
