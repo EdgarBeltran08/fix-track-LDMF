@@ -49,24 +49,68 @@ const Details: React.FC = () => {
   const handleAddPartFromInventory = () => {
     if (!selectedPart) return;
 
-    const partToAdd = {
-      id: selectedPart.id,
-      name: selectedPart.name,
-      cost: selectedPart.unitCost,
-      quantity: parseInt(newPartQuantity),
-      inventoryId: selectedPart.id,
-    };
+    const existingPart = parts.find((p) => p.inventoryId === selectedPart.id);
 
-    setParts([...parts, partToAdd]);
+    if (existingPart) {
+      // Si ya existe, solo aumentar cantidad en la interfaz (no en DB todavía)
+      const updatedParts = parts.map((p) =>
+        p.inventoryId === selectedPart.id
+          ? { ...p, quantity: p.quantity + parseInt(newPartQuantity) }
+          : p
+      );
+      setParts(updatedParts);
+    } else {
+      // Si no existe, agregar normalmente
+      const partToAdd = {
+        id: Date.now().toString(),
+        name: selectedPart.name,
+        cost: selectedPart.unitCost,
+        quantity: parseInt(newPartQuantity),
+        inventoryId: selectedPart.id,
+      };
+      setParts([...parts, partToAdd]);
+    }
+
+    // Limpiar modal
     setIsModalVisible(false);
     setSelectedPart(null);
     setSelectedCategory("");
     setNewPartQuantity("1");
   };
+
   //Cargar inventario
   useEffect(() => {
     fetchInventory();
   }, []);
+  useEffect(() => {
+    if (repairId) {
+      setNotes("");
+      loadExistingData();
+    }
+  }, [repairId]);
+  const loadExistingData = async () => {
+    try {
+      // Obtener la reparación completa
+      const repair = await RepairsRepository.getById(repairId);
+
+      // Siempre asignar notes; si no existe, será ""
+      setNotes(repair?.notes || "");
+
+      // Obtener las piezas
+      const existingPieces = await RepairsRepository.getPieces(repairId);
+      setParts(
+        existingPieces.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          cost: p.unitCost,
+          quantity: p.quantity,
+          inventoryId: p.inventoryId,
+        }))
+      );
+    } catch (error) {
+      console.error("Error cargando datos existentes:", error);
+    }
+  };
 
   const fetchInventory = async () => {
     try {
@@ -121,9 +165,33 @@ const Details: React.FC = () => {
     setNewPartQuantity("1");
     setIsModalVisible(false);
   };
+  const removePart = async (id: string) => {
+    try {
+      const partToRemove = parts.find((p) => p.id === id);
 
-  const removePart = (id: string) => {
-    setParts(parts.filter((p) => p.id !== id));
+      if (!partToRemove) return;
+
+      // Si existe en Firestore, eliminarla también
+      if (repairId && partToRemove.inventoryId) {
+        // Buscar si la pieza existe en Firestore
+        const existingPiece = await RepairsRepository.findPieceByInventoryId(
+          repairId,
+          partToRemove.inventoryId
+        );
+
+        if (existingPiece) {
+          await RepairsRepository.deletePiece(repairId, existingPiece.id);
+        }
+      }
+
+      // Eliminar de la interfaz local
+      setParts((prevParts) => prevParts.filter((p) => p.id !== id));
+
+      Alert.alert("Eliminado", "La pieza fue eliminada correctamente.");
+    } catch (error) {
+      console.error("Error al eliminar pieza:", error);
+      Alert.alert("Error", "No se pudo eliminar la pieza.");
+    }
   };
 
   const updateQuantity = (id: string, delta: number) => {
@@ -136,12 +204,30 @@ const Details: React.FC = () => {
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const handleUpdate = async () => {
     try {
-      // 1️⃣ Guardar las notas
+      // Guardar notas
       await RepairsRepository.updateNotes(repairId, notes);
 
-      // 2️⃣ Guardar las piezas (solo si hay)
-      if (parts.length > 0) {
-        for (const part of parts) {
+      // Guardar piezas
+      for (const part of parts) {
+        if (!part.inventoryId) continue;
+
+        // Verificar si ya existe en Firestore
+        const existingPiece = await RepairsRepository.findPieceByInventoryId(
+          repairId,
+          part.inventoryId
+        );
+
+        if (existingPiece) {
+          // Si ya existe y cambió la cantidad → actualizar
+          if (existingPiece.quantity !== part.quantity) {
+            await RepairsRepository.updatePieceQuantity(
+              repairId,
+              existingPiece.id,
+              part.quantity
+            );
+          }
+        } else {
+          // Si no existe → agregarla
           await RepairsRepository.addPieceToRepair(repairId, {
             name: part.name,
             quantity: part.quantity,

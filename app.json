@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icons/logo.svg",
     "scheme": "fix-track",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
