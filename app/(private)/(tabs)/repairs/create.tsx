@@ -59,6 +59,7 @@ export default function AddEquipoForm() {
         );
         return;
       }
+
       if (!firma) {
         Alert.alert(
           "Firma requerida",
@@ -66,6 +67,7 @@ export default function AddEquipoForm() {
         );
         return;
       }
+
       // Generar folio único de 6 dígitos
       const folio = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -85,18 +87,13 @@ export default function AddEquipoForm() {
         finalCost: 0,
         deliveryDate: null,
         folio: folio,
-
         signature: firma || null,
       };
 
       const repairId = await RepairsRepository.create(newRepair);
       console.log("Repair ID:", repairId);
-      Alert.alert(
-        "Éxito",
-        `La reparación fue registrada correctamente.\nFolio: ${folio}`
-      );
 
-      // Limpieza de formulario
+      // Limpieza de formulario ANTES de redirigir
       setForm({
         nombre: "",
         telefono: "",
@@ -125,6 +122,20 @@ export default function AddEquipoForm() {
       if (signatureRef.current) {
         signatureRef.current.clearSignature();
       }
+
+      //  Mostrar alerta de éxito y redirigir después
+      Alert.alert(
+        "Éxito",
+        `La reparación fue registrada correctamente.\nFolio: ${folio}`,
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              router.push("/(private)/(tabs)");
+            },
+          },
+        ]
+      );
     } catch (error) {
       console.error("Error al registrar:", error);
       Alert.alert(

@@ -1,4 +1,5 @@
 import { Button, ButtonText } from "@/shared/components/ui/button";
+import { useRouter } from "expo-router"; // 👈 Importamos el router
 import React, { useRef, useState } from "react";
 import { Alert, Image, ScrollView, Text, TextInput, View } from "react-native";
 import Signature from "react-native-signature-canvas";
@@ -9,6 +10,7 @@ export default function EntregarEquipo() {
   const [scrollEnabled, setScrollEnabled] = useState(true);
 
   const signatureRef = useRef<any>(null);
+  const router = useRouter(); // 👈 Inicializamos router
 
   const handleOK = (signature: string) => {
     setFirma(signature);
@@ -44,7 +46,12 @@ export default function EntregarEquipo() {
   const handleCancel = () => {
     Alert.alert("Cancelar", "¿Deseas cancelar la entrega?", [
       { text: "No" },
-      { text: "Sí", onPress: () => console.log("Entrega cancelada") },
+      {
+        text: "Sí",
+        onPress: () => {
+          router.push("/(private)/(tabs)");
+        },
+      },
     ]);
   };
 
@@ -83,6 +90,7 @@ export default function EntregarEquipo() {
           className="border border-background-200 rounded-xl p-4 bg-background-50 text-typography-900"
         />
       </View>
+
       {/* Firma */}
       <View className="bg-[#EDFFFD] p-6 rounded-2xl shadow-lg mb-6 border border-[#FFB74D]/30">
         <Text className="text-xl font-bold mb-4 text-[#193456]">
@@ -110,26 +118,22 @@ export default function EntregarEquipo() {
               .m-signature-pad { 
                 border: none; 
                 background-color: #fff; 
-                /* Ajusta la altura del canvas para dejar espacio al footer */
                 height: 160px; 
               }
               .m-signature-pad--footer { 
                 display: flex; 
                 justify-content: space-between; 
                 align-items: center;
-                height: 40px; /* Altura explícita para el footer */
+                height: 40px; 
                 background-color: #fff;
               }
               .m-signature-pad--description {
-                display: none; /* Oculta el texto 'Firme aquí' si no lo quieres */
-                
+                display: none; 
               }
               .m-signature-pad--footer .button.clear {
                 background-color: #E5E7EB;
                 color: #374151;
               }
-
-              /* Estilo botón “Guardar” */
               .m-signature-pad--footer .button.save {
                 background-color: #FFB74D;
                 color: #fff;
@@ -154,6 +158,7 @@ export default function EntregarEquipo() {
           Verificar que el folio sea correcto antes de realizar la entrega
         </Text>
       </View>
+
       {/* Botones de acción */}
       <View className="flex-row justify-between gap-4 mb-6 p-4">
         <Button
@@ -161,13 +166,16 @@ export default function EntregarEquipo() {
           size="sm"
           className="flex-1 mx-1 bg-gray-500"
           style={{ backgroundColor: "#FFB74D" }}
+          onPress={handleEntregar}
         >
           <ButtonText className="text-white font-semibold">Entregar</ButtonText>
         </Button>
+
         <Button
           action="secondary"
           size="sm"
           className="flex-1 mx-1 bg-gray-500"
+          onPress={handleCancel} // 👈 manejador agregado
         >
           <ButtonText className="text-white font-semibold">Cancelar</ButtonText>
         </Button>
