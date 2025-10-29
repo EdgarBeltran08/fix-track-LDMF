@@ -455,7 +455,7 @@ export default function HomeScreen() {
       </View>
 
       {/* Repairs List */}
-      <View className="flex-1 px-6 pt-4">
+      <View className="flex-1 px-6 pt-4  ">
         <View className="flex-row justify-between items-center mb-4">
           <Text
             className="text-2xl font-extrabold"
@@ -476,7 +476,7 @@ export default function HomeScreen() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ paddingBottom: 100 }}
           ListEmptyComponent={
             <View className="items-center justify-center py-8">
               <Ionicons name="search" size={48} color="#9CA3AF" />
