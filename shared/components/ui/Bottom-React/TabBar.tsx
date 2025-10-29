@@ -1,3 +1,4 @@
+import { useUserStore } from "@/shared/stores/useUserStore";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { PlatformPressable, Text } from "@react-navigation/elements";
 import { useLinkBuilder, useTheme } from "@react-navigation/native";
@@ -10,6 +11,10 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { colors } = useTheme();
   const { colorScheme } = useColorScheme();
   const { buildHref } = useLinkBuilder();
+  //Obtener rol
+  const { user } = useUserStore();
+  const userRole = user?.role;
+
   const icon = {
     index: (props: any) => (
       <House name="Inicio" size={24} strokeWidth={2.5} {...props} />
@@ -53,7 +58,13 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
       ]}
     >
       {state.routes.map((route, index) => {
-        if (route.name === "repairs") return null;
+        const isTech = userRole === "tech";
+        const isAdmin = userRole === "admin";
+        
+
+        if (route.name === "repairs" && isTech) {
+          return null; 
+        }
         const { options } = descriptors[route.key];
         const label =
           options.tabBarLabel !== undefined

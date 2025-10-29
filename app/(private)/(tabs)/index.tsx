@@ -74,7 +74,8 @@ export default function HomeScreen() {
   const [repairs, setRepairs] = useState<Repair[]>([]);
   const [loading, setLoading] = useState(true);
   const { user, signOut } = useUserStore();
-
+  const isAdmin = user?.role === "admin"; 
+  const isTech = user?.role === "tech";
   // Load repairs on component mount
   useFocusEffect(
     React.useCallback(() => {
@@ -121,12 +122,16 @@ export default function HomeScreen() {
   const renderRepairCard = ({ item }: { item: Repair }) => (
     <Pressable
       className="mb-3"
-      onPress={() =>
+      onPress={() => {
+        //Solo el tecnico puede acceder a detalles
+        if (isTech){
         router.push({
           pathname: "/(private)/(tabs)/repairs/details",
           params: { repairId: item.id },
-        })
+        });
+       }
       }
+    }
     >
       <Card className="p-6 rounded-xl border-4">
         {/* Header */}
@@ -137,15 +142,19 @@ export default function HomeScreen() {
           </View>
 
           <Pressable
-            onPress={() =>
+            onPress={() =>{
+              //Solo el tecnico puede cambiar estatus
+              if (isTech) {
               router.push({
                 pathname: "/(private)/(tabs)/repairs/status",
                 params: {
                   repairId: item.id,
                   currentStatus: item.status,
                 },
-              })
+              });
             }
+            }
+          }
           >
             <Badge
               action={getStatusColor(item.status)}
@@ -213,7 +222,7 @@ export default function HomeScreen() {
               className="text-3xl font-extrabold text-white"
               style={{ color: "#FFB74D" }}
             >
-              ¡Hola, {user?.displayName?.split(" ")[0] || "Administrador"}!
+              ¡Hola, {user?.displayName}!
             </Text>
             <Text
               className="text-2xl font-semibold capitalize"
@@ -359,6 +368,7 @@ export default function HomeScreen() {
       {/* Action Bar */}
       <View className="px-6 py-4" style={{ backgroundColor: "#193456" }}>
         <View className="flex-row space-x-3 mb-3">
+          {isAdmin && (
           <Button
             action="primary"
             size="xl"
@@ -376,6 +386,7 @@ export default function HomeScreen() {
               Nueva Reparación
             </ButtonText>
           </Button>
+          )}
         </View>
 
         {/* Search Bar */}
