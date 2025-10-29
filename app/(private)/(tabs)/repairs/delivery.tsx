@@ -1,13 +1,6 @@
+import { Button, ButtonText } from "@/shared/components/ui/button";
 import React, { useRef, useState } from "react";
-import {
-  Alert,
-  Image,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, Image, ScrollView, Text, TextInput, View } from "react-native";
 import Signature from "react-native-signature-canvas";
 
 export default function EntregarEquipo() {
@@ -60,10 +53,11 @@ export default function EntregarEquipo() {
       className="flex-1 bg-background-50 p-6"
       scrollEnabled={scrollEnabled}
       contentContainerStyle={{ paddingBottom: 120 }}
+      style={{ backgroundColor: "#193456" }}
     >
       {/* Encabezado */}
       <View className="items-center mb-6 mt-2">
-        <Text className="text-2xl font-bold text-typography-900 mb-3">
+        <Text className="text-2xl font-bold text-typography-900 mb-3  text-white">
           Entregar Equipo
         </Text>
         <Image
@@ -71,7 +65,7 @@ export default function EntregarEquipo() {
           style={{ width: 100, height: 100, marginBottom: 8 }}
         />
 
-        <Text className="text-center text-typography-900 opacity-70">
+        <Text className="text-center  text-white text-typography-900 opacity-70">
           Ingresa el folio para la entrega del equipo reparado
         </Text>
       </View>
@@ -89,19 +83,19 @@ export default function EntregarEquipo() {
           className="border border-background-200 rounded-xl p-4 bg-background-50 text-typography-900"
         />
       </View>
-
-      {/* Firma del Cliente */}
-      <View className="bg-background-100 p-5 rounded-2xl shadow-md border border-background-200 mb-6">
-        <Text className="text-typography-900 mb-3 font-semibold">
-          Firma de Entregado
+      {/* Firma */}
+      <View className="bg-[#EDFFFD] p-6 rounded-2xl shadow-lg mb-6 border border-[#FFB74D]/30">
+        <Text className="text-xl font-bold mb-4 text-[#193456]">
+          Firma del Cliente
         </Text>
+
         <View
           style={{
-            height: 200,
+            height: 330,
             borderWidth: 2,
-            borderColor: "rgb(var(--color-background-200))",
+            borderColor: "#FFB74D",
             borderRadius: 12,
-            backgroundColor: "rgb(var(--color-background-50))",
+            backgroundColor: "#fff",
           }}
         >
           <Signature
@@ -115,20 +109,42 @@ export default function EntregarEquipo() {
             webStyle={`
               .m-signature-pad { 
                 border: none; 
-                background-color: rgb(var(--color-background-50));
+                background-color: #fff; 
+                /* Ajusta la altura del canvas para dejar espacio al footer */
+                height: 160px; 
+              }
+              .m-signature-pad--footer { 
+                display: flex; 
+                justify-content: space-between; 
+                align-items: center;
+                height: 40px; /* Altura explícita para el footer */
+                background-color: #fff;
+              }
+              .m-signature-pad--description {
+                display: none; /* Oculta el texto 'Firme aquí' si no lo quieres */
+                
+              }
+              .m-signature-pad--footer .button.clear {
+                background-color: #E5E7EB;
+                color: #374151;
+              }
+
+              /* Estilo botón “Guardar” */
+              .m-signature-pad--footer .button.save {
+                background-color: #FFB74D;
+                color: #fff;
               }
             `}
           />
         </View>
 
-        <TouchableOpacity
-          onPress={handleClear}
-          className="bg-background-50 rounded-xl p-3 mt-4 border border-background-200"
-        >
-          <Text className="text-typography-900 text-center font-semibold">
-            Borrar Firma
-          </Text>
-        </TouchableOpacity>
+        {firma && (
+          <View className="flex-row items-center mt-4 p-3 bg-green-100 rounded-xl border border-green-300">
+            <Text className="text-green-800 font-semibold">
+              ✓ Firma guardada correctamente
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* Advertencia */}
@@ -140,23 +156,21 @@ export default function EntregarEquipo() {
       </View>
       {/* Botones de acción */}
       <View className="flex-row justify-between gap-4 mb-6 p-4">
-        <TouchableOpacity
-          onPress={handleEntregar}
-          className="flex-1 bg-success-400 rounded-xl p-4 border border-background-200"
+        <Button
+          action="secondary"
+          size="sm"
+          className="flex-1 mx-1 bg-gray-500"
+          style={{ backgroundColor: "#FFB74D" }}
         >
-          <Text className="text-background-50 text-center font-bold text-lg">
-            Entregar
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={handleCancel}
-          className="flex-1 bg-background-200 rounded-xl p-4 border border-background-200"
+          <ButtonText className="text-white font-semibold">Entregar</ButtonText>
+        </Button>
+        <Button
+          action="secondary"
+          size="sm"
+          className="flex-1 mx-1 bg-gray-500"
         >
-          <Text className="text-typography-900 text-center font-bold text-lg">
-            Cancelar
-          </Text>
-        </TouchableOpacity>
+          <ButtonText className="text-white font-semibold">Cancelar</ButtonText>
+        </Button>
       </View>
     </ScrollView>
   );
