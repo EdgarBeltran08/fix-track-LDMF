@@ -128,15 +128,25 @@ export class RepairsRepository {
   }
 
 
-  // 🔹 Obtener piezas de una reparación específica
-  static async getPieces(repairId: string) {
-    const piecesRef = collection(db, "repairs", repairId, "pieces");
-    const snapshot = await getDocs(piecesRef);
-    return snapshot.docs.map((docSnap) => ({
+ // 🔹 Obtener piezas de una reparación específica (tipado correcto)
+static async getPieces(repairId: string) {
+  const piecesRef = collection(db, "repairs", repairId, "pieces");
+  const snapshot = await getDocs(piecesRef);
+
+  return snapshot.docs.map((docSnap) => {
+    const data = docSnap.data();
+
+    return {
       id: docSnap.id,
-      ...docSnap.data(),
-    }));
-  }
+      inventoryId: data.inventoryId || "",
+      name: data.name || "",
+      quantity: data.quantity || 0,
+      unitCost: data.unitCost || 0,
+      addedAt: data.addedAt?.toDate?.() || new Date(),
+    };
+  });
+}
+
 
 // 🔹 Verificar si ya existe una pieza con el mismo inventoryId
 static async findPieceByInventoryId(

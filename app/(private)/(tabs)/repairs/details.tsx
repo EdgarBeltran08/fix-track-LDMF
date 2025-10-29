@@ -203,6 +203,13 @@ const Details: React.FC = () => {
   };
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const handleUpdate = async () => {
+    if (!notes.trim()) {
+      Alert.alert(
+        "Campo obligatorio",
+        "Debes llenar el campo de notas antes de enviar."
+      );
+      return; // sale de la función y no hace nada más
+    }
     try {
       // Guardar notas
       await RepairsRepository.updateNotes(repairId, notes);
