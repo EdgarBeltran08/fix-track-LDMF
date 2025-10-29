@@ -256,7 +256,6 @@ export default function ActualizarEstadoScreen() {
               <Picker.Item label="Revisión" value="Revisión" />
               <Picker.Item label="En progreso" value="En progreso" />
               <Picker.Item label="Completo" value="Completo" />
-              <Picker.Item label="Entregado" value="Entregado" />
               <Picker.Item label="Cancelado" value="Cancelado" />
             </Picker>
           </View>

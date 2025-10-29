@@ -144,7 +144,7 @@ export default function DetallesEquipoView() {
       {/* FIRMA */}
       <View className="bg-background-100 border border-background-200 rounded-2xl p-5 items-center mb-6">
         <Text className="text-xl font-bold text-typography-900 mb-3">
-          Firma del Cliente
+          Firma de conformidad del cliente
         </Text>
         <View className="w-full border border-background-200 rounded-xl bg-background-50 p-3 items-center">
           {firma ? (

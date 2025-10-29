@@ -74,7 +74,7 @@ export default function HomeScreen() {
   const [repairs, setRepairs] = useState<Repair[]>([]);
   const [loading, setLoading] = useState(true);
   const { user, signOut } = useUserStore();
-  const isAdmin = user?.role === "admin"; 
+  const isAdmin = user?.role === "admin";
   const isTech = user?.role === "tech";
   // Load repairs on component mount
   useFocusEffect(
@@ -120,19 +120,7 @@ export default function HomeScreen() {
   };
 
   const renderRepairCard = ({ item }: { item: Repair }) => (
-    <Pressable
-      className="mb-3"
-      onPress={() => {
-        //Solo el tecnico puede acceder a detalles
-        if (isTech){
-        router.push({
-          pathname: "/(private)/(tabs)/repairs/details",
-          params: { repairId: item.id },
-        });
-       }
-      }
-    }
-    >
+    <Pressable className="mb-3">
       <Card className="p-6 rounded-xl border-4">
         {/* Header */}
         <View className="flex-row justify-between items-start mb-3">
@@ -142,19 +130,17 @@ export default function HomeScreen() {
           </View>
 
           <Pressable
-            onPress={() =>{
-              //Solo el tecnico puede cambiar estatus
+            onPress={() => {
               if (isTech) {
-              router.push({
-                pathname: "/(private)/(tabs)/repairs/status",
-                params: {
-                  repairId: item.id,
-                  currentStatus: item.status,
-                },
-              });
-            }
-            }
-          }
+                router.push({
+                  pathname: "/(private)/(tabs)/repairs/status",
+                  params: {
+                    repairId: item.id,
+                    currentStatus: item.status,
+                  },
+                });
+              }
+            }}
           >
             <Badge
               action={getStatusColor(item.status)}
@@ -182,7 +168,7 @@ export default function HomeScreen() {
           </Text>
         </View>
 
-        {/* Footer */}
+        {/* Footer con fecha y costo */}
         <View className="flex-row justify-between items-center pt-3 border-t border-background-200">
           <View className="flex-row items-center">
             <Ionicons
@@ -202,9 +188,68 @@ export default function HomeScreen() {
               textShadowOffset: { width: 0, height: 0 },
               textShadowRadius: 5,
             }}
+          ></Text>
+        </View>
+
+        {/* 🔹 BOTONES INFERIORES 🔹 */}
+        <View className="flex-row justify-between mt-4">
+          {isTech && (
+            <Button
+              action="secondary"
+              size="sm"
+              className="flex-1 mx-1"
+              style={{
+                backgroundColor: item.status === "done" ? "#BDBDBD" : "#FFB74D",
+                opacity: item.status === "done" ? 0.6 : 1,
+              }}
+              onPress={() => {
+                //  Evita completamente la navegación si está en "done"
+                if (item.status === "done") return;
+                router.push({
+                  pathname: "/(private)/(tabs)/repairs/details",
+                  params: { repairId: item.id },
+                });
+              }}
+            >
+              <ButtonText className="text-white font-semibold">
+                Modificar
+              </ButtonText>
+            </Button>
+          )}
+
+          {/* Botón Ver */}
+          <Button
+            action="secondary"
+            size="sm"
+            className="flex-1 mx-1 bg-gray-500"
+            onPress={() =>
+              router.push({
+                pathname: "/(private)/(tabs)/repairs/detailsview",
+                params: { repairId: item.id },
+              })
+            }
           >
-            ${item.estimatedCost.toLocaleString("es-MX")}
-          </Text>
+            <ButtonText className="text-white font-semibold">Ver</ButtonText>
+          </Button>
+
+          {isAdmin && item.status === "done" && (
+            <Button
+              action="secondary"
+              size="sm"
+              className="flex-1 mx-1"
+              style={{ backgroundColor: "#FFB74D" }}
+              onPress={() =>
+                router.push({
+                  pathname: "/(private)/(tabs)/repairs/delivery",
+                  params: { repairId: item.id },
+                })
+              }
+            >
+              <ButtonText className="text-white font-semibold">
+                Entregar
+              </ButtonText>
+            </Button>
+          )}
         </View>
       </Card>
     </Pressable>
@@ -369,23 +414,23 @@ export default function HomeScreen() {
       <View className="px-6 py-4" style={{ backgroundColor: "#193456" }}>
         <View className="flex-row space-x-3 mb-3">
           {isAdmin && (
-          <Button
-            action="primary"
-            size="xl"
-            className="flex-1"
-            onPress={() => router.push("/(private)/(tabs)/repairs/create")}
-            style={{ backgroundColor: "#FFB74D" }}
-          >
-            <Ionicons
-              name="add"
-              size={30}
-              color="white"
-              style={{ marginRight: 8 }}
-            />
-            <ButtonText className="font-semibold text-2xl ">
-              Nueva Reparación
-            </ButtonText>
-          </Button>
+            <Button
+              action="primary"
+              size="xl"
+              className="flex-1"
+              onPress={() => router.push("/(private)/(tabs)/repairs/create")}
+              style={{ backgroundColor: "#FFB74D" }}
+            >
+              <Ionicons
+                name="add"
+                size={30}
+                color="white"
+                style={{ marginRight: 8 }}
+              />
+              <ButtonText className="font-semibold text-2xl ">
+                Nueva Reparación
+              </ButtonText>
+            </Button>
           )}
         </View>
 
