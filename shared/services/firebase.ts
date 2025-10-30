@@ -6,12 +6,14 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBmAoozhfJOvceM1Cywm1L8YUzKEND0Fd4",
-  authDomain: "fix-track-9e24c.firebaseapp.com",
-  projectId: "fix-track-9e24c",
-  storageBucket: "fix-track-9e24c.firebasestorage.app",
-  messagingSenderId: "632487064290",
-  appId: "1:632487064290:web:0e9bd6f2ea21395c0da4bb",
+  apiKey: "AIzaSyDkIZpmA81hbd95qhpsQrxEmnvMSxi6Yt8",
+  authDomain: "fixtrack-lab.firebaseapp.com",
+  projectId: "fixtrack-lab",
+  storageBucket: "fixtrack-lab.firebasestorage.app",
+  messagingSenderId: "586087672871",
+  appId: "1:586087672871:web:fd31b52754e2c625bd7202",
+  measurementId: "G-88PVCRDZ89"
+
 };
 
 export const app = initializeApp(firebaseConfig);
