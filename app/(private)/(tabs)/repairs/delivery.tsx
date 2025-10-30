@@ -10,19 +10,19 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
 // IMPORTAR LA FUNCIÓN DE REPOSITORIO NECESARIA
-// import { RepairsRepository } from "@/shared/repositories/repairs.repository"; 
-// (Descomentar y ajustar la ruta si usas un repositorio)
+import { RepairsRepository } from "@/shared/repositories/repairs.repository";
 
 
 export default function EntregarEquipo() {
   const [folio, setFolio] = useState("");
   const [nombreCompleto, setNombreCompleto] = useState("");
-  const [loading, setLoading] = useState(false); // Nuevo estado de carga
+  const [loading, setLoading] = useState(false);
 
   const [scrollEnabled] = useState(true);
 
-  // --- FUNCIÓN PARA ENTREGAR (ELIMINA LA REPARACIÓN) ---
+  // --- FUNCIÓN PARA ENTREGAR (ACTUALIZA EL ESTADO A 'DELIVERED') ---
   const handleEntregar = () => {
     if (!folio.trim()) {
       Alert.alert("Folio requerido", "Por favor, ingresa el número de folio.");
@@ -36,34 +36,49 @@ export default function EntregarEquipo() {
       return;
     }
 
-    // Confirmación final antes de eliminar/entregar
+    // Confirmación final
     Alert.alert(
       "Confirmar Entrega y Cierre",
-      `¿Estás seguro de que deseas confirmar la entrega y eliminar permanentemente la reparación con folio ${folio.trim()}?`,
+      `¿Estás seguro de que deseas confirmar la entrega del equipo con folio ${folio.trim()}? La reparación se marcará como ENTREGADA.`,
       [
         { text: "Cancelar", style: "cancel" },
         { 
           text: "Confirmar Entrega", 
-          style: "destructive", // Se usa 'destructive' ya que es una acción final/eliminación
+          style: "default",
           onPress: async () => {
             setLoading(true);
             try {
-              // LÓGICA DE ELIMINACIÓN
-              // ⚠️ ASUMIMOS QUE TENEMOS UN MÉTODO PARA ELIMINAR LA REPARACIÓN POR FOLIO O ID
-              // await RepairsRepository.delete(folio.trim()); 
+              // 1. BUSCAR LA REPARACIÓN POR FOLIO para obtener el ID
+              // NOTA: Asumimos que RepairsRepository.getByFolio ya está implementado
+              const repairToUpdate = await RepairsRepository.getByFolio(folio.trim());
               
-              // Simulación de éxito después de la eliminación/entrega final
+              if (!repairToUpdate) {
+                Alert.alert("Error", `No se encontró ninguna reparación activa con el folio: ${folio.trim()}.`);
+                return;
+              }
+
+              // 2. Objeto de actualización: Aquí se resuelve el error de tipado con 'as const'
+              const updates = {
+                status: "delivered" as const, // <-- SOLUCIÓN AL ERROR DE TIPADO
+                deliveredTo: nombreCompleto.trim(), // Campo para registrar quién recibe
+                deliveryDate: new Date(), // Timestamp del momento de la entrega
+              };
+              
+              // 3. Ejecutar la actualización usando el ID (método update existente)
+              await RepairsRepository.update(repairToUpdate.id, updates);
+              
               Alert.alert(
                 "¡Éxito!",
-                `La reparación con folio ${folio.trim()} ha sido entregada y eliminada del sistema. Entregado a: ${nombreCompleto.trim()}`
+                `El equipo ${folio.trim()} ha sido marcado como ENTREGADO. Entregado a: ${nombreCompleto.trim()}`
               );
 
-              // Regresar a la pantalla de listado principal (ya que el registro no existe más)
+              // 4. Navegación: Regresar a la pantalla de listado principal
               router.replace("/repairs"); 
 
             } catch (error) {
-              console.error("Error al eliminar la reparación:", error);
-              Alert.alert("Error", "No se pudo completar la entrega/eliminación. Verifica la conexión.");
+              console.error("Error al actualizar la reparación:", error);
+              // Muestra un error más claro si falla la base de datos
+              Alert.alert("Error", "No se pudo actualizar el estado de la reparación. Verifica la conexión a DB y que el folio exista.");
             } finally {
               setLoading(false);
             }
@@ -74,25 +89,25 @@ export default function EntregarEquipo() {
   };
   // -----------------------------------------------------
 
-  // --- FUNCIÓN PARA CANCELAR (REGRESA A DETALLES) ---
+  // --- FUNCIÓN PARA CANCELAR (REGRESA A LA PANTALLA ANTERIOR) ---
   const handleCancel = () => {
-    Alert.alert("Cancelar", "¿Deseas descartar la entrega y volver a los detalles de la reparación?", [
+    Alert.alert("Cancelar", "¿Deseas descartar la entrega y volver a la pantalla anterior?", [
       { text: "No", style: "cancel" },
       { 
         text: "Sí, Volver", 
         onPress: () => {
-          // Asumimos que la pantalla anterior es 'details.tsx' y queremos volver ahí
+          // Vuelve a la pantalla anterior (asumimos details.tsx o el índice de repairs)
           router.back(); 
         }
       },
     ]);
   };
-  // --------------------------------------------------
+  // --------------------------------------------------------
 
   return (
     <ScrollView
       className="flex-1 bg-background-50 p-6"
-      scrollEnabled={scrollEnabled}
+      scrollEnabled={true}
       contentContainerStyle={{ paddingBottom: 120 }}
     >
       {/* Encabezado */}

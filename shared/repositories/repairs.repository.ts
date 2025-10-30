@@ -16,6 +16,23 @@ import { db } from "../services/firebase";
 import { Repair, RepairStatus } from "../types/repair.type";
 
 export class RepairsRepository {
+
+  static async getByFolio(folio: string): Promise<Repair | null> {
+    const snapshot = await getDocs(
+      query(
+        collection(db, "repairs"),
+        where("folio", "==", folio.trim()), // Busca donde el campo 'folio' coincida
+        limit(1) // Esperamos solo un resultado
+      )
+    );
+
+    if (snapshot.empty) {
+      return null;
+    }
+    // Devuelve el primer documento encontrado
+    return Repair.fromFirestore(snapshot.docs[0]);
+  }
+
   static async getAll(): Promise<Repair[]> {
     const snapshot = await getDocs(
       query(collection(db, "repairs"), orderBy("createdAt", "desc"))
