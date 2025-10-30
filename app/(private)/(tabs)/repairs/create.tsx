@@ -13,19 +13,22 @@ import { useUserStore } from "@/shared/stores/useUserStore";
 import { Ionicons } from "@expo/vector-icons";
 import CheckBox from "expo-checkbox";
 import { router } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Modal, // Añadido
   ScrollView,
+  StyleSheet, // Añadido
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import Signature from "react-native-signature-canvas";
+// Eliminado: import Signature from "react-native-signature-canvas";
 import { ValidationError } from "yup";
 
+// --- TIPOS Y CONSTANTES ---
 type FormData = {
   customerName: string;
   customerPhone: string;
@@ -49,7 +52,73 @@ type ChecklistKeys =
   | "sinImagen"
   | "rayasPantalla"
   | "pantallaNegra";
-//
+
+// --- TEXTO DE TÉRMINOS Y CONDICIONES ---
+const LOREM_TEXT = `
+TÉRMINOS Y CONDICIONES DEL SERVICIO DE REPARACIÓN FIX TRACK
+
+Artículo 1: Aceptación y Consentimiento
+
+Al entregar su equipo para diagnóstico y/o reparación, el Cliente acepta de manera expresa los siguientes términos y condiciones. La aceptación se formaliza mediante la Confirmación Digital (Nombre Completo) en el presente formulario, que sustituye a la firma autógrafa y tiene plena validez legal.
+
+Artículo 2: Riesgo de la Reparación y Daños Potenciales
+
+El Cliente reconoce y acepta que:
+1. Riesgo de Pérdida Total o Daño Adicional: La reparación de equipos electrónicos, especialmente aquellos con daño por líquidos, daños severos o manipulación previa, conlleva el riesgo inherente de que el equipo pueda sufrir un fallo permanente e irreparable (incluyendo el riesgo de que el dispositivo no encienda de forma definitiva). Fix Track no se hace responsable por la pérdida total del equipo o la aparición de fallos adicionales no relacionados con el servicio contratado.
+2. Pérdida de Datos: El proceso de diagnóstico o reparación puede requerir el reinicio del sistema operativo. Es responsabilidad exclusiva del Cliente realizar una copia de seguridad (backup) de todos los datos, archivos e información almacenada en el equipo antes de su entrega. Fix Track no es responsable por la pérdida total o parcial de datos.
+3. Anulación de Garantía del Fabricante: La manipulación o apertura del equipo por parte de Fix Track puede anular la garantía oficial del fabricante del dispositivo.
+
+Artículo 3: Garantía del Servicio
+
+1. Alcance de la Garantía: La garantía ofrecida por Fix Track se limita estrictamente a la mano de obra realizada y a la pieza de repuesto específica que fue instalada.
+2. Vigencia: La garantía es válida por 30 días naturales a partir de la fecha de entrega del equipo al Cliente.
+3. Exclusiones: La garantía será nula en los siguientes casos:
+   * Manipulación Indebida: Si el equipo presenta daños físicos, golpes, caídas, señales de humedad o cualquier tipo de manipulación externa o interna posterior a la reparación.
+   * Fallas Adicionales: Si la falla reportada después de la reparación es diferente a la originalmente reparada. Cualquier falla adicional generará un nuevo presupuesto y costo extra.
+
+Artículo 4: Procedencia y Bloqueo del Equipo
+
+El Cliente declara bajo protesta de decir verdad que el equipo entregado es de su legítima propiedad y procedencia lícita. Fix Track no se responsabiliza por dispositivos reportados como robados o bloqueados por IMEI, y se reserva el derecho de denunciar a las autoridades competentes si se detecta alguna anomalía.
+
+Artículo 5: Plazos de Recolección y Resguardo
+
+1. Plazo de Recolección: Una vez que la reparación esté finalizada (o el diagnóstico haya sido rechazado por el Cliente), el Cliente dispone de 30 días naturales para recoger el equipo.
+2. Costo de Resguardo: Vencido el plazo de 30 días, Fix Track se reserva el derecho de aplicar un costo diario de almacenaje o considerar el equipo en abandono, procediendo a su desecho o venta para cubrir los gastos de almacenaje y/o diagnóstico.
+3. Accesorios: Fix Track no se hace responsable por tarjetas SIM, tarjetas de memoria, fundas, protectores, o cualquier otro accesorio olvidado en el equipo.
+`;
+
+// --- COMPONENTE MODAL DE TÉRMINOS Y CONDICIONES ---
+const TermsModal = ({ isVisible, onClose }: { isVisible: boolean; onClose: () => void }) => {
+  return (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={isVisible}
+      onRequestClose={onClose}
+    >
+      <View style={styles.centeredView}>
+        <View className="bg-background-0 p-6 rounded-2xl shadow-lg w-11/12 h-3/4">
+          <Text className="text-2xl font-bold text-typography-900 mb-4 text-center">
+            Términos y Condiciones
+          </Text>
+          <ScrollView className="flex-1 border border-outline-200 p-3 rounded-lg mb-4">
+            <Text className="text-base text-typography-900 text-justify">
+              {LOREM_TEXT}
+            </Text>
+          </ScrollView>
+          <TouchableOpacity
+            onPress={onClose}
+            className="bg-primary-500 rounded-xl p-3"
+          >
+            <Text className="text-background-0 text-center font-bold">Cerrar</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+// ----------------------------------------------------
+
 export default function AddEquipoForm() {
   const { user } = useUserStore();
   const [form, setForm] = useState<FormData>({
@@ -61,8 +130,13 @@ export default function AddEquipoForm() {
     estimatedCost: "",
   });
 
-  const [firma, setFirma] = useState<string | null>(null);
-  const [scrollEnabled, setScrollEnabled] = useState(true);
+  // --- ESTADOS DE ACEPTACIÓN (Reemplazan a 'firma') ---
+  const [nombreConfirmacion, setNombreConfirmacion] = useState<string>("");
+  const [terminosAceptados, setTerminosAceptados] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  // ----------------------------------------------------
+
+  const [scrollEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<FormField, string>>>({});
   const [alertConfig, setAlertConfig] = useState<{
@@ -75,9 +149,24 @@ export default function AddEquipoForm() {
     type: "success",
     message: "",
   });
+  
+  // Eliminado: const signatureRef = useRef<any>(null);
 
-  // Ref para controlar el componente Signature
-  const signatureRef = useRef<any>(null);
+  const [checklist, setChecklist] = useState<Record<ChecklistKeys, boolean>>({
+    aparatoMojado: false,
+    noEnciende: false,
+    seApagaSolo: false,
+    noCarga: false,
+    bateriaInflada: false,
+    seDescarga: false,
+    seReinicia: false,
+    pantallaRota: false,
+    pantallaManchas: false,
+    tactilNoResponde: false,
+    sinImagen: false,
+    rayasPantalla: false,
+    pantallaNegra: false,
+  });
 
   // Auto-dismiss alert after 4 seconds
   useEffect(() => {
@@ -91,25 +180,16 @@ export default function AddEquipoForm() {
 
   const handleChange = (field: FormField, value: string) => {
     setForm({ ...form, [field]: value });
-    // Clear error for this field when user starts typing
     if (errors[field]) {
       setErrors({ ...errors, [field]: undefined });
     }
   };
 
-  const handleOK = (signature: string) => {
-    setFirma(signature);
-    console.log("Firma guardada:", signature);
-    setScrollEnabled(true);
+  const toggleCheckbox = (key: ChecklistKeys) => {
+    setChecklist((prev) => ({ ...prev, [key]: !prev[key] }));
   };
-
-  // Limpiar firma tanto en estado como en canvas
-  const handleClear = () => {
-    setFirma(null);
-    if (signatureRef.current) {
-      signatureRef.current.clearSignature();
-    }
-  };
+  
+  // Eliminado: handleOK y handleClear
 
   const handleCancel = () => {
     Alert.alert("Cancelar", "¿Estás seguro de que quieres cancelar?", [
@@ -124,11 +204,27 @@ export default function AddEquipoForm() {
   };
 
   const handleSubmit = async () => {
-    try {
-      // Clear previous errors
-      setErrors({});
+    // --- NUEVAS VALIDACIONES DE ACEPTACIÓN ---
+    if (!nombreConfirmacion.trim()) {
+      setAlertConfig({
+        visible: true,
+        type: "error",
+        message: "Debe ingresar el nombre para confirmar la aceptación.",
+      });
+      return;
+    }
+    if (!terminosAceptados) {
+      setAlertConfig({
+        visible: true,
+        type: "error",
+        message: "Debe aceptar los Términos y Condiciones.",
+      });
+      return;
+    }
+    // ---------------------------------------------
 
-      // Validate form
+    try {
+      setErrors({});
       const validatedData = await createRepairSchema.validate(
         {
           ...form,
@@ -137,24 +233,21 @@ export default function AddEquipoForm() {
         { abortEarly: false }
       );
 
-      // Check if user is logged in
       if (!user?.id) {
         setAlertConfig({
           visible: true,
           type: "error",
-          message: "Debes iniciar sesión para crear una reparación",
+          message: "Debes iniciar sesión para crear una reparación.",
         });
         return;
       }
 
       setLoading(true);
 
-      // Generate folio
-      const folio = `FT-${new Date().getFullYear()}-${String(Date.now()).slice(
-        -6
-      )}`;
+      const folio = `FT-${new Date().getFullYear()}-${String(
+        Date.now()
+      ).slice(-6)}`;
 
-      // Combine issue description with checklist items
       const selectedIssues = Object.entries(checklist)
         .filter(([, value]) => value)
         .map(([key]) => {
@@ -182,8 +275,8 @@ export default function AddEquipoForm() {
               validatedData.issueDescription
             }\n\nProblemas detectados:\n- ${selectedIssues.join("\n- ")}`
           : validatedData.issueDescription;
-
-      // Create repair object
+      
+      // --- OBJETO DE DATOS PARA FIRESTORE (MODIFICADO) ---
       const repairData = {
         customerName: validatedData.customerName,
         customerEmail: validatedData.customerEmail,
@@ -200,9 +293,13 @@ export default function AddEquipoForm() {
         folio,
         notes: [],
         pieces: [],
+        // --- NUEVOS CAMPOS DE ACEPTACIÓN ---
+        nombre_acepta: nombreConfirmacion,
+        terminos_aceptados: true,
+        fecha_aceptacion: new Date(),
+        // -------------------------------------
       };
 
-      // Save to Firebase
       await RepairsRepository.create(repairData);
 
       // Reset form
@@ -215,26 +312,17 @@ export default function AddEquipoForm() {
         estimatedCost: "",
       });
       setChecklist({
-        aparatoMojado: false,
-        noEnciende: false,
-        seApagaSolo: false,
-        noCarga: false,
-        bateriaInflada: false,
-        seDescarga: false,
-        seReinicia: false,
-        pantallaRota: false,
-        pantallaManchas: false,
-        tactilNoResponde: false,
-        sinImagen: false,
-        rayasPantalla: false,
+        aparatoMojado: false, noEnciende: false, seApagaSolo: false,
+        noCarga: false, bateriaInflada: false, seDescarga: false,
+        seReinicia: false, pantallaRota: false, pantallaManchas: false,
+        tactilNoResponde: false, sinImagen: false, rayasPantalla: false,
         pantallaNegra: false,
       });
-      setFirma(null);
-      if (signatureRef.current) {
-        signatureRef.current.clearSignature();
-      }
+      // --- RESET DE NUEVOS ESTADOS ---
+      setNombreConfirmacion("");
+      setTerminosAceptados(false);
+      // -------------------------------
 
-      // Show success toast
       setAlertConfig({
         visible: true,
         type: "success",
@@ -242,13 +330,11 @@ export default function AddEquipoForm() {
         folio: folio,
       });
 
-      // Navigate back after alert is visible
       setTimeout(() => {
         router.back();
       }, 1000);
     } catch (error) {
       if (error instanceof ValidationError) {
-        // Handle validation errors
         const validationErrors: Partial<Record<FormField, string>> = {};
         error.inner.forEach((err) => {
           if (err.path) {
@@ -256,39 +342,19 @@ export default function AddEquipoForm() {
           }
         });
         setErrors(validationErrors);
-        // Errors will be displayed by FormControl components
       } else {
         console.error("Error creating repair:", error);
         setAlertConfig({
           visible: true,
           type: "error",
-          message:
-            "Ocurrió un error al registrar la reparación. Por favor, intenta de nuevo.",
+          message: "Ocurrió un error al registrar la reparación. Por favor, intenta de nuevo.",
         });
       }
     } finally {
       setLoading(false);
     }
   };
-  const [checklist, setChecklist] = useState<Record<ChecklistKeys, boolean>>({
-    aparatoMojado: false,
-    noEnciende: false,
-    seApagaSolo: false,
-    noCarga: false,
-    bateriaInflada: false,
-    seDescarga: false,
-    seReinicia: false,
-    pantallaRota: false,
-    pantallaManchas: false,
-    tactilNoResponde: false,
-    sinImagen: false,
-    rayasPantalla: false,
-    pantallaNegra: false,
-  });
 
-  const toggleCheckbox = (key: ChecklistKeys) => {
-    setChecklist((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
   return (
     <View className="flex-1">
       <ScrollView
@@ -296,12 +362,12 @@ export default function AddEquipoForm() {
         scrollEnabled={scrollEnabled}
         contentContainerStyle={{ paddingBottom: 120 }}
       >
-        {/* Título */}
+        {/* Título, Bloque Cliente y Bloque Equipo (con sus FormControl) se mantienen */}
         <View className="mb-8 mt-2">
-          <Text className="text-3xl font-bold text-center text-typography-900 mb-2">
-            Registrar reparación
-          </Text>
-          <View className="w-20 h-1 bg-primary-500 mx-auto rounded-full" />
+            <Text className="text-3xl font-bold text-center text-typography-900 mb-2">
+                Registrar reparación
+            </Text>
+            <View className="w-20 h-1 bg-primary-500 mx-auto rounded-full" />
         </View>
 
         {/* Bloque Cliente */}
@@ -312,7 +378,6 @@ export default function AddEquipoForm() {
               Datos del Cliente
             </Text>
           </View>
-
           <FormControl className="mb-4" isInvalid={!!errors.customerName}>
             <TextInput
               placeholder="Nombre completo"
@@ -331,7 +396,6 @@ export default function AddEquipoForm() {
               </FormControlError>
             )}
           </FormControl>
-
           <FormControl className="mb-4" isInvalid={!!errors.customerPhone}>
             <TextInput
               placeholder="Teléfono"
@@ -351,10 +415,9 @@ export default function AddEquipoForm() {
               </FormControlError>
             )}
           </FormControl>
-
           <FormControl isInvalid={!!errors.customerEmail}>
             <TextInput
-              placeholder="Correo electrónico"
+              placeholder="Correo electrónico (obligatorio)"
               value={form.customerEmail}
               onChangeText={(v) => handleChange("customerEmail", v)}
               keyboardType="email-address"
@@ -381,10 +444,9 @@ export default function AddEquipoForm() {
               Datos del Equipo
             </Text>
           </View>
-
           <FormControl className="mb-4" isInvalid={!!errors.deviceModel}>
             <TextInput
-              placeholder="Modelo del dispositivo (ej: iPhone 14 Pro, Samsung Galaxy S23)"
+              placeholder="Modelo del dispositivo (ej: iPhone 14 Pro)"
               value={form.deviceModel}
               onChangeText={(v) => handleChange("deviceModel", v)}
               placeholderTextColor="#999999"
@@ -400,7 +462,6 @@ export default function AddEquipoForm() {
               </FormControlError>
             )}
           </FormControl>
-
           <FormControl className="mb-4" isInvalid={!!errors.estimatedCost}>
             <TextInput
               placeholder="Costo estimado de la reparación"
@@ -420,91 +481,41 @@ export default function AddEquipoForm() {
               </FormControlError>
             )}
           </FormControl>
-
+          
           {/* Checklist */}
           <Text className="text-lg font-bold text-typography-900 mb-2 mt-2">
             Este equipo se recibe:
           </Text>
-
           <View className="gap-2 mb-4">
-            <View className="flex-row items-center mb-2">
-              <CheckBox
-                value={checklist.aparatoMojado}
-                onValueChange={() => toggleCheckbox("aparatoMojado")}
-                color={checklist.aparatoMojado ? "#FFB74D" : undefined}
-              />
-              <Text className="ml-2 text-typography-900">Aparato mojado</Text>
-            </View>
-
-            <Text className="font-bold text-typography-900 mt-2">
-              Condiciones relacionadas con la batería y energía
-            </Text>
-
-            {[
-              ["noEnciende", "No enciende"],
-              ["seApagaSolo", "Se apaga solo"],
-              ["noCarga", "No carga aún conectado"],
-              ["bateriaInflada", "Batería inflada"],
-              ["seDescarga", "Se descarga demasiado rápido"],
-              ["seReinicia", "Se reinicia constantemente"],
-            ].map(([key, label]) => (
-              <View key={key} className="flex-row items-center mb-1">
-                <CheckBox
-                  value={checklist[key as ChecklistKeys]}
-                  onValueChange={() => toggleCheckbox(key as ChecklistKeys)}
-                  color={
-                    checklist[key as ChecklistKeys] ? "#FFB74D" : undefined
-                  }
-                />
-                <Text className="ml-2 text-typography-900">{label}</Text>
+              <View className="flex-row items-center mb-2">
+                  <CheckBox value={checklist.aparatoMojado} onValueChange={() => toggleCheckbox("aparatoMojado")} color={checklist.aparatoMojado ? "#FFB74D" : undefined} />
+                  <Text className="ml-2 text-typography-900">Aparato mojado</Text>
               </View>
-            ))}
-
-            <Text className="font-bold text-typography-900 mt-3">
-              Condiciones de la pantalla
-            </Text>
-
-            {[
-              ["pantallaRota", "Pantalla rota o estrellada"],
-              [
-                "pantallaManchas",
-                "Pantalla con manchas (amarillas, negras o de colores)",
-              ],
-              [
-                "tactilNoResponde",
-                "Táctil no responde o responde parcialmente",
-              ],
-              ["sinImagen", "Pantalla encendida pero sin imagen"],
-              ["rayasPantalla", "Pantalla con rayas verticales / horizontales"],
-              ["pantallaNegra", "Pantalla completamente negra"],
-            ].map(([key, label]) => (
-              <View key={key} className="flex-row items-center mb-1">
-                <CheckBox
-                  value={checklist[key as ChecklistKeys]}
-                  onValueChange={() => toggleCheckbox(key as ChecklistKeys)}
-                  color={
-                    checklist[key as ChecklistKeys] ? "#FFB74D" : undefined
-                  }
-                />
-                <Text className="ml-2 text-typography-900">{label}</Text>
-              </View>
-            ))}
+              <Text className="font-bold text-typography-900 mt-2">Condiciones de batería y energía</Text>
+              {[["noEnciende", "No enciende"], ["seApagaSolo", "Se apaga solo"], ["noCarga", "No carga"], ["bateriaInflada", "Batería inflada"], ["seDescarga", "Se descarga rápido"], ["seReinicia", "Se reinicia"]].map(([key, label]) => (
+                  <View key={key} className="flex-row items-center mb-1">
+                      <CheckBox value={checklist[key as ChecklistKeys]} onValueChange={() => toggleCheckbox(key as ChecklistKeys)} color={checklist[key as ChecklistKeys] ? "#FFB74D" : undefined} />
+                      <Text className="ml-2 text-typography-900">{label}</Text>
+                  </View>
+              ))}
+              <Text className="font-bold text-typography-900 mt-3">Condiciones de la pantalla</Text>
+              {[["pantallaRota", "Pantalla rota"], ["pantallaManchas", "Pantalla con manchas"], ["tactilNoResponde", "Táctil no responde"], ["sinImagen", "Sin imagen"], ["rayasPantalla", "Con rayas"], ["pantallaNegra", "Pantalla negra"]].map(([key, label]) => (
+                  <View key={key} className="flex-row items-center mb-1">
+                      <CheckBox value={checklist[key as ChecklistKeys]} onValueChange={() => toggleCheckbox(key as ChecklistKeys)} color={checklist[key as ChecklistKeys] ? "#FFB74D" : undefined} />
+                      <Text className="ml-2 text-typography-900">{label}</Text>
+                  </View>
+              ))}
           </View>
-          {/*CHECKLIST*/}
 
           <FormControl isInvalid={!!errors.issueDescription}>
             <TextInput
               placeholder="Describe el problema o daño del equipo..."
               value={form.issueDescription}
               onChangeText={(v) => handleChange("issueDescription", v)}
-              multiline
-              numberOfLines={6}
-              textAlignVertical="top"
+              multiline numberOfLines={6} textAlignVertical="top"
               placeholderTextColor="#999999"
               className={`border-2 rounded-xl p-4 h-32 text-typography-900 bg-background-50 ${
-                errors.issueDescription
-                  ? "border-error-500"
-                  : "border-outline-200"
+                errors.issueDescription ? "border-error-500" : "border-outline-200"
               }`}
             />
             {errors.issueDescription && (
@@ -515,67 +526,45 @@ export default function AddEquipoForm() {
               </FormControlError>
             )}
           </FormControl>
-
-          {/* texto legal*/}
-          <Text className="text-xs text-typography-700 mt-3 text-justify">
-            Green Monkey responsabiliza al cliente de la procedencia lícita del
-            equipo. La garantía solo aplica en mano de obra y en piezas
-            reemplazadas, cualquier falla adicional genera un costo extra.
-            Golpes o manipulación indebida no tendrán garantía de ningún tipo.
-            Estos equipos corren el riesgo de apagarse definitivamente. El
-            cliente cuenta con 30 días para recoger su equipo. No nos hacemos
-            responsables por SIM o accesorios olvidados.
-          </Text>
         </View>
 
-        {/* Bloque Firma */}
+        {/* --- BLOQUE ACEPTACIÓN (NUEVO) --- */}
         <View className="bg-background-0 p-6 rounded-2xl shadow-lg mb-6 border border-outline-100">
           <View className="flex-row items-center mb-4">
             <View className="w-2 h-6 bg-warning-500 rounded-full mr-3" />
             <Text className="text-xl font-bold text-typography-900">
-              Firma del Cliente
+              Aceptación del Cliente
             </Text>
           </View>
-          <View
-            style={{
-              height: 200,
-              borderWidth: 2,
-              borderColor: "rgb(var(--color-outline-200))",
-              borderRadius: 12,
-              backgroundColor: "rgb(var(--color-background-50))",
-            }}
-          >
-            <Signature
-              ref={signatureRef}
-              onOK={handleOK}
-              onBegin={() => setScrollEnabled(false)}
-              onEnd={() => setScrollEnabled(true)}
-              descriptionText="Firme aquí"
-              clearText="Borrar"
-              confirmText="Guardar"
-              webStyle={`.m-signature-pad {border: none; background-color: rgb(var(--color-background-50));}`}
+          <Text className="text-base font-semibold text-typography-700 mb-2">
+            Escriba su nombre completo para confirmar la recepción
+          </Text>
+          <TextInput
+            placeholder="Nombre Completo del Cliente"
+            value={nombreConfirmacion}
+            onChangeText={setNombreConfirmacion}
+            placeholderTextColor="#999999"
+            className="border-2 border-outline-200 rounded-xl p-4 mb-6 text-typography-900 bg-background-50"
+          />
+          <View className="flex-row items-start">
+            <CheckBox
+              value={terminosAceptados}
+              onValueChange={setTerminosAceptados}
+              color={terminosAceptados ? "#2AD582" : undefined}
+              className="mt-1"
             />
-          </View>
-
-          {firma && (
-            <View className="flex-row items-center mt-4 p-3 bg-success-50 rounded-xl border border-success-200">
-              <Text className="text-success-700 font-semibold">
-                ✓ Firma guardada correctamente
-              </Text>
+            <View className="ml-3 flex-1 flex-row flex-wrap">
+              <Text className="text-typography-900">Acepto los </Text>
+              <TouchableOpacity onPress={() => setModalVisible(true)}>
+                <Text className="text-primary-500 font-bold underline">
+                  Términos y Condiciones
+                </Text>
+              </TouchableOpacity>
             </View>
-          )}
-
-          {/* Botón para borrar la firma */}
-          <TouchableOpacity
-            onPress={handleClear}
-            className="bg-secondary-200 rounded-xl p-4 mt-4 border border-outline-200"
-          >
-            <Text className="text-typography-700 text-center font-semibold">
-              Borrar Firma
-            </Text>
-          </TouchableOpacity>
+          </View>
         </View>
-
+        {/* ---------------------------------- */}
+        
         {/* Botones Finales */}
         <View className="flex-row justify-between mb-8 gap-4">
           <TouchableOpacity
@@ -655,6 +644,23 @@ export default function AddEquipoForm() {
           </GluestackAlert>
         </View>
       )}
+
+      {/* --- LLAMADA AL MODAL DE TÉRMINOS --- */}
+      <TermsModal
+        isVisible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
+      {/* ------------------------------------- */}
     </View>
   );
 }
+
+// --- ESTILOS PARA EL MODAL ---
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(29, 29, 29, 0.5)",
+  },
+});
