@@ -7,6 +7,7 @@ import { useUserStore } from "@/shared/stores/useUserStore";
 import { Repair } from "@/shared/types/repair.type";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useColorScheme } from "nativewind";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
@@ -67,6 +68,7 @@ const getStatusTextStyle = (status: Repair["status"]) => {
 };
 
 export default function HomeScreen() {
+  const { colorScheme } = useColorScheme();
   const [searchText, setSearchText] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -165,7 +167,7 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1 bg-background-0">
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+      <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} backgroundColor="transparent" translucent />
 
       {/* Header */}
       <View className="bg-background-50 pt-12 pb-6 px-6 border-b border-background-200">
@@ -300,7 +302,7 @@ export default function HomeScreen() {
       </View>
 
       {/* Repairs List */}
-      <View className="flex-1 px-6 pt-4">
+      <View className="flex-1 px-6 pt-4 bg-primary-0">
         <View className="flex-row justify-between items-center mb-4">
           <Text className="text-lg font-semibold text-typography-900">
             Reparaciones Activas

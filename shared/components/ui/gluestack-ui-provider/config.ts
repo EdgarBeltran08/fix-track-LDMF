@@ -259,10 +259,10 @@ export const config = {
     "--color-typography-300": "155 190 170",
     "--color-typography-400": "180 220 190",
     "--color-typography-500": "200 235 205",
-    "--color-typography-600": "220 245 220",
+    "--color-typography-600": "255 240 190",
     "--color-typography-700": "235 255 240",
     "--color-typography-800": "240 255 245",
-    "--color-typography-900": "245 255 250",
+    "--color-typography-900": "255 251 235",
     "--color-typography-950": "250 255 252",
 
     /* Outline */

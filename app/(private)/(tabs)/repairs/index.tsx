@@ -504,7 +504,7 @@ export default function RepairsScreen() {
       </View>
 
       {/* Repairs List */}
-      <View className="flex-1 px-6 pt-4 bg-background-0">
+      <View className="flex-1 px-6 pt-4 bg-primary-0">
         <View className="flex-row justify-between items-center mb-4">
           <Text className="text-lg font-bold text-typography-900">
             {selectedStatus === "all"
