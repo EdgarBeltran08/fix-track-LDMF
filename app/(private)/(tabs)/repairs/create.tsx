@@ -464,7 +464,7 @@ export default function AddEquipoForm() {
           </FormControl>
           <FormControl className="mb-4" isInvalid={!!errors.estimatedCost}>
             <TextInput
-              placeholder="Costo estimado de la reparación"
+              placeholder="Costo de Diagnóstico"
               value={form.estimatedCost}
               onChangeText={(v) => handleChange("estimatedCost", v)}
               keyboardType="numeric"

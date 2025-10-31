@@ -120,7 +120,9 @@ export default function DetallesEquipoView() {
     (acc, piece) => acc + piece.unitCost * piece.quantity,
     0
   );
-  const totalCost = repair.estimatedCost;
+  
+  // 🚨 CÁLCULO CORREGIDO: Total a Pagar = Max(0, Costo Piezas/Servicios - Anticipo de Diagnóstico)
+  const totalCost = Math.max(0, partsCost - (repair.estimatedCost || 0));
 
   return (
     <View className="flex-1 bg-primary-0">
@@ -282,7 +284,7 @@ export default function DetallesEquipoView() {
                 style={{ marginRight: 8 }}
               />
               <Text className="text-lg font-bold text-typography-900">
-                Piezas Utilizadas
+                Piezas Utilizadas y Mano de Obra
               </Text>
               <View className="ml-2 bg-primary-400 px-2 py-1 rounded-full">
                 <Text className="text-white text-xs font-bold">
@@ -355,16 +357,24 @@ export default function DetallesEquipoView() {
                   </Text>
                 </View>
                 <Text className="text-base font-bold text-typography-900">
-                  ${partsCost.toLocaleString("es-MX")}
+                  ${partsCost.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </Text>
               </View>
             )}
+            
+            <View className="flex-row justify-between items-center pb-3 border-b border-background-200">
+              <Text className="text-typography-900">Anticipo de Diagnóstico</Text>
+              <Text className="font-semibold text-typography-900">
+                -${(repair.estimatedCost || 0).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </Text>
+            </View>
+
             <View className="flex-row justify-between items-center pt-3 border-t-2 border-primary-300">
               <Text className="text-lg font-bold text-typography-900">
-                Total Estimado
+                Total a Pagar
               </Text>
               <Text className="text-2xl font-bold text-primary-600">
-                ${totalCost.toLocaleString("es-MX")}
+                ${totalCost.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </Text>
             </View>
           </Card>
@@ -421,9 +431,6 @@ export default function DetallesEquipoView() {
             </Card>
           </View>
         )}
-
-        {/* Signature Section - Not implemented yet */}
-        {/* TODO: Add customerSignature field to Repair type and save signature in create form */}
 
         {/* Timestamps */}
         <View className="mb-6">
