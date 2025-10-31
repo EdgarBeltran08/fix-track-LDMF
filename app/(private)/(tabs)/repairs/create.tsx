@@ -57,23 +57,30 @@ type ChecklistKeys =
 const LOREM_TEXT = `
 TÉRMINOS Y CONDICIONES DEL SERVICIO DE REPARACIÓN FIX TRACK
 
+
 Artículo 1: Aceptación y Consentimiento
 
 Al entregar su equipo para diagnóstico y/o reparación, el Cliente acepta de manera expresa los siguientes términos y condiciones. La aceptación se formaliza mediante la Confirmación Digital (Nombre Completo) en el presente formulario, que sustituye a la firma autógrafa y tiene plena validez legal.
 
 Artículo 2: Diagnóstico, Presupuesto y Anticipo
-
 1.  Costo del Diagnóstico: Todo equipo requiere de un diagnóstico técnico para determinar la(s) falla(s) y generar un presupuesto de reparación. Este servicio de diagnóstico tiene un costo fijo, el cual será comunicado al Cliente al momento de la recepción del equipo y deberá ser cubierto como un anticipo.
+
 2.  Aceptación del Presupuesto: Una vez completado el diagnóstico, Fix Track presentará al Cliente un presupuesto detallado del costo total de la reparación (piezas y/o mano de obra).
+
 3.  Anticipo Deducible:
+
     * Si el Cliente ACEPTA el presupuesto, el costo del diagnóstico pagado como anticipo será deducido íntegramente del monto total de la reparación.
+
     * Si el Cliente RECHAZA el presupuesto, el pago del diagnóstico no será reembolsable, ya que cubre el tiempo y los recursos técnicos invertidos en la revisión del equipo.
+
 4.  Variaciones en el Presupuesto: Si durante la reparación se detectan fallas adicionales no contempladas en el diagnóstico inicial, Fix Track se pondrá en contacto con el Cliente para notificarle y solicitar su aprobación para cualquier costo adicional.
 
 Artículo 3: Garantía del Servicio
 
 1. Alcance de la Garantía: La garantía ofrecida por Fix Track se limita estrictamente a la mano de obra realizada y a la pieza de repuesto específica que fue instalada.
+
 2. Vigencia: La garantía es válida por 30 días naturales a partir de la fecha de entrega del equipo al Cliente.
+
 3. Exclusiones: La garantía será nula en los siguientes casos:
    * Manipulación Indebida: Si el equipo presenta daños físicos, golpes, caídas, señales de humedad o cualquier tipo de manipulación externa o interna posterior a la reparación.
    * Fallas Adicionales: Si la falla reportada después de la reparación es diferente a la originalmente reparada. Cualquier falla adicional generará un nuevo presupuesto y costo extra.
@@ -85,7 +92,9 @@ El Cliente declara bajo protesta de decir verdad que el equipo entregado es de s
 Artículo 5: Plazos de Recolección y Resguardo
 
 1. Plazo de Recolección: Una vez que la reparación esté finalizada (o el diagnóstico haya sido rechazado por el Cliente), el Cliente dispone de 30 días naturales para recoger el equipo.
+
 2. Costo de Resguardo: Vencido el plazo de 30 días, Fix Track se reserva el derecho de aplicar un costo diario de almacenaje o considerar el equipo en abandono, procediendo a su desecho o venta para cubrir los gastos de almacenaje y/o diagnóstico.
+
 3. Accesorios: Fix Track no se hace responsable por tarjetas SIM, tarjetas de memoria, fundas, protectores, o cualquier otro accesorio olvidado en el equipo.
 `;
 
@@ -151,7 +160,7 @@ export default function AddEquipoForm() {
     type: "success",
     message: "",
   });
-  
+
   // Eliminado: const signatureRef = useRef<any>(null);
 
   const [checklist, setChecklist] = useState<Record<ChecklistKeys, boolean>>({
@@ -190,20 +199,45 @@ export default function AddEquipoForm() {
   const toggleCheckbox = (key: ChecklistKeys) => {
     setChecklist((prev) => ({ ...prev, [key]: !prev[key] }));
   };
-  
+
+ 
+
   // Eliminado: handleOK y handleClear
 
   const handleCancel = () => {
-    Alert.alert("Cancelar", "¿Estás seguro de que quieres cancelar?", [
-      { text: "No" },
-      {
-        text: "Sí",
-        onPress: () => {
-          router.back();
-        },
-      },
-    ]);
-  };
+    Alert.alert("Cancelar", "¿Estás seguro de que quieres cancelar?", [
+      { text: "No", style: "cancel" },
+      {
+        text: "Sí, cancelar",
+        style: "destructive",
+        onPress: () => {
+          // 1. Reiniciar todos los estados del formulario a sus valores iniciales
+          setForm({
+            customerName: "",
+            customerPhone: "",
+            customerEmail: "",
+            deviceModel: "",
+            issueDescription: "",
+            estimatedCost: "",
+          });
+          setErrors({});
+          setChecklist({
+            aparatoMojado: false, noEnciende: false, seApagaSolo: false,
+            noCarga: false, bateriaInflada: false, seDescarga: false,
+            seReinicia: false, pantallaRota: false, pantallaManchas: false,
+            tactilNoResponde: false, sinImagen: false, rayasPantalla: false,
+            pantallaNegra: false,
+          });
+          setNombreConfirmacion("");
+          setTerminosAceptados(false);
+
+          // 2. Navegar hacia atrás después de limpiar el formulario
+          router.back();
+        },
+      },
+    ]);
+  };
+
 
   const handleSubmit = async () => {
     // --- NUEVAS VALIDACIONES DE ACEPTACIÓN ---
@@ -224,6 +258,11 @@ export default function AddEquipoForm() {
       return;
     }
     // ---------------------------------------------
+    if (!form.estimatedCost.trim()) {
+      // Usamos el mismo sistema de errores que yup para que la UI reaccione
+      setErrors(prev => ({ ...prev, estimatedCost: "El costo de diagnóstico es requerido." }));
+      return;
+    }
 
     try {
       setErrors({});
@@ -277,7 +316,7 @@ export default function AddEquipoForm() {
               validatedData.issueDescription
             }\n\nProblemas detectados:\n- ${selectedIssues.join("\n- ")}`
           : validatedData.issueDescription;
-      
+
       // --- OBJETO DE DATOS PARA FIRESTORE (MODIFICADO) ---
       const repairData = {
         customerName: validatedData.customerName,
@@ -483,7 +522,7 @@ export default function AddEquipoForm() {
               </FormControlError>
             )}
           </FormControl>
-          
+
           {/* Checklist */}
           <Text className="text-lg font-bold text-typography-900 mb-2 mt-2">
             Este equipo se recibe:
@@ -566,7 +605,7 @@ export default function AddEquipoForm() {
           </View>
         </View>
         {/* ---------------------------------- */}
-        
+
         {/* Botones Finales */}
         <View className="flex-row justify-between mb-8 gap-4 m-4">
           <TouchableOpacity
