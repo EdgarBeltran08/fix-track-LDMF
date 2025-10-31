@@ -61,7 +61,7 @@ const getStatusBadgeStyle = (status: RepairStatus) => {
 const getStatusTextStyle = (status: RepairStatus) => {
   const styleMap = {
     in_review: "text-blue-800",
-    repairing: "text-orange-800",
+    repairing: "text-orange-500",
     waiting_parts: "text-gray-700",
     done: "text-green-800",
     not_repaired: "text-red-800",
@@ -259,7 +259,7 @@ export default function ActualizarEstadoScreen() {
   }
 
   return (
-    <View className="flex-1 bg-background-0">
+    <View className="flex-1 bg-primary-0 ">
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       {/* Header */}
@@ -291,7 +291,7 @@ export default function ActualizarEstadoScreen() {
         contentContainerStyle={{ paddingBottom: 120 }}
       >
         {/* Repair Info Card */}
-        <Card className="p-5 mb-6 bg-background-50 border-2 border-background-200">
+        <Card className="p-5 mb-6 bg-background-0 border-2 border-background-200">
           <View className="mb-4 pb-4 border-b border-background-200">
             <Text className="text-xs font-semibold text-primary-600 mb-2">
               FOLIO
@@ -361,7 +361,7 @@ export default function ActualizarEstadoScreen() {
           <Text className="text-base font-bold text-typography-900 mb-3">
             Estado Actual
           </Text>
-          <Card className="p-4 bg-background-50 border-2 border-background-200">
+          <Card className="p-4 bg-primary-0 border-2 border-background-200">
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center flex-1">
                 <View
@@ -382,7 +382,7 @@ export default function ActualizarEstadoScreen() {
                         : repair.status === "done"
                         ? "#15803D"
                         : repair.status === "not_repaired"
-                        ? "#B91C1C"
+                        ? "#ba2d2dff"
                         : "#047857"
                     }
                   />
@@ -422,11 +422,11 @@ export default function ActualizarEstadoScreen() {
           <Text className="text-base font-bold text-typography-900 mb-3">
             Cambiar Estado
           </Text>
-          <Card className="p-4 bg-background-50 border-2 border-primary-300">
-            <Text className="text-sm text-typography-600 mb-3">
+          <Card className="p-4 bg-tertiary-400 border-2 border-tertiary-50">
+            <Text className="text-xl text-typography-0 mb-3">
               Selecciona el nuevo estado para esta reparación
             </Text>
-            <View className="border-2 border-primary-300 rounded-xl bg-background-50 overflow-hidden">
+            <View className="border-2 border-tertiary-200 rounded-xl bg-tertiary-400 overflow-hidden">
               <Picker
                 selectedValue={newStatus}
                 onValueChange={(itemValue) =>
@@ -446,22 +446,22 @@ export default function ActualizarEstadoScreen() {
                   label="Seleccionar nuevo estado..."
                   value=""
                   enabled={false}
-                  color="#6B7280"
+                  color="#4c515cff"
                 />
                 <Picker.Item
                   label="En Revisión"
                   value="in_review"
-                  color="#1F2937"
+                  color="#0d1117ff"
                 />
                 <Picker.Item
                   label="Reparando"
                   value="repairing"
-                  color="#1F2937"
+                  color="#0d1117ff"
                 />
                 <Picker.Item
                   label="Esperando Piezas"
                   value="waiting_parts"
-                  color="#1F2937"
+                  color="#0d1117ff"
                 />
                 <Picker.Item label="Terminado" value="done" color="#1F2937" />
                 <Picker.Item
@@ -553,8 +553,8 @@ export default function ActualizarEstadoScreen() {
           <GluestackAlert
             action={alertConfig.type}
             className={`${
-              alertConfig.type === "success" ? "bg-success-700" : "bg-error-700"
-            } rounded-xl shadow-2xl p-4`}
+              alertConfig.type === "success" ? "bg-success-300" : "bg-error-700"
+            } rounded-xl shadow-4xl p-4`}
           >
             <View className="flex-row items-start justify-between w-full">
               <View className="flex-row items-start flex-1 gap-3">

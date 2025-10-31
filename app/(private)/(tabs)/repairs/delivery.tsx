@@ -106,12 +106,12 @@ export default function EntregarEquipo() {
 
   return (
     <ScrollView
-      className="flex-1 bg-background-50 p-6"
+      className="flex-1 bg-primary-0"
       scrollEnabled={true}
       contentContainerStyle={{ paddingBottom: 120 }}
     >
       {/* Encabezado */}
-      <View className="items-center mb-6 mt-2">
+      <View className="items-center mb-6 bg-background-50 px-6 py-8 rounded-b-3xl mb-10">
         <Text className="text-2xl font-bold text-typography-900 mb-3">
           Entregar Equipo
         </Text>
@@ -120,13 +120,13 @@ export default function EntregarEquipo() {
           style={{ width: 100, height: 100, marginBottom: 8 }}
         />
 
-        <Text className="text-center text-typography-900 opacity-70">
+        <Text className="text-center text-typography-900 opacity-70 text-xs">
           Ingresa el folio para la entrega del equipo reparado
         </Text>
       </View>
 
       {/* Campo de Folio */}
-      <View className="bg-background-100 p-5 rounded-2xl shadow-md border border-background-200 mb-6">
+      <View className="bg-background-100 rounded-2xl shadow-md border border-background-200 mb-7 mx-4 px-5 py-7">
         <Text className="text-typography-900 mb-2 font-semibold">
           Número de folio
         </Text>
@@ -141,7 +141,7 @@ export default function EntregarEquipo() {
       </View>
 
       {/* Confirmación de Entrega */}
-      <View className="bg-background-100 p-5 rounded-2xl shadow-md border border-background-200 mb-6">
+      <View className="bg-background-100 rounded-2xl shadow-md border border-background-200 mb-7 mx-4 px-5 py-7">
         <Text className="text-typography-900 mb-3 font-semibold">
           Confirmación de Entrega
         </Text>
@@ -159,9 +159,9 @@ export default function EntregarEquipo() {
       </View>
 
       {/* Advertencia */}
-      <View className="flex-row items-start bg-background-50 p-3 rounded-xl border border-background-200">
+      <View className="flex-row items-start bg-background-50 p-3 rounded-xl border border-background-200 mx-4 mb-2">
         <Text className="text-3xl mr-3 text-typography-900">⚠️</Text>
-        <Text className="text-typography-900 flex-1">
+        <Text className="text-typography-900 flex-1 mr-2">
           Verificar que el folio sea correcto antes de realizar la entrega
         </Text>
       </View>

@@ -130,7 +130,7 @@ export default function RepairsScreen() {
         router.push(`/(private)/(tabs)/repairs/detailsview?id=${item.id}`)
       }
     >
-      <Card className="p-4 bg-background-50 border-2 border-background-200 shadow-sm">
+      <Card className="p-4 bg-primary-50 border-2 border-background-200 shadow-sm">
         {/* Header */}
         <View className="flex-row justify-between items-start mb-3">
           <View className="flex-1 pr-2">
@@ -470,7 +470,7 @@ export default function RepairsScreen() {
             color="white"
             style={{ marginRight: 8 }}
           />
-          <ButtonText className="font-bold text-base">
+          <ButtonText className="font-semibold">
             Nueva Reparación
           </ButtonText>
         </Button>

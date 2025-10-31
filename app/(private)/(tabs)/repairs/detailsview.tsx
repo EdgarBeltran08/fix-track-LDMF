@@ -123,7 +123,7 @@ export default function DetallesEquipoView() {
   const totalCost = repair.estimatedCost;
 
   return (
-    <View className="flex-1 bg-background-0">
+    <View className="flex-1 bg-primary-0">
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       {/* Header */}
@@ -211,7 +211,7 @@ export default function DetallesEquipoView() {
                 <Ionicons
                   name="call"
                   size={16}
-                  color="#6B7280"
+                  color="#c8bd65ff"
                   style={{ marginRight: 6 }}
                 />
                 <Text className="text-base text-typography-900">
@@ -227,7 +227,7 @@ export default function DetallesEquipoView() {
                 <Ionicons
                   name="mail"
                   size={16}
-                  color="#6B7280"
+                  color="#c8bd65ff"
                   style={{ marginRight: 6 }}
                 />
                 <Text className="text-base text-typography-900">
@@ -284,7 +284,7 @@ export default function DetallesEquipoView() {
               <Text className="text-lg font-bold text-typography-900">
                 Piezas Utilizadas
               </Text>
-              <View className="ml-2 bg-primary-500 px-2 py-1 rounded-full">
+              <View className="ml-2 bg-primary-400 px-2 py-1 rounded-full">
                 <Text className="text-white text-xs font-bold">
                   {repair.pieces.length}
                 </Text>
@@ -347,7 +347,7 @@ export default function DetallesEquipoView() {
                   <Ionicons
                     name="cube-outline"
                     size={18}
-                    color="#6B7280"
+                    color="#c8bd65ff"
                     style={{ marginRight: 6 }}
                   />
                   <Text className="text-base font-semibold text-typography-900">
@@ -447,7 +447,7 @@ export default function DetallesEquipoView() {
                 <Ionicons
                   name="calendar"
                   size={16}
-                  color="#6B7280"
+                  color="#c8bd65ff"
                   style={{ marginRight: 6 }}
                 />
                 <Text className="text-base text-typography-900">
@@ -471,7 +471,7 @@ export default function DetallesEquipoView() {
                   <Ionicons
                     name="refresh"
                     size={16}
-                    color="#6B7280"
+                    color="#c8bd65ff"
                     style={{ marginRight: 6 }}
                   />
                   <Text className="text-base text-typography-900">

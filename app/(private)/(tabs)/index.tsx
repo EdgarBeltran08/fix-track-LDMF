@@ -111,7 +111,7 @@ export default function HomeScreen() {
 
   const renderRepairCard = ({ item }: { item: Repair }) => (
     <Pressable className="mb-3">
-      <Card className="p-4 bg-background-50 border border-background-200">
+      <Card className="p-4 bg-primary-50 border border-background-200">
         {/* Header */}
         <View className="flex-row justify-between items-start mb-3">
           <View className="flex-1">
@@ -145,19 +145,19 @@ export default function HomeScreen() {
         </View>
 
         {/* Footer */}
-        <View className="flex-row justify-between items-center pt-3 border-t border-background-200">
+        <View className="flex-row justify-between items-center p-3 bg-tertiary-500 rounded-lg">
           <View className="flex-row items-center">
             <Ionicons
               name="calendar-outline"
               size={16}
-              color="#6B7280"
+              color="#262719ff"
               style={{ marginRight: 4 }}
             />
-            <Text className="text-sm text-typography-600">
+            <Text className="text-sm text-typography-0">
               {item.createdAt.toLocaleDateString("es-MX")}
             </Text>
           </View>
-          <Text className="text-base font-semibold text-primary-600">
+          <Text className="text-base font-bold text-primary-0 bg-primary-500 px-3 py-1 rounded-xl">
             ${item.estimatedCost.toLocaleString("es-MX")}
           </Text>
         </View>
@@ -170,7 +170,7 @@ export default function HomeScreen() {
       <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} backgroundColor="transparent" translucent />
 
       {/* Header */}
-      <View className="bg-background-50 pt-12 pb-6 px-6 border-b border-background-200">
+      <View className="bg-background-50 pt-12 px-6 border-b-2 border-primary-400 pb-9">
         <View className="flex-row items-center justify-between mb-4">
           <View>
             <Text className="text-2xl font-bold text-typography-900">
@@ -272,12 +272,12 @@ export default function HomeScreen() {
           <Button
             action="primary"
             size="lg"
-            className="flex-1"
+            className="flex-1 rounded-xl"
             onPress={() => router.push("/(private)/(tabs)/repairs/create")}
           >
             <Ionicons
-              name="add"
-              size={20}
+              name="add-circle"
+              size={22}
               color="white"
               style={{ marginRight: 8 }}
             />
@@ -289,7 +289,7 @@ export default function HomeScreen() {
         <View className="relative">
           <Input variant="outline" size="md">
             <InputField
-              placeholder="Buscar por cliente, dispositivo o folio..."
+              placeholder="Buscar por cliente, dispositivo, folio o teléfono..."
               value={searchText}
               onChangeText={setSearchText}
               className="pl-10"

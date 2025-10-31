@@ -156,7 +156,7 @@ export default function AuthIndex() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-background-0"
+      className="flex-1 bg-background-50"
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
     >
@@ -167,10 +167,10 @@ export default function AuthIndex() {
         showsVerticalScrollIndicator={false}
         bounces={false}
       >
-        <View className="flex-1 justify-center px-6 py-8 min-h-full">
+        <View className="flex-1 justify-end min-h-full">
           {/* Header with Logo */}
           {!keyboardVisible && (
-            <View className="mb-8 items-center flex-shrink-0">
+            <View className="mb-10 items-center flex-shrink-0">
               {/* Logo Container */}
               <View className="mb-4 p-4 rounded-full bg-primary-50 shadow-lg shadow-primary-200/30">
                 <SvgXml xml={logoSvg} width={80} height={80} />
@@ -189,30 +189,33 @@ export default function AuthIndex() {
           )}
           {/* Compact header for keyboard mode */}
           {keyboardVisible && (
-            <View className="mb-6 items-center flex-shrink-0">
-              <Text className="text-2xl font-black text-primary-600 mb-1 tracking-tight">
+            <View className="mt-8 mb-8 items-center flex-shrink-0">
+              <View className="mb-4 p-4 rounded-full bg-primary-50 shadow-lg shadow-primary-200/30">
+                <SvgXml xml={logoSvg} width={80} height={80} />
+              </View>
+              <Text className="text-6xl font-black text-primary-600 mb-1 tracking-tight">
                 FixTrack
               </Text>
-              <Text className="text-sm text-typography-600 text-center">
+              <Text className="text-xl text-typography-600 text-center">
                 Iniciar sesión
               </Text>
             </View>
           )}
           {/* Login Card */}
-          <View className="bg-background-0 rounded-2xl p-8 border border-primary-100 shadow-xl shadow-primary-900/5 flex-shrink-0">
-            {!keyboardVisible && (
-              <View className="mb-6 items-center">
-                <Text className="text-2xl font-bold text-typography-900 mb-2">
-                  Bienvenido de nuevo
-                </Text>
-                <Text className="text-sm text-typography-500">
-                  Inicia sesión para acceder a tu panel de control
-                </Text>
-              </View>
-            )}
+          <View className="shadow-xl shadow-primary-900/5">
+            
+            <View className="items-center bg-primary-0 p-10 rounded-t-full">
+              <Text className="text-2xl font-bold text-typography-900 mb-2">
+                Bienvenido de nuevo
+              </Text>
+              <Text className="text-sm text-typography-500">
+                Inicia sesión para acceder a tu panel de control
+              </Text>
+            </View>
+            
 
             {/* Email Field */}
-            <FormControl className="mb-4" isInvalid={!!validationErrors.email}>
+            <FormControl className="bg-primary-0 px-10 py-2" isInvalid={!!validationErrors.email}>
               <FormControlLabel>
                 <FormControlLabelText className="text-typography-700 font-semibold text-base mb-1">
                   Correo electrónico
@@ -245,7 +248,7 @@ export default function AuthIndex() {
 
             {/* Password Field */}
             <FormControl
-              className="mb-6"
+              className="bg-primary-0 px-10 py-4 pb-8"
               isInvalid={!!validationErrors.password}
             >
               <FormControlLabel>
@@ -282,7 +285,7 @@ export default function AuthIndex() {
               size="lg"
               action="primary"
               onPress={handleLogin}
-              className="mb-4 h-14 rounded-xl shadow-lg shadow-primary-900/20"
+              className="h-14 shadow-lg shadow-primary-900/20"
               isDisabled={isLoading}
             >
               {isLoading ? (
@@ -296,7 +299,7 @@ export default function AuthIndex() {
           </View>
           {/* Footer */}
           {!keyboardVisible && (
-            <View className="mt-6 items-center flex-shrink-0">
+            <View className="bg-primary-0 items-center flex-shrink-0 pt-6 pb-10">
               <Text className="text-sm text-typography-400 text-center leading-relaxed max-w-sm">
                 Optimiza el flujo de trabajo de tu taller con tecnología de
                 vanguardia

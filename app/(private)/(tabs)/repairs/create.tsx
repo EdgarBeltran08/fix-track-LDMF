@@ -358,12 +358,12 @@ export default function AddEquipoForm() {
   return (
     <View className="flex-1">
       <ScrollView
-        className="flex-1 bg-background-0 p-4"
+        className="flex-1 bg-primary-0 p-0"
         scrollEnabled={scrollEnabled}
         contentContainerStyle={{ paddingBottom: 120 }}
       >
         {/* Título, Bloque Cliente y Bloque Equipo (con sus FormControl) se mantienen */}
-        <View className="mb-8 mt-2">
+        <View className="mb-6 bg-background-50 p-4 py-6 rounded-b-3xl ">
             <Text className="text-3xl font-bold text-center text-typography-900 mb-2">
                 Registrar reparación
             </Text>
@@ -371,7 +371,7 @@ export default function AddEquipoForm() {
         </View>
 
         {/* Bloque Cliente */}
-        <View className="bg-background-0 p-6 rounded-2xl shadow-lg mb-6 border border-outline-100">
+        <View className="bg-background-0 p-6 rounded-2xl shadow-lg mb-6 border border-outline-100 m-4">
           <View className="flex-row items-center mb-4">
             <View className="w-2 h-6 bg-primary-500 rounded-full mr-3" />
             <Text className="text-xl font-bold text-typography-900">
@@ -437,7 +437,7 @@ export default function AddEquipoForm() {
         </View>
 
         {/* Bloque Equipo */}
-        <View className="bg-background-0 p-6 rounded-2xl shadow-lg mb-6 border border-outline-100">
+        <View className="bg-background-0 p-6 rounded-2xl shadow-lg mb-6 border border-outline-100 m-4">
           <View className="flex-row items-center mb-4">
             <View className="w-2 h-6 bg-info-500 rounded-full mr-3" />
             <Text className="text-xl font-bold text-typography-900">
@@ -529,7 +529,7 @@ export default function AddEquipoForm() {
         </View>
 
         {/* --- BLOQUE ACEPTACIÓN (NUEVO) --- */}
-        <View className="bg-background-0 p-6 rounded-2xl shadow-lg mb-6 border border-outline-100">
+        <View className="bg-background-0 p-6 rounded-2xl shadow-lg mb-6 border border-outline-100 m-4">
           <View className="flex-row items-center mb-4">
             <View className="w-2 h-6 bg-warning-500 rounded-full mr-3" />
             <Text className="text-xl font-bold text-typography-900">
@@ -566,7 +566,7 @@ export default function AddEquipoForm() {
         {/* ---------------------------------- */}
         
         {/* Botones Finales */}
-        <View className="flex-row justify-between mb-8 gap-4">
+        <View className="flex-row justify-between mb-8 gap-4 m-4">
           <TouchableOpacity
             onPress={handleSubmit}
             disabled={loading}

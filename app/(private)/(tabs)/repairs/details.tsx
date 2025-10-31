@@ -347,7 +347,7 @@ const Details: React.FC = () => {
     );
   }
   return (
-    <View className="flex-1 bg-background-50">
+    <View className="flex-1 bg-primary-0">
       <StatusBar barStyle="dark-content" backgroundColor="#FAFAFA" />
 
       {/* Alert Notification */}
@@ -389,7 +389,7 @@ const Details: React.FC = () => {
         contentContainerStyle={{ paddingBottom: 120 }}
       >
         {/* Header */}
-        <View className="bg-background-50 px-5 pt-3 pb-4 border-b border-background-200">
+        <View className="bg-background-50 px-5 pt-3 pb-4 border-b ">
           <View className="flex-row items-center justify-between">
             <TouchableOpacity
               onPress={() => router.back()}
@@ -425,19 +425,19 @@ const Details: React.FC = () => {
 
         <View className="p-5">
           {/* Client Info */}
-          <Card className="bg-background-0 rounded-xl p-4 mb-4">
-            <View className="flex-row items-center mb-3">
+          <Card className="bg-tertiary-300 rounded-xl p-4 mb-4">
+            <View className="flex-row items-stretch mb-3 pb-3 border-b">
               <Ionicons
                 name="person-outline"
-                size={20}
-                color="#FFB74D"
+                size={24}
+                color="#1b1916ff"
                 style={{ marginRight: 8 }}
               />
-              <Text className="text-base font-semibold text-typography-900">
+              <Text className="text-2xl font-bold text-typography-0">
                 {repair.customerName}
               </Text>
             </View>
-            <Text className="text-sm text-typography-600 mb-1">
+            <Text className="text-m text-typography-0 mb-1">
               {repair.deviceModel}
             </Text>
           </Card>
@@ -540,29 +540,36 @@ const Details: React.FC = () => {
             )}
           </View>
 
-          {/* COSTO DE LA REPARACION */}
-          <Card className="bg-background-0 rounded-xl p-4 mb-4">
-            <View className="flex-row items-center mb-3">
+          <View className="flex-row items-center mb-4">
               <Ionicons
                 name="cash-outline"
                 size={20}
                 color="#FFB74D"
                 style={{ marginRight: 8 }}
               />
+            <Text className="text-lg font-bold text-typography-900">
+              Servicio
+            </Text>
+          </View>
+
+          {/* COSTO DE LA REPARACION */}
+          <Card className="bg-background-0 rounded-xl p-4 mb-4">
+            <View className="flex-row items-center mb-3">
+
               <Text className="text-lg font-bold text-typography-900">
                 Costos
               </Text>
             </View>
 
             <View className="space-y-2">
-              <View className="flex-row justify-between py-2 border-b border-background-200">
+              <View className="flex-row justify-between py-2 pb-4 border-b border-background-200">
                 <Text className="text-typography-900">Costo estimado</Text>
                 <Text className="font-semibold text-typography-900">
                   ${repair.estimatedCost.toFixed(2)}
                 </Text>
               </View>
 
-              <View className="flex-row justify-between py-2 border-b border-background-200">
+              <View className="flex-row justify-between py-2 border-b pb-4 border-background-200">
                 <Text className="text-typography-900">Costo de piezas</Text>
                 <Text className="font-semibold text-primary-500">
                   ${partsCost.toFixed(2)}
@@ -580,15 +587,21 @@ const Details: React.FC = () => {
             </View>
           </Card>
 
-          {/* NOTAS */}
-          <Card className="bg-background-0 rounded-xl p-4 mb-4">
-            <View className="flex-row items-center mb-3">
+          <View className="flex-row items-center mb-4">
               <Ionicons
                 name="document-text-outline"
                 size={20}
                 color="#FFB74D"
                 style={{ marginRight: 8 }}
               />
+            <Text className="text-lg font-bold text-typography-900">
+              Comentarios
+            </Text>
+          </View>
+
+          {/* NOTAS */}
+          <Card className="bg-background-0 rounded-xl p-4 mb-4">
+            <View className="flex-row items-center mb-3">
               <Text className="text-lg font-bold text-typography-900">
                 Añadir Nota
               </Text>
@@ -673,7 +686,7 @@ const Details: React.FC = () => {
         onRequestClose={() => setIsModalVisible(false)}
       >
         <View className="flex-1 justify-end bg-black/50">
-          <View className="bg-background-0 rounded-t-3xl p-6 max-h-[80%]">
+          <View className="bg-background-100 rounded-t-3xl p-6 max-h-[80%]">
             <View className="flex-row items-center justify-between mb-4">
               <Text className="text-xl font-bold text-typography-900">
                 Añadir Pieza

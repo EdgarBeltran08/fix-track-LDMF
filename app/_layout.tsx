@@ -22,9 +22,9 @@ function LayoutContainer({ children }: { children: React.ReactNode }) {
   if (isDark) {
     return (
       <LinearGradient
-        colors={["#185744", "#0B2419"]}
-        start={{ x: 1, y: 0 }}
-        end={{ x: 1, y: 1 }}
+        colors={["#1b5b48ff", "#0B2419"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
         style={{
           flex: 1,
           paddingTop: insets.top,
