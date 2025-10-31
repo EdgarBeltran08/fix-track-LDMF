@@ -61,12 +61,14 @@ Artículo 1: Aceptación y Consentimiento
 
 Al entregar su equipo para diagnóstico y/o reparación, el Cliente acepta de manera expresa los siguientes términos y condiciones. La aceptación se formaliza mediante la Confirmación Digital (Nombre Completo) en el presente formulario, que sustituye a la firma autógrafa y tiene plena validez legal.
 
-Artículo 2: Riesgo de la Reparación y Daños Potenciales
+Artículo 2: Diagnóstico, Presupuesto y Anticipo
 
-El Cliente reconoce y acepta que:
-1. Riesgo de Pérdida Total o Daño Adicional: La reparación de equipos electrónicos, especialmente aquellos con daño por líquidos, daños severos o manipulación previa, conlleva el riesgo inherente de que el equipo pueda sufrir un fallo permanente e irreparable (incluyendo el riesgo de que el dispositivo no encienda de forma definitiva). Fix Track no se hace responsable por la pérdida total del equipo o la aparición de fallos adicionales no relacionados con el servicio contratado.
-2. Pérdida de Datos: El proceso de diagnóstico o reparación puede requerir el reinicio del sistema operativo. Es responsabilidad exclusiva del Cliente realizar una copia de seguridad (backup) de todos los datos, archivos e información almacenada en el equipo antes de su entrega. Fix Track no es responsable por la pérdida total o parcial de datos.
-3. Anulación de Garantía del Fabricante: La manipulación o apertura del equipo por parte de Fix Track puede anular la garantía oficial del fabricante del dispositivo.
+1.  Costo del Diagnóstico: Todo equipo requiere de un diagnóstico técnico para determinar la(s) falla(s) y generar un presupuesto de reparación. Este servicio de diagnóstico tiene un costo fijo, el cual será comunicado al Cliente al momento de la recepción del equipo y deberá ser cubierto como un anticipo.
+2.  Aceptación del Presupuesto: Una vez completado el diagnóstico, Fix Track presentará al Cliente un presupuesto detallado del costo total de la reparación (piezas y/o mano de obra).
+3.  Anticipo Deducible:
+    * Si el Cliente ACEPTA el presupuesto, el costo del diagnóstico pagado como anticipo será deducido íntegramente del monto total de la reparación.
+    * Si el Cliente RECHAZA el presupuesto, el pago del diagnóstico no será reembolsable, ya que cubre el tiempo y los recursos técnicos invertidos en la revisión del equipo.
+4.  Variaciones en el Presupuesto: Si durante la reparación se detectan fallas adicionales no contempladas en el diagnóstico inicial, Fix Track se pondrá en contacto con el Cliente para notificarle y solicitar su aprobación para cualquier costo adicional.
 
 Artículo 3: Garantía del Servicio
 

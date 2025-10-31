@@ -353,7 +353,7 @@ export default function DetallesEquipoView() {
                     style={{ marginRight: 6 }}
                   />
                   <Text className="text-base font-semibold text-typography-900">
-                    Piezas
+                    Piezas y Mano de Obra
                   </Text>
                 </View>
                 <Text className="text-base font-bold text-typography-900">
