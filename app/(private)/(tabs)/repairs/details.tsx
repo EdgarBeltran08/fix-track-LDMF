@@ -83,8 +83,8 @@ const Details: React.FC = () => {
     message: "",
   });
 
-  const partsCost = pieces.reduce((acc, p) => acc + p.unitCost * p.quantity, 0);
-  const totalCost = (repair?.estimatedCost || 0) + partsCost;
+ const partsCost = pieces.reduce((acc, p) => acc + p.unitCost * p.quantity, 0);
+const totalCost = partsCost - (repair?.estimatedCost || 0);
 
   useEffect(() => {
     if (id) {
@@ -434,8 +434,8 @@ const Details: React.FC = () => {
                   color="#FFB74D"
                   style={{ marginRight: 8 }}
                 />
-                <Text className="text-lg font-bold text-typography-900">
-                  Piezas Utilizadas / Servicios 
+                <Text className="text-g font-bold text-typography-900">
+                  Piezas Utilizadas y Mano de Obra
                 </Text>
               </View>
               <TouchableOpacity
@@ -536,20 +536,22 @@ const Details: React.FC = () => {
               </Text>
             </View>
 
-            <View className="space-y-2">
-              <View className="flex-row justify-between py-2 border-b border-background-200">
-                <Text className="text-typography-900">Costo estimado</Text>
-                <Text className="font-semibold text-typography-900">
-                  ${repair.estimatedCost.toFixed(2)}
-                </Text>
-              </View>
-
-              <View className="flex-row justify-between py-2 border-b border-background-200">
-                <Text className="text-typography-900">Costo de Piezas o Servicios Aplicados</Text>
+             <View className="flex-row justify-between py-2 border-b border-background-200">
+                <Text className="text-typography-900">Costo de Piezas y Mano de Obra</Text>
                 <Text className="font-semibold text-primary-500">
                   ${partsCost.toFixed(2)}
                 </Text>
               </View>
+
+            <View className="space-y-2">
+              <View className="flex-row justify-between py-2 border-b border-background-200">
+                <Text className="text-typography-900">Pago de Diagnóstico</Text>
+                <Text className="font-semibold text-typography-900">
+                  -${repair.estimatedCost.toFixed(2)}
+                </Text>
+              </View>
+
+             
 
               <View className="flex-row justify-between py-3 bg-primary-50 rounded-lg px-3 mt-2">
                 <Text className="text-lg font-bold text-typography-900">
@@ -658,7 +660,7 @@ const Details: React.FC = () => {
           <View className="bg-background-0 rounded-t-3xl p-6 pb-20 max-h-[80%]">
             <View className="flex-row items-center justify-between mb-4">
               <Text className="text-xl font-bold text-typography-900">
-                Añadir Pieza / Servicio
+                Añadir Pieza y Mano de Obra
               </Text>
               <TouchableOpacity onPress={() => setIsModalVisible(false)}>
                 <Ionicons name="close" size={28} color="#9CA3AF" />
@@ -678,7 +680,7 @@ const Details: React.FC = () => {
                 className="border border-background-200 rounded-xl p-3 mb-3 text-typography-900 bg-background-0"
               />
               <TextInput
-                placeholder="Costo unitario de pieza / Costo de servicio"
+                placeholder="Costo unitario de pieza / Costo de Mano de Obra"
                 placeholderTextColor="#9CA3AF"
                 value={customPieceCost}
                 onChangeText={setCustomPieceCost}
@@ -732,5 +734,4 @@ const Details: React.FC = () => {
 };
 
 export default Details;
-
 

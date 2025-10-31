@@ -4,7 +4,7 @@ import { Card } from "@/shared/components/ui/card";
 import { Input, InputField } from "@/shared/components/ui/input";
 import { RepairsRepository } from "@/shared/repositories/repairs.repository";
 import { useUserStore } from "@/shared/stores/useUserStore";
-import { Repair } from "@/shared/types/repair.type";
+import { Repair, RepairStatus } from "@/shared/types/repair.type";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -15,10 +15,10 @@ import {
   ScrollView,
   StatusBar,
   Text,
-  View,
+  View
 } from "react-native";
 
-const getStatusText = (status: Repair["status"]) => {
+const getStatusText = (status: RepairStatus) => {
   const statusMap = {
     in_review: "En Revisión",
     repairing: "Reparando",
@@ -30,7 +30,7 @@ const getStatusText = (status: Repair["status"]) => {
   return statusMap[status];
 };
 
-const getStatusColor = (status: Repair["status"]) => {
+const getStatusColor = (status: RepairStatus) => {
   const colorMap = {
     in_review: "info",
     repairing: "warning",
@@ -42,7 +42,7 @@ const getStatusColor = (status: Repair["status"]) => {
   return colorMap[status] as "info" | "warning" | "muted" | "success" | "error";
 };
 
-const getStatusBadgeStyle = (status: Repair["status"]) => {
+const getStatusBadgeStyle = (status: RepairStatus) => {
   const styleMap = {
     in_review: "bg-blue-100 border-blue-300",
     repairing: "bg-orange-100 border-orange-300",
@@ -54,7 +54,7 @@ const getStatusBadgeStyle = (status: Repair["status"]) => {
   return styleMap[status];
 };
 
-const getStatusTextStyle = (status: Repair["status"]) => {
+const getStatusTextStyle = (status: RepairStatus) => {
   const styleMap = {
     in_review: "text-blue-700",
     repairing: "text-orange-700",
@@ -107,61 +107,75 @@ export default function HomeScreen() {
     setRefreshing(false);
   };
 
-  const renderRepairCard = ({ item }: { item: Repair }) => (
-    <Pressable className="mb-3">
-      <Card className="p-4 bg-background-50 border border-background-200">
-        {/* Header */}
-        <View className="flex-row justify-between items-start mb-3">
-          <View className="flex-1">
-            <Text className="text-lg font-semibold text-typography-900 mb-1">
-              {item.customerName}
-            </Text>
-            <Text className="text-sm text-typography-600">{item.folio}</Text>
-          </View>
+  const renderRepairCard = ({ item }: { item: Repair }) => {
+    // 🚀 CÁLCULO DEL COSTO FINAL APLICADO AQUÍ
+    const partsCost = item.pieces.reduce(
+      (acc, piece) => acc + piece.unitCost * piece.quantity,
+      0
+    );
+    const totalAPagar = Math.max(0, partsCost - (item.estimatedCost || 0));
 
-          <Badge
-            action={getStatusColor(item.status)}
-            variant="outline"
-            className={`ml-2 border-2 ${getStatusBadgeStyle(item.status)}`}
-          >
-            <Text
-              className={`text-xs font-bold ${getStatusTextStyle(item.status)}`}
+    return (
+      <Pressable
+        className="mb-3"
+        onPress={() => router.push(`/(private)/(tabs)/repairs/detailsview?id=${item.id}`)}
+      >
+        <Card className="p-4 bg-background-50 border border-background-200">
+          {/* Header */}
+          <View className="flex-row justify-between items-start mb-3">
+            <View className="flex-1">
+              <Text className="text-lg font-semibold text-typography-900 mb-1">
+                {item.customerName}
+              </Text>
+              <Text className="text-sm text-typography-600">{item.folio}</Text>
+            </View>
+            <Badge
+              action={getStatusColor(item.status)}
+              variant="outline"
+              className={`ml-2 border-2 ${getStatusBadgeStyle(item.status)}`}
             >
-              {getStatusText(item.status)}
+              <Text
+                className={`text-xs font-bold ${getStatusTextStyle(
+                  item.status
+                )}`}
+              >
+                {getStatusText(item.status)}
+              </Text>
+            </Badge>
+          </View>
+
+          {/* Device Info */}
+          <View className="mb-3">
+            <Text className="text-base font-medium text-typography-800 mb-1">
+              {item.deviceModel}
             </Text>
-          </Badge>
-        </View>
-
-        {/* Device Info */}
-        <View className="mb-3">
-          <Text className="text-base font-medium text-typography-800 mb-1">
-            {item.deviceModel}
-          </Text>
-          <Text className="text-sm text-typography-600" numberOfLines={2}>
-            {item.issueDescription}
-          </Text>
-        </View>
-
-        {/* Footer */}
-        <View className="flex-row justify-between items-center pt-3 border-t border-background-200">
-          <View className="flex-row items-center">
-            <Ionicons
-              name="calendar-outline"
-              size={16}
-              color="#6B7280"
-              style={{ marginRight: 4 }}
-            />
-            <Text className="text-sm text-typography-600">
-              {item.createdAt.toLocaleDateString("es-MX")}
+            <Text className="text-sm text-typography-600" numberOfLines={2}>
+              {item.issueDescription}
             </Text>
           </View>
-          <Text className="text-base font-semibold text-primary-600">
-            ${item.estimatedCost.toLocaleString("es-MX")}
-          </Text>
-        </View>
-      </Card>
-    </Pressable>
-  );
+
+          {/* Footer */}
+          <View className="flex-row justify-between items-center pt-3 border-t border-background-200">
+            <View className="flex-row items-center">
+              <Ionicons
+                name="calendar-outline"
+                size={16}
+                color="#6B7280"
+                style={{ marginRight: 4 }}
+              />
+              <Text className="text-sm text-typography-600">
+                {item.createdAt.toLocaleDateString("es-MX")}
+              </Text>
+            </View>
+            <Text className="text-base font-semibold text-primary-600">
+              {/* 🚨 MOSTRANDO EL CÁLCULO CORRECTO */}
+              ${totalAPagar.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </Text>
+          </View>
+        </Card>
+      </Pressable>
+    );
+  };
 
   return (
     <View className="flex-1 bg-background-0">
