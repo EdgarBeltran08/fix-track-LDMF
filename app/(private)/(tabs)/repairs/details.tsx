@@ -14,14 +14,16 @@ import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Modal,
-  Alert as RNAlert,
+  KeyboardAvoidingView, // Agregado
+  Modal, // 1. IMPORTAR
+  Platform,
+  Alert as RNAlert, // Agregado
   ScrollView,
   StatusBar,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 const getStatusText = (status: Repair["status"]) => {
@@ -660,86 +662,93 @@ const totalCost = partsCost - (repair?.estimatedCost || 0);
         </View>
       </ScrollView>
 
-      {/* MODAL PARA AGREGAR PIEZA */}
-      <Modal
-        transparent={true}
-        visible={isModalVisible}
-        animationType="slide"
-        onRequestClose={() => setIsModalVisible(false)}
-      >
-        <View className="flex-1 justify-end bg-black/50">
-          <View className="bg-background-100 rounded-t-3xl p-6 max-h-[80%]">
-            <View className="flex-row items-center justify-between mb-4">
-              <Text className="text-xl font-bold text-typography-900">
-                Añadir Pieza y Mano de Obra
-              </Text>
-              <TouchableOpacity onPress={() => setIsModalVisible(false)}>
-                <Ionicons name="close" size={28} color="#9CA3AF" />
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView>
-              {/* Pieza Personalizada (Ahora es el bloque principal) */}
-              <Text className="text-lg font-semibold text-typography-900 mb-3">
-                Datos de la Pieza o Servicio
-              </Text>
-              <TextInput
-                placeholder="Nombre de la pieza o Servicio"
-                placeholderTextColor="#9CA3AF"
-                value={customPieceName}
-                onChangeText={setCustomPieceName}
-                className="border border-background-200 rounded-xl p-3 mb-3 text-typography-900 bg-background-0"
-              />
-              <TextInput
-                placeholder="Costo unitario de pieza / Costo de Mano de Obra"
-                placeholderTextColor="#9CA3AF"
-                value={customPieceCost}
-                onChangeText={setCustomPieceCost}
-                keyboardType="numeric"
-                className="border border-background-200 rounded-xl p-3 mb-3 text-typography-900 bg-background-0"
-              />
-
-              {/* Quantity */}
-              <Text className="text-sm font-semibold text-typography-900 mb-2">
-                Cantidad
-              </Text>
-              <TextInput
-                placeholder="Cantidad"
-                placeholderTextColor="#9CA3AF"
-                value={pieceQuantity}
-                onChangeText={setPieceQuantity}
-                keyboardType="numeric"
-                className="border border-background-200 rounded-xl bg-background-0 p-3 mb-4 text-typography-900"
-              />
-
-              {/* Buttons */}
-              <View className="flex-row gap-3 mt-2">
-                <Button
-                  action="primary"
-                  size="lg"
-                  className="flex-1"
-                  onPress={addPiece}
-                >
-                  <ButtonText>Añadir</ButtonText>
-                </Button>
-                <Button
-                  action="negative"
-                  size="lg"
-                  className="flex-1"
-                  onPress={() => {
-                    setIsModalVisible(false);
-                    setCustomPieceName("");
-                    setCustomPieceCost("");
-                    setPieceQuantity("1");
-                  }}
-                >
-                  <ButtonText>Cancelar</ButtonText>
-                </Button>
-              </View>
-            </ScrollView>
-          </View>
+          <Modal
+  transparent={true}
+  visible={isModalVisible}
+  animationType="slide"
+  onRequestClose={() => setIsModalVisible(false)}
+>
+  {/* 3. ENVOLVER TODO CON KeyboardAvoidingView */}
+  <KeyboardAvoidingView
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+    className="flex-1"
+  >
+    {/* El contenedor que centra el modal */}
+    <View className="flex-1 justify-center items-center bg-black/50 px-4">
+      {/* La "tarjeta" del modal con contenido */}
+      <View className="bg-background-100 rounded-2xl p-6 w-full max-h-[90%]">
+        <View className="flex-row items-center justify-between mb-4">
+          <Text className="text-xl font-bold text-typography-900">
+            Añadir Pieza y Mano de Obra
+          </Text>
+          <TouchableOpacity onPress={() => setIsModalVisible(false)}>
+            <Ionicons name="close" size={28} color="#9CA3AF" />
+          </TouchableOpacity>
         </View>
-      </Modal>
+
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {/* Pieza Personalizada (Ahora es el bloque principal) */}
+          <Text className="text-lg font-semibold text-typography-900 mb-3">
+            Datos de la Pieza o Servicio
+          </Text>
+          <TextInput
+            placeholder="Nombre de la pieza o Servicio"
+            placeholderTextColor="#9CA3AF"
+            value={customPieceName}
+            onChangeText={setCustomPieceName}
+            className="border border-background-200 rounded-xl p-3 mb-3 text-typography-900 bg-background-0"
+          />
+          <TextInput
+            placeholder="Costo de pieza / Costo de Mano de Obra"
+            placeholderTextColor="#9CA3AF"
+            value={customPieceCost}
+            onChangeText={setCustomPieceCost}
+            keyboardType="numeric"
+            className="border border-background-200 rounded-xl p-3 mb-3 text-typography-900 bg-background-0"
+          />
+
+          {/* Quantity */}
+          <Text className="text-sm font-semibold text-typography-900 mb-2">
+            Cantidad
+          </Text>
+          <TextInput
+            placeholder="Cantidad"
+            placeholderTextColor="#9CA3AF"
+            value={pieceQuantity}
+            onChangeText={setPieceQuantity}
+            keyboardType="numeric"
+            className="border border-background-200 rounded-xl bg-background-0 p-3 mb-4 text-typography-900"
+          />
+
+          {/* Buttons */}
+          <View className="flex-row gap-3 mt-2">
+            <Button
+              action="primary"
+              size="lg"
+              className="flex-1"
+              onPress={addPiece}
+            >
+              <ButtonText>Añadir</ButtonText>
+            </Button>
+            <Button
+              action="negative"
+              size="lg"
+              className="flex-1"
+              onPress={() => {
+                setIsModalVisible(false);
+                setCustomPieceName("");
+                setCustomPieceCost("");
+                setPieceQuantity("1");
+              }}
+            >
+              <ButtonText>Cancelar</ButtonText>
+            </Button>
+          </View>
+        </ScrollView>
+      </View>
+    </View>
+  </KeyboardAvoidingView>
+</Modal>
     </View>
   );
 };
