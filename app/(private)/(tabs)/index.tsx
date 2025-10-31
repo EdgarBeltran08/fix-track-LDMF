@@ -110,7 +110,7 @@ export default function HomeScreen() {
   };
 
   const renderRepairCard = ({ item }: { item: Repair }) => {
-    // 🚀 CÁLCULO DEL COSTO FINAL APLICADO AQUÍ
+    // CÁLCULO DEL COSTO FINAL APLICADO AQUÍ
     const partsCost = item.pieces.reduce(
       (acc, piece) => acc + piece.unitCost * piece.quantity,
       0
@@ -170,7 +170,7 @@ export default function HomeScreen() {
               </Text>
             </View>
             <Text className="text-base font-bold text-primary-0 bg-primary-500 px-3 py-1 rounded-xl">
-              {/* 🚨 MOSTRANDO EL CÁLCULO CORRECTO */}
+              {/* MOSTRANDO EL CÁLCULO CORRECTO */}
               ${totalAPagar.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </Text>
           </View>
@@ -334,7 +334,7 @@ export default function HomeScreen() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ paddingBottom: 110 }}
           ListEmptyComponent={
             <View className="items-center justify-center py-8">
               <Ionicons name="search" size={48} color="#9CA3AF" />

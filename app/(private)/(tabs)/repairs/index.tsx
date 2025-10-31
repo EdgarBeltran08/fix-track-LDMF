@@ -471,7 +471,7 @@ export default function RepairsScreen() {
             style={{ marginRight: 8 }}
           />
           <ButtonText className="font-semibold">
-            Nueva Reparación
+            Nueva Reparación 
           </ButtonText>
         </Button>
 
@@ -532,7 +532,7 @@ export default function RepairsScreen() {
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
-            contentContainerStyle={{ paddingBottom: 20 }}
+            contentContainerStyle={{ paddingBottom: 110 }}
             ListEmptyComponent={
               <View className="items-center justify-center py-12">
                 <View className="bg-background-100 w-20 h-20 rounded-full items-center justify-center mb-4">
