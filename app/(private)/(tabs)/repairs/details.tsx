@@ -4,12 +4,12 @@ import {
 } from "@/shared/components/ui/alert";
 import { Button, ButtonText } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
-import { InventoryRepository } from "@/shared/repositories/inventory.repository";
+// Eliminado: import { InventoryRepository } from "@/shared/repositories/inventory.repository";
 import { RepairsRepository } from "@/shared/repositories/repairs.repository";
-import { InventoryItem } from "@/shared/types/inventory.type";
+// Eliminado: import { InventoryItem } from "@/shared/types/inventory.type";
 import { Repair, RepairPiece } from "@/shared/types/repair.type";
 import { Ionicons } from "@expo/vector-icons";
-import { Picker } from "@react-native-picker/picker";
+// Eliminado: import { Picker } from "@react-native-picker/picker";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -63,13 +63,13 @@ const getStatusTextStyle = (status: Repair["status"]) => {
 const Details: React.FC = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [repair, setRepair] = useState<Repair | null>(null);
-  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  // Eliminado: const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [pieces, setPieces] = useState<RepairPiece[]>([]);
   const [noteText, setNoteText] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedInventoryId, setSelectedInventoryId] = useState<string>("");
+  // Eliminado: const [selectedInventoryId, setSelectedInventoryId] = useState<string>("");
   const [customPieceName, setCustomPieceName] = useState("");
   const [customPieceCost, setCustomPieceCost] = useState("");
   const [pieceQuantity, setPieceQuantity] = useState("1");
@@ -106,9 +106,10 @@ const Details: React.FC = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [repairData, inventory] = await Promise.all([
+      // Modificado: Se elimina la llamada a InventoryRepository
+      const [repairData] = await Promise.all([
         RepairsRepository.getById(id as string),
-        InventoryRepository.getAll(),
+        // Eliminado: InventoryRepository.getAll(),
       ]);
 
       if (repairData) {
@@ -123,8 +124,7 @@ const Details: React.FC = () => {
         setTimeout(() => router.back(), 2000);
       }
 
-      // Filter only available inventory items
-      setInventoryItems(inventory.filter((item) => item.state === "available"));
+      // Eliminado: setInventoryItems(inventory.filter((item) => item.state === "available"));
     } catch (error) {
       console.error("Error loading data:", error);
       setAlertConfig({
@@ -138,21 +138,23 @@ const Details: React.FC = () => {
   };
 
   const addPiece = () => {
-    // Validate input
-    if (selectedInventoryId === "" && customPieceName.trim() === "") {
+    // Lógica simplificada: SOLO PIEZA PERSONALIZADA
+    // Se eliminó la validación selectedInventoryId
+
+    if (customPieceName.trim() === "") {
       setAlertConfig({
         visible: true,
         type: "error",
-        message: "Selecciona una pieza del inventario o ingresa un nombre",
+        message: "Ingresa el nombre de la pieza",
       });
       return;
     }
 
-    if (selectedInventoryId === "" && !customPieceCost) {
+    if (!customPieceCost || isNaN(parseFloat(customPieceCost))) {
       setAlertConfig({
         visible: true,
         type: "error",
-        message: "Ingresa el costo de la pieza",
+        message: "Ingresa un costo válido para la pieza",
       });
       return;
     }
@@ -167,39 +169,19 @@ const Details: React.FC = () => {
       return;
     }
 
-    let newPiece: RepairPiece;
-
-    if (selectedInventoryId) {
-      // Adding from inventory
-      const inventoryItem = inventoryItems.find(
-        (item) => item.id === selectedInventoryId
-      );
-      if (!inventoryItem) return;
-
-      newPiece = {
-        id: Date.now().toString(),
-        inventoryId: inventoryItem.id,
-        name: inventoryItem.name,
-        quantity,
-        unitCost: inventoryItem.unitCost,
-        addedAt: new Date(),
-      };
-    } else {
-      // Adding custom piece
-      newPiece = {
-        id: Date.now().toString(),
-        inventoryId: null,
-        name: customPieceName.trim(),
-        quantity,
-        unitCost: parseFloat(customPieceCost),
-        addedAt: new Date(),
-      };
-    }
+    // Creación de la pieza personalizada
+    const newPiece: RepairPiece = {
+      id: Date.now().toString(),
+      inventoryId: null, // Siempre null
+      name: customPieceName.trim(),
+      quantity,
+      unitCost: parseFloat(customPieceCost),
+      addedAt: new Date(),
+    };
 
     setPieces([...pieces, newPiece]);
 
     // Reset form
-    setSelectedInventoryId("");
     setCustomPieceName("");
     setCustomPieceCost("");
     setPieceQuantity("1");
@@ -453,7 +435,7 @@ const Details: React.FC = () => {
                   style={{ marginRight: 8 }}
                 />
                 <Text className="text-lg font-bold text-typography-900">
-                  Piezas Utilizadas
+                  Piezas Utilizadas / Servicios 
                 </Text>
               </View>
               <TouchableOpacity
@@ -563,7 +545,7 @@ const Details: React.FC = () => {
               </View>
 
               <View className="flex-row justify-between py-2 border-b border-background-200">
-                <Text className="text-typography-900">Costo de piezas</Text>
+                <Text className="text-typography-900">Costo de Piezas o Servicios Aplicados</Text>
                 <Text className="font-semibold text-primary-500">
                   ${partsCost.toFixed(2)}
                 </Text>
@@ -673,10 +655,10 @@ const Details: React.FC = () => {
         onRequestClose={() => setIsModalVisible(false)}
       >
         <View className="flex-1 justify-end bg-black/50">
-          <View className="bg-background-0 rounded-t-3xl p-6 max-h-[80%]">
+          <View className="bg-background-0 rounded-t-3xl p-6 pb-20 max-h-[80%]">
             <View className="flex-row items-center justify-between mb-4">
               <Text className="text-xl font-bold text-typography-900">
-                Añadir Pieza
+                Añadir Pieza / Servicio
               </Text>
               <TouchableOpacity onPress={() => setIsModalVisible(false)}>
                 <Ionicons name="close" size={28} color="#9CA3AF" />
@@ -684,80 +666,24 @@ const Details: React.FC = () => {
             </View>
 
             <ScrollView>
-              {/* Select from Inventory */}
-              <Text className="text-sm font-semibold text-typography-900 mb-2">
-                Seleccionar del Inventario
-              </Text>
-              <View className="border border-background-200 rounded-xl mb-4 overflow-hidden">
-                <Picker
-                  selectedValue={selectedInventoryId}
-                  onValueChange={(value) => {
-                    setSelectedInventoryId(value);
-                    if (value) {
-                      setCustomPieceName("");
-                      setCustomPieceCost("");
-                    }
-                  }}
-                  style={{
-                    backgroundColor: "transparent",
-                    color: "#1F2937",
-                  }}
-                  dropdownIconColor="#FFB74D"
-                >
-                  <Picker.Item
-                    label="Seleccionar pieza..."
-                    value=""
-                    color="#9CA3AF"
-                  />
-                  {inventoryItems.map((item) => (
-                    <Picker.Item
-                      key={item.id}
-                      label={`${item.name} - $${item.unitCost.toFixed(2)}`}
-                      value={item.id}
-                      color="#1F2937"
-                    />
-                  ))}
-                </Picker>
-              </View>
-
-              {/* OR Divider */}
-              <View className="flex-row items-center my-4">
-                <View className="flex-1 h-[1px] bg-background-200" />
-                <Text className="mx-3 text-typography-500">O</Text>
-                <View className="flex-1 h-[1px] bg-background-200" />
-              </View>
-
-              {/* Custom Piece */}
-              <Text className="text-sm font-semibold text-typography-900 mb-2">
-                Pieza Personalizada
+              {/* Pieza Personalizada (Ahora es el bloque principal) */}
+              <Text className="text-lg font-semibold text-typography-900 mb-3">
+                Datos de la Pieza o Servicio
               </Text>
               <TextInput
-                placeholder="Nombre de la pieza"
+                placeholder="Nombre de la pieza o Servicio"
                 placeholderTextColor="#9CA3AF"
                 value={customPieceName}
-                onChangeText={(text) => {
-                  setCustomPieceName(text);
-                  if (text) setSelectedInventoryId("");
-                }}
-                editable={!selectedInventoryId}
-                className={`border ${
-                  selectedInventoryId
-                    ? "border-background-200 bg-background-100"
-                    : "border-background-200 bg-background-0"
-                } rounded-xl p-3 mb-3 text-typography-900`}
+                onChangeText={setCustomPieceName}
+                className="border border-background-200 rounded-xl p-3 mb-3 text-typography-900 bg-background-0"
               />
               <TextInput
-                placeholder="Costo unitario"
+                placeholder="Costo unitario de pieza / Costo de servicio"
                 placeholderTextColor="#9CA3AF"
                 value={customPieceCost}
                 onChangeText={setCustomPieceCost}
                 keyboardType="numeric"
-                editable={!selectedInventoryId}
-                className={`border ${
-                  selectedInventoryId
-                    ? "border-background-200 bg-background-100"
-                    : "border-background-200 bg-background-0"
-                } rounded-xl p-3 mb-3 text-typography-900`}
+                className="border border-background-200 rounded-xl p-3 mb-3 text-typography-900 bg-background-0"
               />
 
               {/* Quantity */}
@@ -789,7 +715,6 @@ const Details: React.FC = () => {
                   className="flex-1"
                   onPress={() => {
                     setIsModalVisible(false);
-                    setSelectedInventoryId("");
                     setCustomPieceName("");
                     setCustomPieceCost("");
                     setPieceQuantity("1");
@@ -807,3 +732,5 @@ const Details: React.FC = () => {
 };
 
 export default Details;
+
+
