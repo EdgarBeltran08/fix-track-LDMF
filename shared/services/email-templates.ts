@@ -273,20 +273,10 @@ export const getRepairCompletedEmailTemplate = (repair: Repair) => {
       <div class="cost-section">
         <div class="cost-title">💰 Resumen de Costos</div>
         ${
-          repair.estimatedCost > 0
-            ? `
-        <div class="cost-row">
-          <span>Mano de obra</span>
-          <span>$${repair.estimatedCost.toFixed(2)}</span>
-        </div>
-        `
-            : ""
-        }
-        ${
           repair.pieces && repair.pieces.length > 0
             ? `
         <div class="cost-row">
-          <span>Piezas (${repair.pieces.length} items)</span>
+          <span>Pieza(s) y Mano de Obra</span>
           <span>$${repair.pieces
             .reduce((acc, p) => acc + p.unitCost * p.quantity, 0)
             .toFixed(2)}</span>
@@ -294,8 +284,19 @@ export const getRepairCompletedEmailTemplate = (repair: Repair) => {
         `
             : ""
         }
+        ${
+          repair.estimatedCost > 0
+            ? `
+        <div class="cost-row">
+          <span>Pago Anticipo</span>
+          <span>$${repair.estimatedCost.toFixed(2)}</span>
+        </div>
+        `
+            : ""
+        }
+        
         <div class="cost-total">
-          <span>Total a pagar</span>
+          <span>Total a pagar  </span>
           <span class="cost-total-value">$${repair.finalCost.toFixed(2)}</span>
         </div>
       </div>
