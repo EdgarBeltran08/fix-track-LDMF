@@ -329,7 +329,7 @@ export const getRepairCompletedEmailTemplate = (repair: Repair) => {
       }
 
       <div class="cta-container">
-        <a href="tel:+1234567890" class="cta-button">
+        <a href="tel:+528125848896" class="cta-button">
           📞 Llamar para Coordinar
         </a>
       </div>
