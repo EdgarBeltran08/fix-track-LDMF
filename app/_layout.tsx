@@ -1,6 +1,7 @@
 import { GluestackUIProvider } from "@/shared/components/ui/gluestack-ui-provider";
 import { useUserStore } from "@/shared/stores/useUserStore";
 import "@/shared/styles/globals.css";
+import { LinearGradient } from "expo-linear-gradient"; // Asegúrate de importar esto
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
@@ -12,17 +13,37 @@ import {
 
 function LayoutContainer({ children }: { children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
-  const { colorScheme } = useColorScheme();
+  const { colorScheme } = useColorScheme(); // Hook para detectar el tema
 
-  const backgroundColor = colorScheme === "dark" ? "#0d0d0d" : "#f2f2f2";
+  // Comprobamos si el tema es "dark"
+  const isDark = colorScheme === "dark";
 
+  // Si es modo noche, usamos el degradado
+  if (isDark) {
+    return (
+      <LinearGradient
+        colors={["#18493A", "#3DC884"]}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+        style={{
+          flex: 1,
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+        }}
+      >
+        {children}
+      </LinearGradient>
+    );
+  }
+
+  // Si no, usamos el fondo sólido de siempre para el modo claro
   return (
     <View
       style={{
         flex: 1,
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
-        backgroundColor,
+        backgroundColor: "#f2f2f2", // Color de fondo para modo claro
       }}
     >
       {children}
