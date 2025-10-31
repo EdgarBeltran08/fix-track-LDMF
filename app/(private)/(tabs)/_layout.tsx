@@ -20,12 +20,6 @@ export default function TabLayout() {
           title: "Repairs",
         }}
       />
-      <Tabs.Screen
-        name="inventory"
-        options={{
-          title: "Inventory",
-        }}
-      />
     </Tabs>
   );
 }

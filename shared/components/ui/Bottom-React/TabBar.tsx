@@ -1,7 +1,7 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { PlatformPressable, Text } from "@react-navigation/elements";
 import { useLinkBuilder, useTheme } from "@react-navigation/native";
-import { House, Package, Wrench } from "lucide-react-native";
+import { House, Wrench } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
 import { StyleSheet, View } from "react-native";
 import "../../../../shared/styles/globals.css";
@@ -14,9 +14,9 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
     index: (props: any) => (
       <House name="Inicio" size={24} strokeWidth={2.5} {...props} />
     ),
-    inventory: (props: any) => (
-      <Package name="Inventario" size={24} strokeWidth={2.5} {...props} />
-    ),
+    // inventory: (props: any) => (
+    //   <Package name="Inventario" size={24} strokeWidth={2.5} {...props} />
+    // ),
     repairs: (props: any) => (
       <Wrench name="Reparaciones" size={24} strokeWidth={2.5} {...props} />
     ),
@@ -53,6 +53,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
       ]}
     >
       {state.routes.map((route, index) => {
+        if (route.name === "inventory") return null;
         const { options } = descriptors[route.key];
         const label =
           options.tabBarLabel !== undefined
