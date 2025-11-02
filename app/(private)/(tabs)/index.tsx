@@ -122,7 +122,7 @@ export default function HomeScreen() {
         className="mb-3"
         onPress={() => router.push(`/(private)/(tabs)/repairs/detailsview?id=${item.id}`)}
       >
-        <Card className="p-4 bg-primary-50 border border-background-200">
+        <Card className="p-4 bg-primary-50 rounded-xl">
           {/* Header */}
           <View className="flex-row justify-between items-start mb-3">
             <View className="flex-1">
@@ -134,7 +134,7 @@ export default function HomeScreen() {
             <Badge
               action={getStatusColor(item.status)}
               variant="outline"
-              className={`ml-2 border-2 ${getStatusBadgeStyle(item.status)}`}
+              className={`ml-2 border-2 rounded-xl ${getStatusBadgeStyle(item.status)}`}
             >
               <Text
                 className={`text-xs font-bold ${getStatusTextStyle(
@@ -151,7 +151,7 @@ export default function HomeScreen() {
             <Text className="text-base font-medium text-typography-800 mb-1">
               {item.deviceModel}
             </Text>
-            <Text className="text-sm text-typography-600" numberOfLines={2}>
+            <Text className="text-sm text-typography-600 mb-1" numberOfLines={2}>
               {item.issueDescription}
             </Text>
           </View>
@@ -159,12 +159,13 @@ export default function HomeScreen() {
           {/* Footer */}
           <View className="flex-row justify-between items-center p-3 bg-tertiary-500 rounded-lg">
             <View className="flex-row items-center">
-              <Ionicons
-                name="calendar-outline"
-                size={16}
-                color="#262719ff"
-                style={{ marginRight: 4 }}
-              />
+              <View className="bg-primary-500 p-1 mr-2 items-center justify-center rounded-lg">
+                <Ionicons
+                  name="calendar-outline"
+                  size={16}
+                  color="#262719ff"
+                />
+              </View>
               <Text className="text-sm text-typography-0">
                 {item.createdAt.toLocaleDateString("es-MX")}
               </Text>
@@ -244,7 +245,7 @@ export default function HomeScreen() {
           className="mb-4"
         >
           <View className="flex-row space-x-4">
-            <View className="bg-background-0 px-4 py-3 rounded-lg border border-background-200 min-w-[110px]">
+            <View className="mr-1 bg-tertiary-800 px-4 py-3 rounded-lg border-2 border-info-600 min-w-[110px]">
               <Text className="text-2xl font-bold text-warning-600 text-center">
                 {statusCounts.repairing || 0}
               </Text>
@@ -252,7 +253,7 @@ export default function HomeScreen() {
                 Reparando
               </Text>
             </View>
-            <View className="bg-background-0 px-4 py-3 rounded-lg border border-background-200 min-w-[110px]">
+            <View className="mr-1 bg-tertiary-800 px-4 py-3 rounded-lg border-2 border-info-600 min-w-[110px]">
               <Text className="text-2xl font-bold text-info-600 text-center">
                 {statusCounts.in_review || 0}
               </Text>
@@ -260,7 +261,7 @@ export default function HomeScreen() {
                 En Revisión
               </Text>
             </View>
-            <View className="bg-background-0 px-4 py-3 rounded-lg border border-background-200 min-w-[110px]">
+            <View className="mr-1 bg-tertiary-800 px-4 py-3 rounded-lg border-2 border-info-600 min-w-[110px]">
               <Text className="text-2xl font-bold text-success-600 text-center">
                 {statusCounts.done || 0}
               </Text>
@@ -268,7 +269,7 @@ export default function HomeScreen() {
                 Terminados
               </Text>
             </View>
-            <View className="bg-background-0 px-4 py-3 rounded-lg border border-background-200 min-w-[110px]">
+            <View className="mr-1 bg-tertiary-800 px-4 py-3 rounded-lg border-2 border-info-600 min-w-[110px]">
               <Text className="text-2xl font-bold text-typography-500 text-center">
                 {statusCounts.waiting_parts || 0}
               </Text>
@@ -281,7 +282,7 @@ export default function HomeScreen() {
       </View>
 
       {/* Action Bar */}
-      <View className="px-6 py-4 bg-background-50 border-b border-background-200">
+      <View className="px-6 py-4 bg-background-50 border-b border-primary-500">
         <View className="flex-row space-x-3 mb-3">
           <Button
             action="primary"
@@ -301,7 +302,7 @@ export default function HomeScreen() {
 
         {/* Search Bar */}
         <View className="relative">
-          <Input variant="outline" size="md">
+          <Input variant="outline" size="md" className="border-2 border-primary-300 bg-secondary-950">
             <InputField
               placeholder="Buscar por cliente, dispositivo, folio o teléfono..."
               value={searchText}
@@ -310,7 +311,7 @@ export default function HomeScreen() {
             />
           </Input>
           <View className="absolute left-3 top-1/2 transform -translate-y-1/2">
-            <Ionicons name="search" size={20} color="#6B7280" />
+            <Ionicons name="search" size={20} color="#9CA3AF" />
           </View>
         </View>
       </View>

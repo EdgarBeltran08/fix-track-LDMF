@@ -5,7 +5,6 @@ import { LinearGradient } from "expo-linear-gradient"; // Asegúrate de importar
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
-import { View } from "react-native";
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
@@ -34,21 +33,23 @@ function LayoutContainer({ children }: { children: React.ReactNode }) {
         {children}
       </LinearGradient>
     );
+  } else {
+      return (
+        <LinearGradient
+          colors={["#ffffffff", "#E3FFF1"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={{
+            flex: 1,
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom,
+          }}
+        >
+          {children}
+        </LinearGradient>
+      );
   }
 
-  // Si no, usamos el fondo sólido de siempre para el modo claro
-  return (
-    <View
-      style={{
-        flex: 1,
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
-        backgroundColor: "#f2f2f2", // Color de fondo para modo claro
-      }}
-    >
-      {children}
-    </View>
-  );
 }
 
 export default function RootLayout() {

@@ -130,7 +130,7 @@ export default function RepairsScreen() {
         router.push(`/(private)/(tabs)/repairs/detailsview?id=${item.id}`)
       }
     >
-      <Card className="p-4 bg-primary-50 border-2 border-background-200 shadow-sm">
+      <Card className="p-4 bg-primary-50 shadow-sm rounded-xl">
         {/* Header */}
         <View className="flex-row justify-between items-start mb-3">
           <View className="flex-1 pr-2">
@@ -144,7 +144,7 @@ export default function RepairsScreen() {
           <Badge
             action={getStatusColor(item.status)}
             variant="outline"
-            className={`border-2 ${getStatusBadgeStyle(item.status)}`}
+            className={`border-2 rounded-xl ${getStatusBadgeStyle(item.status)}`}
           >
             <Text
               className={`text-xs font-bold ${getStatusTextStyle(item.status)}`}
@@ -173,7 +173,7 @@ export default function RepairsScreen() {
         </View>
 
         {/* Contact Info */}
-        <View className="mb-3 pb-3 border-b border-background-200">
+        <View className="mb-1 pb-2 border-b border-background-200">
           <View className="flex-row items-center">
             <Ionicons
               name="call-outline"
@@ -210,9 +210,9 @@ export default function RepairsScreen() {
         </View>
 
         {/* Quick Actions */}
-        <View className="flex-row gap-2 mt-4 pt-3 border-t border-background-200">
+        <View className="flex-row gap-2 mt-4 pt-3">
           <TouchableOpacity
-            className="flex-1 flex-row items-center justify-center bg-primary-500 rounded-lg py-2 px-3"
+            className="flex-1 flex-row items-center justify-center bg-secondary-500 rounded-lg py-3 px-3"
             onPress={() =>
               router.push(`/(private)/(tabs)/repairs/details?id=${item.id}`)
             }
@@ -226,7 +226,7 @@ export default function RepairsScreen() {
             <Text className="text-white font-semibold text-sm">Editar</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="flex-1 flex-row items-center justify-center bg-info-500 rounded-lg py-2 px-3"
+            className="flex-1 flex-row items-center justify-center bg-warning-500 rounded-lg py-2 px-3"
             onPress={() =>
               router.push(`/(private)/(tabs)/repairs/status?id=${item.id}`)
             }
@@ -241,7 +241,7 @@ export default function RepairsScreen() {
           </TouchableOpacity>
           {item.status === "done" && (
             <TouchableOpacity
-              className="flex-1 flex-row items-center justify-center bg-success-500 rounded-lg py-2 px-3"
+              className="flex-1 flex-row items-center justify-center bg-primary-500 rounded-lg py-2 px-3"
               onPress={() =>
                 router.push(`/(private)/(tabs)/repairs/delivery?id=${item.id}`)
               }
@@ -289,10 +289,10 @@ export default function RepairsScreen() {
           <View className="flex-row space-x-3">
             <Pressable
               onPress={() => handleStatusFilter("all")}
-              className={`px-4 py-3 rounded-xl border-2 min-w-[100px] ${
+              className={`mr-1 px-4 py-3 rounded-xl border-2 min-w-[100px] ${
                 selectedStatus === "all"
                   ? "bg-primary-500 border-primary-600"
-                  : "bg-background-0 border-background-300"
+                  : "bg-tertiary-800 border-secondary-500"
               }`}
             >
               <Text
@@ -317,10 +317,10 @@ export default function RepairsScreen() {
 
             <Pressable
               onPress={() => handleStatusFilter("in_review")}
-              className={`px-4 py-3 rounded-xl border-2 min-w-[100px] ${
+              className={`mr-1 px-4 py-3 rounded-xl border-2 min-w-[100px] ${
                 selectedStatus === "in_review"
                   ? "bg-info-500 border-info-600"
-                  : "bg-background-0 border-info-300"
+                  : "bg-tertiary-800 border-info-700"
               }`}
             >
               <Text
@@ -345,10 +345,10 @@ export default function RepairsScreen() {
 
             <Pressable
               onPress={() => handleStatusFilter("repairing")}
-              className={`px-4 py-3 rounded-xl border-2 min-w-[100px] ${
+              className={`mr-1 px-4 py-3 rounded-xl border-2 min-w-[100px] ${
                 selectedStatus === "repairing"
                   ? "bg-warning-500 border-warning-600"
-                  : "bg-background-0 border-warning-300"
+                  : "bg-tertiary-800 border-warning-300"
               }`}
             >
               <Text
@@ -373,17 +373,17 @@ export default function RepairsScreen() {
 
             <Pressable
               onPress={() => handleStatusFilter("waiting_parts")}
-              className={`px-4 py-3 rounded-xl border-2 min-w-[100px] ${
+              className={`mr-1 px-4 py-3 rounded-xl border-2 min-w-[100px] ${
                 selectedStatus === "waiting_parts"
                   ? "bg-gray-500 border-gray-600"
-                  : "bg-background-0 border-gray-300"
+                  : "bg-tertiary-800 border-gray-400"
               }`}
             >
               <Text
                 className={`text-2xl font-bold text-center mb-1 ${
                   selectedStatus === "waiting_parts"
                     ? "text-white"
-                    : "text-gray-700"
+                    : "text-gray-600"
                 }`}
               >
                 {statusCounts.waiting_parts || 0}
@@ -401,10 +401,10 @@ export default function RepairsScreen() {
 
             <Pressable
               onPress={() => handleStatusFilter("done")}
-              className={`px-4 py-3 rounded-xl border-2 min-w-[100px] ${
+              className={`mr-1 px-4 py-3 rounded-xl border-2 min-w-[100px] ${
                 selectedStatus === "done"
                   ? "bg-success-500 border-success-600"
-                  : "bg-background-0 border-success-300"
+                  : "bg-tertiary-800 border-success-300"
               }`}
             >
               <Text
@@ -430,7 +430,7 @@ export default function RepairsScreen() {
               className={`px-4 py-3 rounded-xl border-2 min-w-[100px] ${
                 selectedStatus === "delivered"
                   ? "bg-emerald-500 border-emerald-600"
-                  : "bg-background-0 border-emerald-300"
+                  : "bg-tertiary-800 border-emerald-300"
               }`}
             >
               <Text
@@ -480,7 +480,7 @@ export default function RepairsScreen() {
           <Input
             variant="outline"
             size="md"
-            className="border-2 border-primary-300"
+            className="border-2 border-primary-300 bg-secondary-950"
           >
             <InputField
               placeholder="Buscar por cliente, dispositivo, folio o teléfono..."

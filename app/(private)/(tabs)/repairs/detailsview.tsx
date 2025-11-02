@@ -196,7 +196,7 @@ export default function DetallesEquipoView() {
               Datos del Cliente
             </Text>
           </View>
-          <Card className="p-5 bg-background-50 border-2 border-background-200">
+          <Card className="p-5 bg-background-50 border-2 border-background-200 rounded-xl">
             <View className="mb-3">
               <Text className="text-xs font-semibold text-typography-600 mb-1">
                 NOMBRE
@@ -253,7 +253,7 @@ export default function DetallesEquipoView() {
               Datos del Equipo
             </Text>
           </View>
-          <Card className="p-5 bg-background-50 border-2 border-background-200">
+          <Card className="p-5 bg-background-50 border-2 border-background-200 rounded-xl">
             <View className="mb-3">
               <Text className="text-xs font-semibold text-typography-600 mb-1">
                 MODELO DEL DISPOSITIVO
@@ -292,7 +292,7 @@ export default function DetallesEquipoView() {
                 </Text>
               </View>
             </View>
-            <Card className="p-4 bg-background-50 border-2 border-background-200">
+            <Card className="p-4 bg-background-50 border-2 border-background-200 rounded-xl">
               {repair.pieces.map((piece: RepairPiece, index: number) => (
                 <View
                   key={piece.id}
@@ -342,7 +342,7 @@ export default function DetallesEquipoView() {
               Costos de la Reparación
             </Text>
           </View>
-          <Card className="p-5 bg-background-50 border-2 border-primary-300">
+          <Card className="p-5 bg-background-50 border-2 border-primary-300 rounded-xl">
             {repair.pieces.length > 0 && (
               <View className="flex-row justify-between items-center mb-3 pb-3 border-b border-background-200">
                 <View className="flex-row items-center">
@@ -399,7 +399,7 @@ export default function DetallesEquipoView() {
                 </Text>
               </View>
             </View>
-            <Card className="p-4 bg-background-50 border-2 border-background-200">
+            <Card className="p-4 bg-background-50 border-2 border-background-200 rounded-xl">
               {repair.notes.map((note: RepairNote, index: number) => (
                 <View
                   key={note.id}
@@ -522,7 +522,7 @@ export default function DetallesEquipoView() {
             action="secondary"
             variant="outline"
             size="lg"
-            className="rounded-xl border-2"
+            className="rounded-xl border-2 bg-background-50 border-primary-500"
             onPress={() =>
               router.push(`/(private)/(tabs)/repairs/status?id=${repair.id}`)
             }
