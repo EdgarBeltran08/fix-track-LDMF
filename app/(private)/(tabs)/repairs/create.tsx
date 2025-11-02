@@ -121,7 +121,7 @@ const TermsModal = ({ isVisible, onClose }: { isVisible: boolean; onClose: () =>
             onPress={onClose}
             className="bg-primary-500 rounded-xl p-3"
           >
-            <Text className="text-background-0 text-center font-bold">Cerrar</Text>
+            <Text className="text-background-900 text-center font-bold">Cerrar</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -597,7 +597,7 @@ export default function AddEquipoForm() {
             <View className="ml-3 flex-1 flex-row flex-wrap">
               <Text className="text-typography-900">Acepto los </Text>
               <TouchableOpacity onPress={() => setModalVisible(true)}>
-                <Text className="text-primary-500 font-bold underline">
+                <Text className="text-primary-700 font-bold underline">
                   Términos y Condiciones
                 </Text>
               </TouchableOpacity>
@@ -620,7 +620,7 @@ export default function AddEquipoForm() {
             {loading ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text className="text-background-0 text-center font-bold text-lg">
+              <Text className="text-background-900 text-center font-bold text-lg">
                 Registrar Reparación
               </Text>
             )}
@@ -632,7 +632,7 @@ export default function AddEquipoForm() {
               loading ? "opacity-50" : ""
             }`}
           >
-            <Text className="text-typography-700 text-center font-bold text-lg">
+            <Text className="text-background-900 text-typography-700 text-center font-bold text-lg">
               Cancelar
             </Text>
           </TouchableOpacity>
