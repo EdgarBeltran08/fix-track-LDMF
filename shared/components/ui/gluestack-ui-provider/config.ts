@@ -24,8 +24,8 @@ export const config = {
     "--color-secondary-400": "187 223 102", /* #BBDF66 */
     "--color-secondary-500": "0 121 255",
     "--color-secondary-600": "129 155 70",
-    "--color-secondary-700": "100 121 54",
-    "--color-secondary-800": "76 93 40",
+    "--color-secondary-700": "57, 171, 196",
+    "--color-secondary-800": "255, 164, 66",
     "--color-secondary-900": "39 49 21",
     "--color-secondary-950": "237, 234, 232",
 
@@ -34,8 +34,8 @@ export const config = {
     "--color-tertiary-50": "252 247 232",
     "--color-tertiary-100": "249 241 215",
     "--color-tertiary-200": "245 235 198", /* #F5EBC6 */
-    "--color-tertiary-300": "236 223 170",
-    "--color-tertiary-400": "233 218 171", /* #E9DAAB */
+    "--color-tertiary-300": "237, 202, 76",
+    "--color-tertiary-400": "255, 147, 79", /* #E9DAAB */
     "--color-tertiary-500": "69, 156, 255",
     "--color-tertiary-600": "197 179 115", /* #C5B373 */
     "--color-tertiary-700": "172 152 89",
@@ -131,7 +131,7 @@ export const config = {
     "--color-background-0": "169 196 182", /* dutch white --*/ 
     "--color-background-50": "255 255 255",
     "--color-background-100": "196, 243, 255",
-    "--color-background-200": "169 196 182",
+    "--color-background-200": "42, 213, 130",
     "--color-background-300": "217 210 140",
     "--color-background-400": "205 197 120",
     "--color-background-500": "197 179 115",
@@ -176,8 +176,8 @@ export const config = {
     "--color-secondary-400": "102 102 102",
     "--color-secondary-500": "0 110 144",
     "--color-secondary-600": "153 153 153",
-    "--color-secondary-700": "179 179 179",
-    "--color-secondary-800": "204 204 204",
+    "--color-secondary-700": "18 73 58",
+    "--color-secondary-800": "18 73 58",
     "--color-secondary-900": "242 242 242",
     "--color-secondary-950": "28, 46, 37",
 

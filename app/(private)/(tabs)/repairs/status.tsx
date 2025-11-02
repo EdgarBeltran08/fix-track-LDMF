@@ -291,9 +291,9 @@ export default function ActualizarEstadoScreen() {
         contentContainerStyle={{ paddingBottom: 120 }}
       >
         {/* Repair Info Card */}
-        <Card className="p-5 mb-6 bg-background-0 border-2 border-background-200">
-          <View className="mb-4 pb-4 border-b border-background-200">
-            <Text className="text-xs font-semibold text-primary-600 mb-2">
+        <Card className="p-5 mb-6 bg-primary-300 rounded-xl">
+          <View className="mb-4 pb-4 border-b border-primary-900">
+            <Text className="text-xs font-bold text-primary-600 mb-2 px-3 py-1 bg-white b-5 rounded-lg">
               FOLIO
             </Text>
             <Text className="text-2xl font-bold text-typography-900">
@@ -339,7 +339,7 @@ export default function ActualizarEstadoScreen() {
           </View>
 
           <View>
-            <View className="flex-row items-center mb-2">
+            <View className="flex-row items-center mb-2 pb-4">
               <Ionicons
                 name="document-text-outline"
                 size={18}
@@ -361,7 +361,7 @@ export default function ActualizarEstadoScreen() {
           <Text className="text-base font-bold text-typography-900 mb-3">
             Estado Actual
           </Text>
-          <Card className="p-4 bg-primary-0 border-2 border-background-200">
+          <Card className="p-4 bg-secondary-700 border-l-4 border-primary-500 rounded-r-xl">
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center flex-1">
                 <View
@@ -380,7 +380,7 @@ export default function ActualizarEstadoScreen() {
                         : repair.status === "waiting_parts"
                         ? "#374151"
                         : repair.status === "done"
-                        ? "#15803D"
+                        ? "#2dc163ff"
                         : repair.status === "not_repaired"
                         ? "#ba2d2dff"
                         : "#047857"
@@ -422,7 +422,7 @@ export default function ActualizarEstadoScreen() {
           <Text className="text-base font-bold text-typography-900 mb-3">
             Cambiar Estado
           </Text>
-          <Card className="p-4 bg-tertiary-400 border-2 border-tertiary-50">
+          <Card className="p-4 bg-tertiary-400">
             <Text className="text-xl text-typography-0 mb-3">
               Selecciona el nuevo estado para esta reparación
             </Text>
@@ -532,7 +532,7 @@ export default function ActualizarEstadoScreen() {
             action="secondary"
             variant="outline"
             size="lg"
-            className="rounded-xl border-2"
+            className="rounded-xl border-2 border-primary-500 bg-background-50"
             onPress={handleCancel}
             isDisabled={updating}
           >

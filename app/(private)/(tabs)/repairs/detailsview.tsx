@@ -196,7 +196,7 @@ export default function DetallesEquipoView() {
               Datos del Cliente
             </Text>
           </View>
-          <Card className="p-5 bg-background-50 border-2 border-background-200 rounded-xl">
+          <Card className="p-5 bg-background-50 border-2 border-primary-500 rounded-xl">
             <View className="mb-3">
               <Text className="text-xs font-semibold text-typography-600 mb-1">
                 NOMBRE
@@ -253,7 +253,7 @@ export default function DetallesEquipoView() {
               Datos del Equipo
             </Text>
           </View>
-          <Card className="p-5 bg-background-50 border-2 border-background-200 rounded-xl">
+          <Card className="p-5 bg-background-50 border-2 border-primary-500 rounded-xl">
             <View className="mb-3">
               <Text className="text-xs font-semibold text-typography-600 mb-1">
                 MODELO DEL DISPOSITIVO
@@ -362,7 +362,7 @@ export default function DetallesEquipoView() {
               </View>
             )}
             
-            <View className="flex-row justify-between items-center pb-3 border-b border-background-200">
+            <View className="flex-row justify-between items-center pb-3">
               <Text className="text-typography-900">Anticipo de Diagnóstico</Text>
               <Text className="font-semibold text-typography-900">
                 -${(repair.estimatedCost || 0).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -445,7 +445,7 @@ export default function DetallesEquipoView() {
               Información Adicional
             </Text>
           </View>
-          <Card className="p-5 bg-background-50 border-2 border-background-200">
+          <Card className="p-5 bg-background-50 border-2 border-primary-500">
             <View className="mb-3">
               <Text className="text-xs font-semibold text-typography-600 mb-1">
                 FECHA DE REGISTRO

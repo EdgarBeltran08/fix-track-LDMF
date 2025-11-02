@@ -450,7 +450,7 @@ const totalCost = partsCost - (repair?.estimatedCost || 0);
             </View>
 
             {pieces.length === 0 ? (
-              <Card className="bg-background-50 rounded-xl p-4 items-center">
+              <Card className="bg-background-50 rounded-xl p-4 items-center border border-background-200">
                 <Ionicons
                   name="cube-outline"
                   size={32}
@@ -465,7 +465,7 @@ const totalCost = partsCost - (repair?.estimatedCost || 0);
               pieces.map((p) => (
                 <Card
                   key={p.id}
-                  className="bg-background-0 border border-background-200 rounded-xl p-4 mb-3"
+                  className="bg-background-50 border-2 border-background-200 rounded-xl p-4 mb-3"
                 >
                   <View className="flex-row justify-between items-start">
                     <View className="flex-1">
@@ -487,18 +487,18 @@ const totalCost = partsCost - (repair?.estimatedCost || 0);
                       <View className="flex-row mt-3 items-center">
                         <TouchableOpacity
                           onPress={() => updateQuantity(p.id, -1)}
-                          className="bg-background-100 p-2 rounded-lg"
+                          className="bg-primary-500 p-2 rounded-lg"
                         >
-                          <Ionicons name="remove" size={18} color="#FFB74D" />
+                          <Ionicons name="remove" size={18} color="#000000ff" />
                         </TouchableOpacity>
                         <Text className="mx-4 font-bold text-typography-900">
                           {p.quantity}
                         </Text>
                         <TouchableOpacity
                           onPress={() => updateQuantity(p.id, 1)}
-                          className="bg-background-100 p-2 rounded-lg"
+                          className="bg-primary-500 p-2 rounded-lg"
                         >
-                          <Ionicons name="add" size={18} color="#FFB74D" />
+                          <Ionicons name="add" size={18} color="#000000ff" />
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -537,7 +537,7 @@ const totalCost = partsCost - (repair?.estimatedCost || 0);
           </View>
 
           {/* COSTO DE LA REPARACION */}
-          <Card className="bg-background-0 rounded-xl p-4 mb-4">
+          <Card className="bg-secondary-700 rounded-xl p-4 mb-4">
             <View className="flex-row items-center mb-3">
 
               <Text className="text-lg font-bold text-typography-900">
@@ -545,7 +545,7 @@ const totalCost = partsCost - (repair?.estimatedCost || 0);
               </Text>
             </View>
 
-             <View className="flex-row justify-between py-2 pb-4 border-b border-background-200">
+             <View className="flex-row justify-between py-2 pb-4 border-b border-background-900">
                 <Text className="text-typography-900">Costo de Piezas y Mano de Obra</Text>
                 <Text className="font-semibold text-primary-500">
                   ${partsCost.toFixed(2)}
@@ -553,14 +553,14 @@ const totalCost = partsCost - (repair?.estimatedCost || 0);
               </View>
 
             <View className="space-y-2">
-              <View className="flex-row justify-between py-2 border-b border-background-200">
+              <View className="flex-row justify-between py-4">
                 <Text className="text-typography-900">Pago de Diagnóstico</Text>
-                <Text className="font-semibold text-typography-900">
+                <Text className="font-semibold text-error-500">
                   -${repair.estimatedCost.toFixed(2)}
                 </Text>
               </View>             
 
-              <View className="flex-row justify-between py-3 bg-primary-50 rounded-lg px-3 mt-2">
+              <View className="flex-row justify-between py-3 bg-primary-200 rounded-lg px-3 mt-2">
                 <Text className="text-lg font-bold text-typography-900">
                   Total
                 </Text>
@@ -584,7 +584,7 @@ const totalCost = partsCost - (repair?.estimatedCost || 0);
           </View>
 
           {/* NOTAS */}
-          <Card className="bg-background-0 rounded-xl p-4 mb-4">
+          <Card className="bg-primary-400 rounded-xl p-4 mb-4">
             <View className="flex-row items-center mb-3">
               <Text className="text-lg font-bold text-typography-900">
                 Añadir Nota
@@ -596,7 +596,7 @@ const totalCost = partsCost - (repair?.estimatedCost || 0);
               placeholderTextColor="#9CA3AF"
               value={noteText}
               onChangeText={setNoteText}
-              className="border border-background-200 rounded-xl bg-background-50 p-3 text-typography-900 min-h-[100px]"
+              className="border-2 border-primary-500 rounded-xl bg-background-50 p-3 text-typography-900 min-h-[100px]"
               style={{ textAlignVertical: "top" }}
             />
           </Card>
@@ -676,13 +676,13 @@ const totalCost = partsCost - (repair?.estimatedCost || 0);
     {/* El contenedor que centra el modal */}
     <View className="flex-1 justify-center items-center bg-black/50 px-4">
       {/* La "tarjeta" del modal con contenido */}
-      <View className="bg-background-100 rounded-2xl p-6 w-full max-h-[90%]">
+      <View className="bg-background-50 rounded-2xl p-6 w-full max-h-[90%]">
         <View className="flex-row items-center justify-between mb-4">
           <Text className="text-xl font-bold text-typography-900">
             Añadir Pieza y Mano de Obra
           </Text>
           <TouchableOpacity onPress={() => setIsModalVisible(false)}>
-            <Ionicons name="close" size={28} color="#9CA3AF" />
+            <Ionicons name="close" size={28} color="#7f8691ff" />
           </TouchableOpacity>
         </View>
 
@@ -696,7 +696,7 @@ const totalCost = partsCost - (repair?.estimatedCost || 0);
             placeholderTextColor="#9CA3AF"
             value={customPieceName}
             onChangeText={setCustomPieceName}
-            className="border border-background-200 rounded-xl p-3 mb-3 text-typography-900 bg-background-0"
+            className="border-2 border-primary-500 rounded-xl p-3 mb-3 text-typography-900 bg-primary-0"
           />
           <TextInput
             placeholder="Costo de pieza / Costo de Mano de Obra"
@@ -704,7 +704,7 @@ const totalCost = partsCost - (repair?.estimatedCost || 0);
             value={customPieceCost}
             onChangeText={setCustomPieceCost}
             keyboardType="numeric"
-            className="border border-background-200 rounded-xl p-3 mb-3 text-typography-900 bg-background-0"
+            className="border-2 border-primary-500 rounded-xl p-3 mb-3 text-typography-900 bg-primary-0"
           />
 
           {/* Quantity */}
@@ -717,7 +717,7 @@ const totalCost = partsCost - (repair?.estimatedCost || 0);
             value={pieceQuantity}
             onChangeText={setPieceQuantity}
             keyboardType="numeric"
-            className="border border-background-200 rounded-xl bg-background-0 p-3 mb-4 text-typography-900"
+            className="border-2 border-primary-500 rounded-xl bg-primary-0 p-3 mb-4 text-typography-900"
           />
 
           {/* Buttons */}

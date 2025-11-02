@@ -155,7 +155,7 @@ export default function RepairsScreen() {
         </View>
 
         {/* Device Info */}
-        <View className="mb-3 pb-3 border-b border-background-200">
+        <View className="mb-3 pb-3 border-b border-primary-500">
           <View className="flex-row items-center mb-2">
             <Ionicons
               name="phone-portrait-outline"
@@ -173,7 +173,7 @@ export default function RepairsScreen() {
         </View>
 
         {/* Contact Info */}
-        <View className="mb-1 pb-2 border-b border-background-200">
+        <View className="mb-1 pb-2 border-b border-primary-500">
           <View className="flex-row items-center">
             <Ionicons
               name="call-outline"
@@ -457,7 +457,7 @@ export default function RepairsScreen() {
       </View>
 
       {/* Action Bar */}
-      <View className="px-6 py-4 bg-background-50 border-b border-background-200">
+      <View className="px-6 py-4 bg-background-50 border-b border-primary-500">
         <Button
           action="primary"
           size="lg"
