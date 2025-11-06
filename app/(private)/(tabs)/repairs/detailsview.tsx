@@ -121,7 +121,7 @@ export default function DetallesEquipoView() {
     0
   );
   
-  // 🚨 CÁLCULO CORREGIDO: Total a Pagar = Max(0, Costo Piezas/Servicios - Anticipo de Diagnóstico)
+  // CÁLCULO CORREGIDO: Total a Pagar = Max(0, Costo Piezas/Servicios - Anticipo de Diagnóstico)
   const totalCost = Math.max(0, partsCost - (repair.estimatedCost || 0));
 
   return (

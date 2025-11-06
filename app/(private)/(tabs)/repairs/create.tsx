@@ -63,27 +63,27 @@ Artículo 1: Aceptación y Consentimiento
 Al entregar su equipo para diagnóstico y/o reparación, el Cliente acepta de manera expresa los siguientes términos y condiciones. La aceptación se formaliza mediante la Confirmación Digital (Nombre Completo) en el presente formulario, que sustituye a la firma autógrafa y tiene plena validez legal.
 
 Artículo 2: Diagnóstico, Presupuesto y Anticipo
-1.  Costo del Diagnóstico: Todo equipo requiere de un diagnóstico técnico para determinar la(s) falla(s) y generar un presupuesto de reparación. Este servicio de diagnóstico tiene un costo fijo, el cual será comunicado al Cliente al momento de la recepción del equipo y deberá ser cubierto como un anticipo.
+1.  Costo del Diagnóstico: Todo equipo requiere de un diagnóstico técnico para determinar la(s) falla(s) y generar un presupuesto de reparación. Este servicio de diagnóstico tiene un costo fijo, el cual será comunicado al Cliente al momento de la recepción del equipo y deberá ser cubierto como un anticipo.
 
-2.  Aceptación del Presupuesto: Una vez completado el diagnóstico, Fix Track presentará al Cliente un presupuesto detallado del costo total de la reparación (piezas y/o mano de obra).
+2.  Aceptación del Presupuesto: Una vez completado el diagnóstico, Fix Track presentará al Cliente un presupuesto detallado del costo total de la reparación (piezas y/o mano de obra).
 
-3.  Anticipo Deducible:
+3.  Anticipo Deducible:
 
-    * Si el Cliente ACEPTA el presupuesto, el costo del diagnóstico pagado como anticipo será deducido íntegramente del monto total de la reparación.
+    * Si el Cliente ACEPTA el presupuesto, el costo del diagnóstico pagado como anticipo será deducido íntegramente del monto total de la reparación.
 
-    * Si el Cliente RECHAZA el presupuesto, el pago del diagnóstico no será reembolsable, ya que cubre el tiempo y los recursos técnicos invertidos en la revisión del equipo.
+    * Si el Cliente RECHAZA el presupuesto, el pago del diagnóstico no será reembolsable, ya que cubre el tiempo y los recursos técnicos invertidos en la revisión del equipo.
 
-4.  Variaciones en el Presupuesto: Si durante la reparación se detectan fallas adicionales no contempladas en el diagnóstico inicial, Fix Track se pondrá en contacto con el Cliente para notificarle y solicitar su aprobación para cualquier costo adicional.
+4.  Variaciones en el Presupuesto: Si durante la reparación se detectan fallas adicionales no contempladas en el diagnóstico inicial, Fix Track se pondrá en contacto con el Cliente para notificarle y solicitar su aprobación para cualquier costo adicional.
 
 Artículo 3: Garantía del Servicio
 
 1. Alcance de la Garantía: La garantía ofrecida por Fix Track se limita estrictamente a la mano de obra realizada y a la pieza de repuesto específica que fue instalada.
 
-2. Vigencia: La garantía es válida por 30 días naturales a partir de la fecha de entrega del equipo al Cliente.
+2. Vigencia: La garantía es válida por 90 (noventa) días naturales a partir de la fecha de entrega del equipo al Cliente, en cumplimiento con la Ley Federal de Protección al Consumidor.
 
 3. Exclusiones: La garantía será nula en los siguientes casos:
-   * Manipulación Indebida: Si el equipo presenta daños físicos, golpes, caídas, señales de humedad o cualquier tipo de manipulación externa o interna posterior a la reparación.
-   * Fallas Adicionales: Si la falla reportada después de la reparación es diferente a la originalmente reparada. Cualquier falla adicional generará un nuevo presupuesto y costo extra.
+   * Manipulación Indebida: Si el equipo presenta daños físicos, golpes, caídas, señales de humedad o cualquier tipo de manipulación externa o interna posterior a la reparación.
+   * Fallas Adicionales: Si la falla reportada después de la reparación es diferente a la originalmente reparada. Cualquier falla adicional generará un nuevo presupuesto y costo extra.
 
 Artículo 4: Procedencia y Bloqueo del Equipo
 
@@ -91,13 +91,14 @@ El Cliente declara bajo protesta de decir verdad que el equipo entregado es de s
 
 Artículo 5: Plazos de Recolección y Resguardo
 
-1. Plazo de Recolección: Una vez que la reparación esté finalizada (o el diagnóstico haya sido rechazado por el Cliente), el Cliente dispone de 30 días naturales para recoger el equipo.
+1. Plazo de Recolección: Una vez que la reparación esté finalizada, el Cliente dispone de 30 (treinta) días naturales para recoger el equipo.
 
-2. Costo de Resguardo: Vencido el plazo de 30 días, Fix Track se reserva el derecho de aplicar un costo diario de almacenaje o considerar el equipo en abandono, procediendo a su desecho o venta para cubrir los gastos de almacenaje y/o diagnóstico.
+2. Costo de Resguardo: Vencido el plazo de 30 días naturales sin que el equipo sea recogido, Fix Track se reserva el derecho de aplicar un cargo diario por concepto de almacenaje. El monto de dicho cargo será especificado a la hora que se pase a la entrega de su dispositivo o comunicandose con nosotros y se acumulará hasta la fecha en que el equipo sea retirado.
 
-3. Accesorios: Fix Track no se hace responsable por tarjetas SIM, tarjetas de memoria, fundas, protectores, o cualquier otro accesorio olvidado en el equipo.
+3. Abandono de Equipo: Si transcurre un plazo de 1 (un) año a partir de la fecha de notificación (de servicio finalizado ) sin que el Cliente recoja su equipo, este se considerará legalmente en abandono. En tal caso, Fix Track podrá disponer del bien para cubrir los costos del servicio, diagnóstico y almacenaje acumulados, conforme a lo dispuesto en la legislación civil aplicable, sin que el Cliente tenga derecho a reclamo o compensación posterior.
+
+4. Accesorios: Fix Track no se hace responsable por tarjetas SIM, tarjetas de memoria, fundas, protectores, o cualquier otro accesorio olvidado en el equipo.
 `;
-
 // --- COMPONENTE MODAL DE TÉRMINOS Y CONDICIONES ---
 const TermsModal = ({ isVisible, onClose }: { isVisible: boolean; onClose: () => void }) => {
   return (
